@@ -1,7 +1,10 @@
 
+using BAL;
 using DAL;
 using DAL.Models;
 using Microsoft.AspNetCore.Identity;
+using AutoMapper;
+//using AutoMapper.Extensions.Microsoft.DependencyInjection;
 
 namespace DropShipping
 {
@@ -12,9 +15,10 @@ namespace DropShipping
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
+            //builder.Services.AddAutoMapper();
             builder.Services.AddControllers();
             DataAccessLayerRegistrationService.RegistrationService(builder.Services,builder.Configuration);
+            BusineessLayerRegistrationServices.RegistrationService(builder.Services);
             builder.Services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<DropShoppingDbContext>()
                 .AddDefaultTokenProviders();
@@ -35,7 +39,8 @@ namespace DropShipping
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
+            app.UseAuthentication();
+            app.UseStaticFiles();
 
             app.MapControllers();
 

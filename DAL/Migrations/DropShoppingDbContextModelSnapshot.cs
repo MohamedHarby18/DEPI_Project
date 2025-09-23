@@ -44,7 +44,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Brands");
+                    b.ToTable("Brands", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Category", b =>
@@ -69,7 +69,7 @@ namespace DAL.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Customer", b =>
@@ -110,7 +110,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("DropshipperId");
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customers", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Dropshipper", b =>
@@ -120,7 +120,7 @@ namespace DAL.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("Dropshippers");
+                    b.ToTable("Dropshippers", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Order", b =>
@@ -158,7 +158,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("DropshipperId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.OrderItem", b =>
@@ -194,7 +194,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("OrderItems");
+                    b.ToTable("OrderItems", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.Product", b =>
@@ -239,7 +239,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.ProductImages", b =>
@@ -268,7 +268,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("ProductImages");
+                    b.ToTable("ProductImages", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.User", b =>
@@ -362,7 +362,7 @@ namespace DAL.Migrations
                     b.HasIndex("DropshipperId")
                         .IsUnique();
 
-                    b.ToTable("Wallets");
+                    b.ToTable("Wallets", (string)null);
                 });
 
             modelBuilder.Entity("DAL.Models.WalletTransaction", b =>
@@ -390,7 +390,7 @@ namespace DAL.Migrations
 
                     b.HasIndex("WalletId");
 
-                    b.ToTable("WalletTransactions");
+                    b.ToTable("WalletTransactions", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -610,7 +610,7 @@ namespace DAL.Migrations
 
             modelBuilder.Entity("DAL.Models.User", b =>
                 {
-                    b.OwnsOne("DAL.Models.Address", "Address", b1 =>
+                    b.OwnsOne("DAL.Models.User.Address#DAL.Models.Address", "Address", b1 =>
                         {
                             b1.Property<string>("UserId")
                                 .HasColumnType("nvarchar(450)");
@@ -632,7 +632,7 @@ namespace DAL.Migrations
 
                             b1.HasKey("UserId");
 
-                            b1.ToTable("AspNetUsers");
+                            b1.ToTable("AspNetUsers", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("UserId");

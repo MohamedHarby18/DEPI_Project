@@ -1,4 +1,6 @@
 ﻿using DAL.Models;
+using DAL.Repositories;
+using DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -13,8 +15,8 @@ namespace DAL
 
             Services.AddDbContext<DropShoppingDbContext>(options =>
     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
-
-      
+            Services.AddScoped<IProductRepository, ProductRepository>();
+            Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return Services;
               

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -32,10 +33,14 @@ namespace DAL
         }
 
 
-
+        
      
               protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<Product>()
+        .HasQueryFilter(p => !p.IsDeleted);
+            builder.Entity<Product>().HasMany(x => x.Images).WithOne(x => x.Product).HasForeignKey(x => x.ProductId).OnDelete(DeleteBehavior.Cascade);
+
             base.OnModelCreating(builder);
             // Dropshipper - ApplicationUser  one-to-one
             builder.Entity<Dropshipper>()

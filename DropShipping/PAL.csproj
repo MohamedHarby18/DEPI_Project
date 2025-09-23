@@ -18,4 +18,9 @@
     <ProjectReference Include="..\BAL\BAL.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\Attachments\" />
+    <Folder Include="wwwroot\Attachments\Products\" />
+  </ItemGroup>
+
 </Project>

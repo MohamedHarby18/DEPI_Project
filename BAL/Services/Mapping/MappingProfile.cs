@@ -1,0 +1,35 @@
+﻿using AutoMapper;
+using AutoMapper.Execution;
+using AutoMapper.Internal;
+using BAL.DTOs;
+using BAL.DTOs.ProductDTOs;
+using DAL.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BAL.Services.Mapping
+{
+    public class MappingProfile:Profile
+    {
+        public MappingProfile()
+        {
+            CreateMap(typeof(PaginatedResult<Product>), typeof(PaginatedResult<ProductDTO>));
+
+            CreateMap<ProductCreateDTO,Product>().ReverseMap();
+            CreateMap<Product,ProductUpdateDTO>().ReverseMap();
+            CreateMap<Product,ProductDetailsDTO>().ForMember(dest => dest.Images, opt => opt.MapFrom<ProductImagesUrlResolver>()).ForMember(dest => dest.CategoryName, opt => opt.MapFrom(x => x.Category.Name))
+                .ForMember(dest => dest.BrandName, opt => opt.MapFrom(x => x.Brand.Name));
+            CreateMap<Product, ProductDTO>()
+                
+                .ForMember(dest => dest.Images, opt => opt.MapFrom<ProductImagesUrlResolver2>());
+        } 
+
+        
+    }
+
+}
