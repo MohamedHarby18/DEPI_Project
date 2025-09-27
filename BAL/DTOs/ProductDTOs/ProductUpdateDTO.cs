@@ -14,7 +14,7 @@ namespace BAL.DTOs.ProductDTOs
         public string Description { get; set; }
         public decimal Price { get; set; }
         public Guid CategoryId { get; set; }
-        List<IFormFile> ProductImages { get; set; }
+        public List<IFormFile> ProductImages { get; set; }
         public Guid BrandId { get; set; }
 
         public int ModelYear { get; set; }

@@ -13,7 +13,7 @@ namespace PAL.Controllers
         public async Task<IActionResult> GetAll([FromQuery]ProductParamaters paramaters) => Ok(await productService.GetAllProducts(paramaters));
 
 
-        [HttpGet("id")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetById(Guid id) => Ok(await productService.GetProductById(id));
 
 
@@ -33,7 +33,7 @@ namespace PAL.Controllers
             return Ok();
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Delete(Guid id)
         {
