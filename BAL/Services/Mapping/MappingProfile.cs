@@ -2,6 +2,7 @@
 using AutoMapper.Execution;
 using AutoMapper.Internal;
 using BAL.DTOs;
+using BAL.DTOs.CategoryDTOs;
 using BAL.DTOs.ProductDTOs;
 using DAL.Models;
 using System;
@@ -20,6 +21,7 @@ namespace BAL.Services.Mapping
         {
             CreateMap(typeof(PaginatedResult<Product>), typeof(PaginatedResult<ProductDTO>));
 
+            
             CreateMap<ProductCreateDTO,Product>().ReverseMap();
             CreateMap<Product,ProductUpdateDTO>().ReverseMap();
             CreateMap<Product,ProductDetailsDTO>().ForMember(dest => dest.Images, opt => opt.MapFrom<ProductImagesUrlResolver>()).ForMember(dest => dest.CategoryName, opt => opt.MapFrom(x => x.Category.Name))
@@ -27,6 +29,12 @@ namespace BAL.Services.Mapping
             CreateMap<Product, ProductDTO>()
                 
                 .ForMember(dest => dest.Images, opt => opt.MapFrom<ProductImagesUrlResolver2>());
+
+            CreateMap<CategoryCreateDTO, Category>();
+            CreateMap<CategoryUpdateDTO, Category>();
+            CreateMap<Category, CategoryDTO>();
+            CreateMap<Category, CategoryDetailsDTO>();
+
         } 
 
         

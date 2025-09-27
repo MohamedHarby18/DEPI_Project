@@ -16,6 +16,7 @@ namespace DAL
             Services.AddDbContext<DropShoppingDbContext>(options =>
     options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
             Services.AddScoped<IProductRepository, ProductRepository>();
+            Services.AddScoped<ICategoryRepository, CategoryRepository>();
             Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return Services;
