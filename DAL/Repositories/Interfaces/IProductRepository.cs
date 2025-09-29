@@ -15,10 +15,10 @@ namespace DAL.Repositories.Interfaces
         Task AddAsync(Product product);
         void UpdateAsync(Product product);
         Task DeleteAsync(Guid id);
+        Task<Product> GetById(Guid id);
 
         Task<bool> IsExisted(Guid id);
 
-        Task<Product> GetById(Guid id);
 
         //Task<IEnumerable<Product>> GetAll();
         Task<PaginatedResult<Product>> GetAll(ProductParamaters paramaters);

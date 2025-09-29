@@ -18,6 +18,7 @@ namespace BAL
     {
         public static IServiceCollection RegistrationService(this IServiceCollection Services)
         {
+            Services.AddScoped<IBrandService, BrandService>();
             Services.AddScoped<IProductService, ProductService>();
             Services.AddScoped<IAttachmentService, AttachmentService>();
             Services.AddScoped<ICategoryService, CategoryService>();
