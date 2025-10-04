@@ -36,9 +36,9 @@ namespace BAL.Services
             throw new NotImplementedException();
         }
 
-        //public Task<DropshipperDto?> UpdateDropshipperAsync(DropshipperDto dropshipperDto)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public Task<DropshipperDto?> UpdateDropshipperAsync(DropshipperDto dropshipperDto)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
