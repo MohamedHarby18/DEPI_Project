@@ -4,6 +4,8 @@ namespace DAL.Models
 {
     public class Order : BaseEntity
     {
+        public Guid CustomerId { get; set; }
+        public Customer Customer { get; set; }
         public DateOnly? ShippedDate { get; set; }
         public decimal OrderPrice { get; set; }
         public OrderStatus OrderStatus { get; set; }

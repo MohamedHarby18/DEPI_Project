@@ -4,6 +4,7 @@ using AutoMapper.Internal;
 using BAL.DTOs;
 using BAL.DTOs.BrandDTOs;
 using BAL.DTOs.CategoryDTOs;
+using BAL.DTOs.OrderDTOs;
 using BAL.DTOs.ProductDTOs;
 using DAL.Models;
 using System;
@@ -31,19 +32,23 @@ namespace BAL.Services.Mapping
                 .ForMember(dest => dest.BrandName, opt => opt.MapFrom(x => x.Brand.Name));
             CreateMap<Product, ProductDTO>()
                 .ForMember(dest => dest.Images, opt => opt.MapFrom<ProductImagesUrlResolver2>());
+            
             //Category Mapping
             CreateMap<CategoryCreateDTO, Category>();
             CreateMap<CategoryUpdateDTO, Category>();
             CreateMap<Category, CategoryDTO>();
             CreateMap<Category, CategoryDetailsDTO>();
 
-
             //Brand Mapping
             CreateMap<BrandCreateDTO, Brand>();
             CreateMap<BrandUpdateDTO, Brand>();
             CreateMap<Brand, BrandDTO>();
 
-
+            //Order Mapping
+            CreateMap<OrderDetailsDTO, Order>();
+            CreateMap<OrderDTO, Order>();
+            CreateMap<OrderUpdateDTO, Order>();
+            CreateMap<OrderUpdateDTO, Order>();
         } 
 
         

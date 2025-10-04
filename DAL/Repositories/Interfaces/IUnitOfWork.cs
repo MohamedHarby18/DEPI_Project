@@ -11,7 +11,6 @@ namespace DAL.Repositories.Interfaces
         IProductRepository ProductRepository { get; }
         ICategoryRepository CategoryRepository { get; }
 
-
         Task<int> SaveChangesAsync();
     }
 }
