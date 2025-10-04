@@ -20,6 +20,7 @@ namespace DAL
             Services.AddScoped<IBrandRepository, BrandRepostory>();
             Services.AddScoped<IProductRepository, ProductRepository>();
             Services.AddScoped<ICategoryRepository, CategoryRepository>();
+            Services.AddScoped<IOrderRepository, OrderRepository>();
             Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return Services;
