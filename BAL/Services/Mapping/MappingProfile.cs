@@ -4,6 +4,7 @@ using AutoMapper.Internal;
 using BAL.DTOs;
 using BAL.DTOs.BrandDTOs;
 using BAL.DTOs.CategoryDTOs;
+using BAL.DTOs.DropshipperDTOs;
 using BAL.DTOs.ProductDTOs;
 using DAL.Models;
 using System;
@@ -43,6 +44,9 @@ namespace BAL.Services.Mapping
             CreateMap<BrandUpdateDTO, Brand>();
             CreateMap<Brand, BrandDTO>();
 
+
+            //DropShipper Mapping
+            CreateMap<DropshipperDto, Dropshipper>().ReverseMap();
 
         } 
 

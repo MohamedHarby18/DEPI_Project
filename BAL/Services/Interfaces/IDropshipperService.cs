@@ -6,8 +6,8 @@ namespace BAL.Services.Interfaces
     {
         Task<IEnumerable<DropshipperDto>> GetAllDropshippersAsync();
         Task<DropshipperDto?> GetDropshipperByIdAsync(string userId);
-        Task<DropshipperDto> CreateDropshipperAsync(DropshipperDto dropshipperDto);
-        Task<DropshipperDto?> UpdateDropshipperAsync(string userId, DropshipperDto dropshipperDto);
-        Task<bool> DeleteDropshipperAsync(string userId);
+        Task CreateDropshipperAsync(DropshipperDto dropshipperDto);
+        Task<DropshipperDto?> UpdateDropshipperAsync(DropshipperDto dropshipperDto);
+        Task DeleteDropshipperAsync(string userId);
     }
 }
