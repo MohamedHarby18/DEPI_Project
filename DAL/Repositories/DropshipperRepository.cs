@@ -15,28 +15,42 @@ namespace DAL.Repositories
         public async Task<IEnumerable<Dropshipper>> GetAllDropshippersAsync()
         {
             return await dbContext.Dropshippers
-               .AsNoTracking()
-               .ToListAsync();
+                .Include(d => d.User) // ✅ load related User
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task<Dropshipper> GetDropshipperByIdAsync(string userId)
         {
-            return (await dbContext.Dropshippers
-    .AsNoTracking()
-    .FirstOrDefaultAsync(x => x.UserId == userId))!;
+            return (await dbContext.Dropshippers.Include(d => d.User) 
+         .AsNoTracking()
+         .FirstOrDefaultAsync(x => x.UserId == userId))!;
         }
 
-       public async Task CreateDropshipperAsync(Dropshipper dropshipper)
+       public async Task CreateDropshipperAsync(Dropshipper dropshipper ,string UserId)
         {
-            await dbContext.Dropshippers.AddAsync(dropshipper);
+            var dropshipper1 = new Dropshipper
+            {
+                UserId = UserId,
+                Wallet = new Wallet { Balance = 0 }
+            };
+            await dbContext.Dropshippers.AddAsync(dropshipper1);
         }
 
-      public   Task UpdateDropshipperAsync(Dropshipper dropshipper)
+        public async Task UpdateDropshipperAsync(Dropshipper dropshipper)
         {
-          dbContext.Dropshippers.Update(dropshipper);
-            return Task.CompletedTask;
+            dbContext.Dropshippers.Update(dropshipper);
+            await Task.CompletedTask;
         }
 
-
+        public async Task<bool> DeleteDropshipperAsync(string userId)
+            {
+                var dropshipper = await dbContext.Dropshippers.FindAsync(userId);
+                if (dropshipper == null)
+                    return false;
+    
+                dbContext.Dropshippers.Remove(dropshipper);
+                return true;
+        }
     }
 }

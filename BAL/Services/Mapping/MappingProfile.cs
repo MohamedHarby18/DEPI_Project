@@ -50,9 +50,35 @@ namespace BAL.Services.Mapping
             CreateMap<OrderDTO, Order>();
             CreateMap<OrderUpdateDTO, Order>();
             CreateMap<OrderUpdateDTO, Order>();
-        } 
 
-        
+            // Dropshipper Mapping
+            CreateMap<Dropshipper, DropshipperDto>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
+                .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
+                .ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.User.PhoneNumber))
+                .ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.User.Address))
+                .ForMember(dest => dest.Password, opt => opt.Ignore()) // ❌ we never map password back
+                .ReverseMap()
+                .ForMember(dest => dest.User, opt => opt.Ignore()) // handled manually
+                .ForMember(dest => dest.UserId, opt => opt.Ignore());
+
+            CreateMap<Dropshipper, DropshipperDetails>()
+.ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.User.Id))
+.ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
+.ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.User.Email))
+.ForMember(dest => dest.PhoneNumber, opt => opt.MapFrom(src => src.User.PhoneNumber))
+.ForMember(dest => dest.Address, opt => opt.MapFrom(src => src.User.Address))
+.ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.User.IsActive))
+.ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.User.CreatedAt))
+.ReverseMap();
+
+
+
+
+        }
+
+
+
     }
 
 }

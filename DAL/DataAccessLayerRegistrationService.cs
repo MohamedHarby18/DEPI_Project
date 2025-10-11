@@ -21,7 +21,9 @@ namespace DAL
             Services.AddScoped<IProductRepository, ProductRepository>();
             Services.AddScoped<ICategoryRepository, CategoryRepository>();
             Services.AddScoped<IOrderRepository, OrderRepository>();
+            Services.AddScoped<IDropshipperRepository, DropshipperRepository>();
             Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 
             return Services;
               

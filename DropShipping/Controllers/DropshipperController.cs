@@ -33,36 +33,43 @@ namespace PAL.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateDropshipper([FromBody] DropshipperDto dropshipperDto)
+        public  Task<IActionResult> CreateDropshipper([FromBody] DropshipperDto dropshipperDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var createdDropshipper = await _dropshipperService.CreateDropshipperAsync(dropshipperDto);
-            return CreatedAtAction(nameof(GetDropshipperById),
-                new { userId = createdDropshipper.UserId }, createdDropshipper);
+            var createdDropshipper =  _dropshipperService.CreateDropshipperAsync(dropshipperDto);
+            return createdDropshipper.ContinueWith<IActionResult>(t => 
+            {
+                if (t.IsFaulted)
+                {
+                    return BadRequest(t.Exception?.Message);
+                }
+                return Ok();
+            });
         }
 
         [HttpPut("{userId}")]
-        public async Task<IActionResult> UpdateDropshipper(string userId, [FromBody] DropshipperDto dropshipperDto)
+        public async Task<IActionResult> UpdateDropshipper(string userId, [FromBody] DropshipperUpdate dropshipperDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var updatedDropshipper = await _dropshipperService.UpdateDropshipperAsync(userId, dropshipperDto);
+            dropshipperDto.Id = userId;
+
+            var updatedDropshipper = await _dropshipperService.UpdateDropshipperAsync(dropshipperDto);
+
             if (updatedDropshipper == null)
                 return NotFound();
 
             return Ok(updatedDropshipper);
         }
 
+
         [HttpDelete("{userId}")]
         public async Task<IActionResult> DeleteDropshipper(string userId)
         {
-            var result = await _dropshipperService.DeleteDropshipperAsync(userId);
-            if (!result)
+            var existingDropshipper = await _dropshipperService.GetDropshipperByIdAsync(userId);
+            if (existingDropshipper == null)
                 return NotFound();
-
+            await _dropshipperService.DeleteDropshipperAsync(userId);
             return NoContent();
         }
     }

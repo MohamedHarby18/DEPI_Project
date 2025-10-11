@@ -14,6 +14,7 @@ namespace DAL.Repositories
         private readonly Lazy<ICategoryRepository> _categoryRepository;
         private readonly Lazy<IBrandRepository> _brandRepository;
         private readonly Lazy<IOrderRepository> _orderRepository;
+        private readonly Lazy<IDropshipperRepository> _dropShipperRepository;
         public UnitOfWork(DropShoppingDbContext context, IProductRepository productRepository, ICategoryRepository categoryRepository,IBrandRepository brandRepository , IOrderRepository orderRepository)
         {
             _context = context;
@@ -27,6 +28,8 @@ namespace DAL.Repositories
         public IBrandRepository BrandRepository => _brandRepository.Value;
 
         public IOrderRepository orderRepository => _orderRepository.Value;
+
+        public IDropshipperRepository DropshipperRepository => _dropShipperRepository.Value;
 
 
         public async Task<int> SaveChangesAsync()
