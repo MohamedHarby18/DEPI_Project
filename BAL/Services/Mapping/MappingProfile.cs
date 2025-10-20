@@ -30,6 +30,8 @@ namespace BAL.Services.Mapping
             CreateMap<Product,ProductDetailsDTO>().ForMember(dest => dest.Images, opt => opt.MapFrom<ProductImagesUrlResolver>()).ForMember(dest => dest.CategoryName, opt => opt.MapFrom(x => x.Category.Name))
                 .ForMember(dest => dest.BrandName, opt => opt.MapFrom(x => x.Brand.Name));
             CreateMap<Product, ProductDTO>()
+               .ForMember(dest=>dest.CategoryName,opt=>opt.MapFrom(x=>x.Category.Name))
+               .ForMember(dest=>dest.BrandName,opt=>opt.MapFrom(x=>x.Brand.Name))
                 .ForMember(dest => dest.Images, opt => opt.MapFrom<ProductImagesUrlResolver2>());
             //Category Mapping
             CreateMap<CategoryCreateDTO, Category>();

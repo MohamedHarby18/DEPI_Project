@@ -23,6 +23,27 @@ namespace DropShipping
                 .AddEntityFrameworkStores<DropShoppingDbContext>()
                 .AddDefaultTokenProviders();
 
+
+
+
+
+
+            // 1?? Add CORS service
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend",
+                    policy =>
+                    {
+                        policy.WithOrigins("http://localhost:3000", "http://127.0.0.1:5500") // your frontend URLs
+                              .AllowAnyHeader()
+                              .AllowAnyMethod();
+                    });
+            });
+
+
+
+
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -35,8 +56,9 @@ namespace DropShipping
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+           
             app.UseHttpsRedirection();
+            app.UseCors("AllowFrontend");
 
             app.UseAuthorization();
             app.UseAuthentication();
