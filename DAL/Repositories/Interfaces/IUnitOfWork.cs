@@ -10,7 +10,7 @@ namespace DAL.Repositories.Interfaces
     {
         IProductRepository ProductRepository { get; }
         ICategoryRepository CategoryRepository { get; }
-
+        IDropshipperRepository DropshipperRepository { get; }
 
         Task<int> SaveChangesAsync();
     }

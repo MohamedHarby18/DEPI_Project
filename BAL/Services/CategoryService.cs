@@ -12,9 +12,21 @@ namespace BAL.Services
 {
     public class CategoryService(IMapper mapper, IUnitOfWork unitOfWork) : ICategoryService
     {
+        //public async Task AddCategory(CategoryCreateDTO categoryDTO)
+        //{
+        //    var category = mapper.Map<Category>(categoryDTO);
+        //    await unitOfWork.CategoryRepository.AddAsync(category);
+        //    await unitOfWork.SaveChangesAsync();
+        //}
+
         public async Task AddCategory(CategoryCreateDTO categoryDTO)
         {
             var category = mapper.Map<Category>(categoryDTO);
+
+            // setting the  timestamps
+            category.CreatedAt = DateTime.UtcNow;
+            category.UpdatedAt = DateTime.UtcNow;
+
             await unitOfWork.CategoryRepository.AddAsync(category);
             await unitOfWork.SaveChangesAsync();
         }
@@ -48,6 +60,20 @@ namespace BAL.Services
             return mapper.Map<CategoryDetailsDTO>(category);
         }
 
+        //public async Task UpdateCategory(CategoryUpdateDTO categoryDTO)
+        //{
+        //    var category = await unitOfWork.CategoryRepository.GetById(categoryDTO.Id);
+        //    if (category == null)
+        //    {
+        //        throw new CategoryNotFoundException(categoryDTO.Id);
+        //    }
+
+        //    mapper.Map(categoryDTO, category);
+
+        //    unitOfWork.CategoryRepository.UpdateAsync(category);
+        //    await unitOfWork.SaveChangesAsync();
+        //}
+
         public async Task UpdateCategory(CategoryUpdateDTO categoryDTO)
         {
             var category = await unitOfWork.CategoryRepository.GetById(categoryDTO.Id);
@@ -58,9 +84,13 @@ namespace BAL.Services
 
             mapper.Map(categoryDTO, category);
 
+            // setting the timestamp of updated at
+            category.UpdatedAt = DateTime.UtcNow;
+
             unitOfWork.CategoryRepository.UpdateAsync(category);
             await unitOfWork.SaveChangesAsync();
         }
+
     }
 }
 

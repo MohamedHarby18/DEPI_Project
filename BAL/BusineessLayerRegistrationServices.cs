@@ -22,6 +22,7 @@ namespace BAL
             Services.AddScoped<IProductService, ProductService>();
             Services.AddScoped<IAttachmentService, AttachmentService>();
             Services.AddScoped<ICategoryService, CategoryService>();
+            Services.AddScoped<IDropshipperService, DropshipperService>();
 
             Services.AddAutoMapper(typeof(MappingProfile).Assembly);
 

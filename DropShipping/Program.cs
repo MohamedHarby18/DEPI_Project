@@ -1,9 +1,13 @@
 
+using AutoMapper;
 using BAL;
+using BAL.Services;
+using BAL.Services.Interfaces;
 using DAL;
 using DAL.Models;
+using DAL.Repositories;
+using DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using AutoMapper;
 //using AutoMapper.Extensions.Microsoft.DependencyInjection;
 
 namespace DropShipping
@@ -47,6 +51,12 @@ namespace DropShipping
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddControllers();
+
+            // Register your dependencies
+            builder.Services.AddScoped<IDropshipperService, DropshipperService>();
+            builder.Services.AddScoped<IDropshipperRepository, DropshipperRepository>();
 
             var app = builder.Build();
 
