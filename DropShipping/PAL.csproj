@@ -19,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\Attachments\" />
     <Folder Include="wwwroot\Attachments\Products\" />
     <Folder Include="wwwroot\JS\" />
   </ItemGroup>
