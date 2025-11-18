@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BAL.DTOs
 {
@@ -13,5 +10,14 @@ namespace BAL.DTOs
         public int PageSize { get; set; }
         public int TotalCount { get; set; }
 
+        public PaginatedResult() { }
+
+        public PaginatedResult(IEnumerable<T> result, int totalCount, int pageIndex, int pageSize)
+        {
+            Result = result;
+            TotalCount = totalCount;
+            PageIndex = pageIndex;
+            PageSize = pageSize;
+        }
     }
 }

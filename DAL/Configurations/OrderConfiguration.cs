@@ -8,6 +8,16 @@ namespace DAL.Configurations
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
+            builder.HasOne(o => o.Customer)
+                .WithMany(c => c.Orders)
+                .HasForeignKey(o => o.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(o => o.Dropshipper)
+                .WithMany()
+                .HasForeignKey(o => o.DropshipperId)
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.Property(o => o.OrderPrice)
                 .HasColumnType("decimal(18,2)");
 
@@ -16,6 +26,10 @@ namespace DAL.Configurations
 
             builder.Property(o => o.ShippedDate)
                 .HasColumnType("date");
+
+            builder.Property(o => o.DropshipperId)
+                .IsRequired()
+                .HasMaxLength(450);
         }
     }
 }
