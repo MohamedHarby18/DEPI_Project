@@ -14,7 +14,10 @@ html, body {
   overflow-x: hidden;
 }
 
-
+.headName{
+  text-decoration: none;
+  color: white;
+}
 
 
 /* HEADER STYLING */
@@ -23,16 +26,17 @@ html, body {
   color: white;
   font-family: "Roboto", sans-serif;
   width: 100%;
-
   padding: 0;
 }
 
 
+
 .container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem;
+    width: 100%;
 }
 
 /* Logo Section */
@@ -48,11 +52,10 @@ html, body {
   background-color: #d8ff00;
   border-radius: 50%;
 }
-
-.logo h1 {
-  font-size: 1.2rem;
-  text-transform: lowercase;
-}
+  .logo h1 {
+        font-size: 1.2rem;
+        text-transform: uppercase;
+    }
 
 /* Search Bar */
 .search-bar {
@@ -114,10 +117,9 @@ html, body {
 
 /* Navigation Bar */
 .main-nav {
-  background-color: #007bff;
-  border-top: 1px solid rgba(255,255,255,0.2);
-   position: relative;
-  z-index: 100;
+    background-color: #007bff;
+    border-top: 1px solid rgba(255,255,255,0.2);
+    z-index: 100;
 }
 
 .main-nav ul {

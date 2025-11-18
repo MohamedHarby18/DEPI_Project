@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Document</title>
-  <link rel="stylesheet" href="./style.css" />
   <link rel="stylesheet" href="./home.css">
   <link
   rel="stylesheet"
@@ -16,51 +15,51 @@
 
 
   <header class="main-header">
-  <div class="container">
-    <!-- Logo -->
-    <div class="logo">
-      <div class="circle"></div>
-      <h1>Dropshipping</h1>
-    </div>
+        <div class="container">
+            <!-- Logo -->
+            <div class="logo">
+                <div class="circle"></div>
+                <a href="index.html" class="headName"><h1>DropZone</h1></a>
+            </div>
 
-     <!-- Search Bar -->
-    <div class="search-bar">
-      <input type="text" placeholder="Search product ..." />
-      <button><i class="fa fa-search"></i></button>
-    </div>
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" placeholder="Search product ..." />
+                <button><i class="fa fa-search"></i></button>
+            </div>
 
-    <div class="right-section">
-        <div class="cart">
-            <a href="ShoppingCart.html"><i class="fa fa-shopping-basket"></i></a>
-            <span class="cart-count">0</span>
+            <div class="right-section">
+                <div class="cart">
+                    <a href="ShoppingCart.html"><i class="fa fa-shopping-basket"></i></a>
+                    <span class="cart-count" id="cartCount">0</span>
+                </div>
+                <a href="#" class="login-link">Logout</a>
+            </div>
         </div>
-      <a href="#" class="login-link">Logout</a>
-    </div>
-  </div>
 
-  <nav class="main-nav">
-  <ul>
-    <li class="dropdown">
-      <a href="#">All Products <i class="fa fa-caret-down"></i></a>
-      <ul class="dropdown-menu">
-        <li><a href="#">Phones</a></li>
-        <li><a href="#">Laptops</a></li>
-        <li><a href="#">Headphones</a></li>
-        <li><a href="#">Chargers</a></li>
-        <li><a href="#">Cables</a></li>
-        <li><a href="#">TVs</a></li>
-        <li><a href="#">Home Appliances</a></li>
-        <li><a href="#">Smartwatches</a></li>
-      </ul>
-    </li>
+        <nav class="main-nav">
+            <ul>
+                <li class="dropdown">
+                    <a href="#">All Products <i class="fa fa-caret-down"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Phones</a></li>
+                        <li><a href="#">Laptops</a></li>
+                        <li><a href="categorypage.html">Headphones</a></li>
+                        <li><a href="#">Chargers</a></li>
+                        <li><a href="#">Cables</a></li>
+                        <li><a href="#">TVs</a></li>
+                        <li><a href="#">Home Appliances</a></li>
+                        <li><a href="#">Smartwatches</a></li>
+                    </ul>
+                </li>
 
-    <li><a href="#">New Products</a></li>
-    <li><a href="#">Orders</a></li>
-    <li><a href="#">Profile</a></li>
-  </ul>
-</nav>
+                <li><a href="#">New Products</a></li>
+                <li><a href="#">Orders</a></li>
+                <li><a href="#">Profile</a></li>
+            </ul>
+        </nav>
 
-</header>
+    </header>
 
   </header>
 
@@ -198,5 +197,7 @@
     <p>© 2025 Dropshipping. All rights reserved.</p>
   </footer>
 
+
+  <script src="./assets/js/cart.js"></script>
 </body>
 </html>

@@ -11,13 +11,26 @@ body {
     color: #222;
 }
 
+.headName{
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
+
+}
+
 /* Container */
-.container {
+.container1 {
     width: 90%;
     max-width: 1200px;
     margin: auto;
 }
-
+.container2 {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem;
+    width: 100%;
+}
 /* =======================
    HEADER
 ======================= */
@@ -37,7 +50,13 @@ body {
     font-weight: 700;
     font-size: 22px;
 }
-
+.logo h1 {
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    text-align: center;
+    margin-top: 10px;
+    font-weight: bold;
+}
 .nav a {
     color: white;
     margin: 0 10px;
