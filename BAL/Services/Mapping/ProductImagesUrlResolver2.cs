@@ -6,7 +6,7 @@ namespace BAL.Services.Mapping
 {
     public class ProductImagesUrlResolver2 : IValueResolver<Product, ProductDTO, List<string>>
     {
-        private readonly string _baseUrl = "https://localhost:7000/";
+        private readonly string _baseUrl = "https://localhost:7000/Attachments/Products/";
 
         public List<string> Resolve(Product source, ProductDTO destination, List<string> destMember, ResolutionContext context)
         {

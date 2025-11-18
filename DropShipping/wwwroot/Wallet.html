@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My Wallet</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/ShoppingCartCSS.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container header-content">
+            <div class="logo">Drop Shopping</div>
+            <nav class="nav">
+                <a href="#">Home</a>
+                <a href="#">Categories</a>
+                <a href="ShoppingCart.html">Shopping Cart</a>
+                <a href="Wallet.html">My Wallet</a>
+            </nav>
+            <div class="header-right">
+                <input type="text" placeholder="Search product ..." class="search-box">
+                <span class="cart-icon">🛒<sup>1</sup></span>
+                <a href="#" class="login">Log In</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Wallet Section -->
+    <main class="wallet-section container my-5">
+        <h1 class="mb-4 text-center">My Wallet</h1>
+
+        <!-- Balance Card -->
+        <div class="row justify-content-center mb-5">
+            <div class="col-md-6">
+                <div class="card text-center shadow-sm border-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-muted">Current Balance</h5>
+                        <h2 class="card-text text-primary fw-bold">$1,250.00</h2>
+                        <button class="btn btn-primary mt-3">Add Funds</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transaction History -->
+        <div class="transaction-history">
+            <h3 class="mb-3">Transaction History</h3>
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2025-11-10</td>
+                            <td>Order #1023 Payment</td>
+                            <td>Debit</td>
+                            <td class="text-danger">- $50.00</td>
+                            <td><span class="badge bg-success">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td>2025-11-07</td>
+                            <td>Wallet Top-Up</td>
+                            <td>Credit</td>
+                            <td class="text-success">+ $200.00</td>
+                            <td><span class="badge bg-success">Completed</span></td>
+                        </tr>
+                        <tr>
+                            <td>2025-11-01</td>
+                            <td>Refund for Order #1017</td>
+                            <td>Credit</td>
+                            <td class="text-success">+ $30.00</td>
+                            <td><span class="badge bg-info">Pending</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container footer-content">
+            <div class="footer-col">
+                <h3>Shop</h3>
+                <ul>
+                    <li><a href="#">Hot deals</a></li>
+                    <li><a href="#">Categories</a></li>
+                    <li><a href="#">Brands</a></li>
+                    <li><a href="#">Rebates</a></li>
+                    <li><a href="#">Weekly deals</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Need help?</h3>
+                <ul>
+                    <li><a href="#">About</a></li>
+                    <li><a href="#">Contact</a></li>
+                    <li><a href="#">Order tracking</a></li>
+                    <li><a href="#">FAQs</a></li>
+                    <li><a href="#">Return policy</a></li>
+                    <li><a href="#">Privacy policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contact</h3>
+                <p>contact@info.com</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

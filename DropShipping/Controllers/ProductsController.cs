@@ -28,7 +28,7 @@ namespace PAL.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update(ProductUpdateDTO updateDTO)
+        public async Task<IActionResult> Update([FromForm]ProductUpdateDTO updateDTO)
         {
             await productService.UpdateProduct(updateDTO);
             return Ok();
