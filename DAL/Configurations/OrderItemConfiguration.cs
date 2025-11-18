@@ -10,6 +10,16 @@ namespace DAL.Configurations
         {
             builder.Property(oi => oi.OrderItemDiscount)
                 .HasColumnType("decimal(18,2)");
+
+            builder.HasOne(oi => oi.Order)
+                .WithMany(o => o.Items)
+                .HasForeignKey(oi => oi.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(oi => oi.Product)
+                .WithMany()
+                .HasForeignKey(oi => oi.ProductId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

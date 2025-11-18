@@ -14,6 +14,8 @@ namespace DAL.Models
         public string DropshipperId { get; set; }
         public User Dropshipper { get; set; }
 
+       
+
         public ICollection<OrderItem> Items { get; set; }
     }
 }

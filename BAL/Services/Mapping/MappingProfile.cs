@@ -4,8 +4,10 @@ using AutoMapper.Internal;
 using BAL.DTOs;
 using BAL.DTOs.BrandDTOs;
 using BAL.DTOs.CategoryDTOs;
-using BAL.DTOs.OrderDTOs;
+using BAL.DTOs.CustomerDTOs;
 using BAL.DTOs.DropshipperDTOs;
+using BAL.DTOs.OrderDTOs;
+using BAL.DTOs.OrderItemDTOs;
 using BAL.DTOs.ProductDTOs;
 using DAL.Models;
 using System;
@@ -45,11 +47,39 @@ namespace BAL.Services.Mapping
             CreateMap<BrandUpdateDTO, Brand>();
             CreateMap<Brand, BrandDTO>();
 
-            //Order Mapping
-            CreateMap<OrderDetailsDTO, Order>();
-            CreateMap<OrderDTO, Order>();
-            CreateMap<OrderUpdateDTO, Order>();
-            CreateMap<OrderUpdateDTO, Order>();
+            // ✅ Safe Order Mapping (avoids null reference)
+            CreateMap<Order, OrderDTO>()
+                .ForMember(dest => dest.DropshipperName,
+                opt => opt.MapFrom(src =>
+                src.Dropshipper != null ? src.Dropshipper.UserName : string.Empty))
+                .ReverseMap();
+
+            CreateMap<Order, OrderDetailsDTO>()
+                .ForMember(dest => dest.DropshipperName,
+                opt => opt.MapFrom(src =>
+                src.Dropshipper != null ? src.Dropshipper.UserName : string.Empty))
+                .ReverseMap();
+
+            CreateMap<OrderCreateDTO, Order>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.OrderStatus, opt => opt.MapFrom(src => OrderStatus.Delivering))
+                .ForMember(dest => dest.Items, opt => opt.Ignore())
+                .ReverseMap();
+
+            // OrderItem mappings
+            CreateMap<OrderItem, OrderItemDTO>()
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
+                .ReverseMap();
+
+            CreateMap<OrderItem, OrderItemsDetailsDTO>()
+                .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product.Name))
+                .ReverseMap();
+
+            CreateMap<OrderItemCreateDTO, OrderItem>().ReverseMap();
+
+            // Customer mapping
+            CreateMap<Customer, CustomerDetailsDTO>().ReverseMap();
+
 
             // Dropshipper Mapping
             CreateMap<Dropshipper, DropshipperDto>()

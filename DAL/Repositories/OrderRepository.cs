@@ -1,6 +1,6 @@
 ﻿using BAL.DTOs;
 using BAL.DTOs.OrderDTOs;
-using BAL.DTOs.OrderDTOs;
+using DAL;
 using DAL.Models;
 using DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -8,88 +8,88 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace DAL.Repositories
+namespace DAL.Repositories.Implementations
 {
-    public class OrderRepository(DropShoppingDbContext dbContext) : IOrderRepository
+    public class OrderRepository : IOrderRepository
     {
+        private readonly DropShoppingDbContext _context;
+
+        public OrderRepository(DropShoppingDbContext context)
+        {
+            _context = context;
+        }
+
         public async Task AddAsync(Order order)
         {
-
-            await dbContext.Orders.AddAsync(order);
+            await _context.Orders.AddAsync(order);
         }
 
         public void UpdateAsync(Order order)
         {
-            dbContext.Orders.Update(order);
+            _context.Orders.Update(order);
         }
 
         public async Task DeleteAsync(Guid id)
         {
-            var order = await dbContext.Orders.FirstOrDefaultAsync(o => o.Id == id);
-            if (order is not null)
+            var order = await _context.Orders.FindAsync(id);
+            if (order != null)
             {
-                order.IsDeleted = true;
+                _context.Orders.Remove(order);
             }
         }
 
         public async Task<Order> GetById(Guid id)
         {
-            return await dbContext.Orders
+            return await _context.Orders
+                .Include(o => o.Customer)
                 .Include(o => o.Items)
-                .ThenInclude(i => i.Product)
+                    .ThenInclude(i => i.Product)
                 .Include(o => o.Dropshipper)
-                .AsNoTracking()
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
         public async Task<bool> IsExisted(Guid id)
         {
-            return await dbContext.Orders.AnyAsync(o => o.Id == id);
+            return await _context.Orders.AnyAsync(o => o.Id == id);
         }
 
-        public async Task SaveChangesAsync()
-        {
-            await dbContext.SaveChangesAsync();
-        }
         public async Task<PaginatedResult<Order>> GetAll(OrderParameters parameters)
         {
-            var query = dbContext.Orders
-                .Where(o => !o.IsDeleted)
+            var query = _context.Orders
+                .Include(o => o.Customer)
                 .Include(o => o.Items)
                     .ThenInclude(i => i.Product)
                 .Include(o => o.Dropshipper)
-                .AsNoTracking();
+                .AsQueryable();
 
-            // filtering by status
-            if (!string.IsNullOrEmpty(parameters.Status) &&
-                Enum.TryParse<OrderStatus>(parameters.Status, out var status))
-            {
-                query = query.Where(o => o.OrderStatus == status);
-            }
-
-            // filtering by FromDate / ToDate
+            // 🕓 Filter by Date Range
             if (parameters.FromDate.HasValue)
                 query = query.Where(o => o.CreatedAt >= parameters.FromDate.Value.ToDateTime(TimeOnly.MinValue));
 
             if (parameters.ToDate.HasValue)
                 query = query.Where(o => o.CreatedAt <= parameters.ToDate.Value.ToDateTime(TimeOnly.MaxValue));
 
-            // count before pagination
+            // 🎯 Filter by Status
+            if (!string.IsNullOrEmpty(parameters.Status) && 
+                Enum.TryParse<OrderStatus>(parameters.Status, true, out var status))
+            {
+                query = query.Where(o => o.OrderStatus == status);
+            }
+
             var totalCount = await query.CountAsync();
 
-            // apply pagination
-            var result = await query
+            var orders = await query
+                .OrderByDescending(o => o.CreatedAt)
                 .Skip((parameters.PageIndex - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)
                 .ToListAsync();
 
-            return new PaginatedResult<Order>
-            {
-                PageIndex = parameters.PageIndex,
-                PageSize = parameters.PageSize,
-                TotalCount = totalCount,
-                Result = result
-            };
+            return new PaginatedResult<Order>(orders, totalCount, parameters.PageIndex, parameters.PageSize);
+        }
+
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
         }
     }
 }

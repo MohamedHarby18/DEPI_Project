@@ -1,42 +1,71 @@
-﻿using BAL.DTOs.OrderDTOs;
+﻿using BAL.DTOs;
+using BAL.DTOs.OrderDTOs;
 using BAL.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
-namespace PAL.Controllers
+namespace API.Controllers
 {
-    [ApiController]
     [Route("api/[controller]")]
-    public class OrdersController(IOrderService orderService) : ControllerBase
+    [ApiController]
+    public class OrderController : ControllerBase
     {
-        [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] OrderParameters parameters)
-            => Ok(await orderService.GetAllOrdersAsync(parameters));
+        private readonly IOrderService _orderService;
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
-            => Ok(await orderService.GetOrderByIdAsync(id));
+        public OrderController(IOrderService orderService)
+        {
+            _orderService = orderService;
+        }
 
+        // ✅ Create new order
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<IActionResult> Add([FromBody] OrderCreateDTO createDto)
+        public async Task<IActionResult> CreateOrder([FromBody] OrderCreateDTO dto)
         {
-            var order = await orderService.CreateOrderAsync(createDto);
-            return CreatedAtAction(nameof(GetById), new { id = order.Id }, order);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var result = await _orderService.CreateOrderAsync(dto);
+            return CreatedAtAction(nameof(GetOrderById), new { id = result.Id }, result);
         }
 
+        // ✅ Get order by ID
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOrderById(Guid id)
+        {
+            var order = await _orderService.GetOrderByIdAsync(id);
+            if (order == null)
+                return NotFound();
+
+            return Ok(order);
+        }
+
+        // ✅ Update order
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] OrderUpdateDTO updateDto)
+        public async Task<IActionResult> UpdateOrder([FromBody] OrderUpdateDTO dto)
         {
-            await orderService.UpdateOrderAsync(updateDto);
-            return Ok();
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            await _orderService.UpdateOrderAsync(dto);
+            return NoContent();
         }
 
+        // ✅ Delete order
         [HttpDelete("{id}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> DeleteOrder(Guid id)
         {
-            await orderService.DeleteOrderAsync(id);
+            await _orderService.DeleteOrderAsync(id);
             return NoContent();
+        }
+
+        // ✅ Get all orders with pagination
+        [HttpGet]
+        public async Task<IActionResult> GetAllOrders([FromQuery] OrderParameters parameters)
+        {
+            var result = await _orderService.GetAllOrdersAsync(parameters);
+            return Ok(result);
         }
     }
 }
