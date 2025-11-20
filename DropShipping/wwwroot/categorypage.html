@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Category Page</title>
+    <title>Product Page</title>
     <link rel="stylesheet" href="./home.css">
     <link rel="stylesheet" href="assets/css/product.css">
-    <link rel="stylesheet" href="assets/css/categorypage.css">
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
     <header class="main-header">
@@ -16,7 +16,7 @@
             <!-- Logo -->
             <div class="logo">
                 <div class="circle"></div>
-                <a href="index.html" class="headName"><h1>DropZone</h1></a>
+                <h1>DropZone</h1>
             </div>
 
             <!-- Search Bar -->
@@ -28,7 +28,7 @@
             <div class="right-section">
                 <div class="cart">
                     <a href="ShoppingCart.html"><i class="fa fa-shopping-basket"></i></a>
-                    <span class="cart-count" id="cartCount">0</span>
+                    <span class="cart-count">0</span>
                 </div>
                 <a href="#" class="login-link">Logout</a>
             </div>
@@ -37,7 +37,7 @@
         <nav class="main-nav">
             <ul>
                 <li class="dropdown">
-                    <a href="#">Categories<i class="fa fa-caret-down"></i></a>
+                    <a href="#">All Products <i class="fa fa-caret-down"></i></a>
                     <ul class="dropdown-menu">
                         <li><a href="#">Phones</a></li>
                         <li><a href="#">Laptops</a></li>
@@ -57,50 +57,15 @@
         </nav>
 
     </header>
+    <div class="container category-page">
 
-    <main class="container1 category-page">
-        <div class="category-layout">
-            <div class="category-left">
-                <section class="category-info">
-                    <p class="category-label">Audio Equipment</p>
-                    <h1>Premium Electronics</h1>
-                    <div class="results-count" id="resultsCount">0 results</div>
-                </section>
-
-                <section class="category-products-wrapper">
-                    <div class="products-container">
-                        <div class="products-grid" id="categoryProducts">
-                            <!-- Products populated by JS -->
-                        </div>
-                    </div>
-
-                    <div class="pagination" id="pagination">
-                        <!-- Pagination buttons populated by JS -->
-                    </div>
-                </section>
+        <!-- Related Products Section -->
+        <div class="category-products">
+            <h1>Category Name</h1>
+            <div class="products-grid" id="category-products">
+                <!--products will be populated by JavaScript -->
             </div>
-
-            <section class="filters-panel">
-                <div class="sidebar-header">
-                    <h2>Filters</h2>
-                    <p>Refine by brand</p>
-                </div>
-
-                <div class="filter-group">
-                    <div class="filter-group-header">
-                        <span>Brands</span>
-                        <button class="clear-filters" id="clearFilters" type="button">Clear</button>
-                    </div>
-                    <div class="filter-options" id="brandFilters">
-                        <!-- Brand checkboxes populated by JS -->
-                    </div>
-                </div>
-            </section>
         </div>
-    </main>
-
-    <div id="toastContainer" class="toast-container"></div>
-
-    <script src="assets/js/categorypage.js"></script>
+    </div>
 </body>
 </html>

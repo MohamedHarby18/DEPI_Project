@@ -2,16 +2,13 @@
     background-color: #f5f7fb;
 }
 
-.headName{
-  text-decoration: none;
-  color: white;
-}
 .category-page {
     display: flex;
     flex-direction: column;
     gap: 2rem;
     padding: 2rem 0 3rem;
 }
+
 .category-layout {
     display: flex;
     gap: 2rem;
@@ -229,7 +226,7 @@
 
 .toast {
     min-width: 220px;
-    background: #61CE70;
+    background: #0f4c81;
     color: #fff;
     padding: 0.85rem 1.25rem;
     border-radius: 12px;

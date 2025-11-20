@@ -15,7 +15,7 @@ class ShoppingCartPage {
 
     loadCartItems() {
         try {
-            const stored = localStorage.getItem('cart');  // <=== FIXED
+            const stored = localStorage.getItem('cartItems');
             return stored ? JSON.parse(stored) : [];
         } catch (error) {
             console.error('Failed to parse cart items', error);
@@ -24,7 +24,7 @@ class ShoppingCartPage {
     }
 
     saveCartItems() {
-        localStorage.setItem('cart', JSON.stringify(this.cartItems)); // <=== FIXED
+        localStorage.setItem('cartItems', JSON.stringify(this.cartItems));
         this.updateSummary();
     }
 
@@ -70,7 +70,6 @@ class ShoppingCartPage {
     attachEvents() {
         if (!this.cartTableBody) return;
 
-        // Change quantity
         this.cartTableBody.addEventListener('change', (event) => {
             if (!event.target.classList.contains('quantity-input')) return;
 
@@ -81,7 +80,6 @@ class ShoppingCartPage {
             this.updateItemQuantity(productId, newQuantity);
         });
 
-        // Remove item
         this.cartTableBody.addEventListener('click', (event) => {
             if (!event.target.classList.contains('remove-item')) return;
             const row = event.target.closest('tr');
@@ -89,7 +87,6 @@ class ShoppingCartPage {
             this.removeItem(productId);
         });
 
-        // Checkout button
         if (this.checkoutBtn) {
             this.checkoutBtn.addEventListener('click', () => {
                 alert('Checkout flow is not implemented yet.');
@@ -131,3 +128,4 @@ class ShoppingCartPage {
 document.addEventListener('DOMContentLoaded', () => {
     new ShoppingCartPage();
 });
+

@@ -18,7 +18,6 @@
     box-sizing: border-box;
 }
 
-
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
@@ -34,9 +33,8 @@ body {
 
 }
 
-.headName{
-  text-decoration: none;
-  color: white;
+.SiteName {
+    text-transform: uppercase;
 }
 
 /* Main Product Section */

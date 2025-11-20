@@ -5,6 +5,7 @@ class ProductPage {
         this.relatedProducts = [];
         this.currentMainImageIndex = 0;
         this.productCardImages = new Map(); // Store current image index for each product card
+        this.productCatalog = this.loadProductCatalog();
         this.init();
     }
 
@@ -16,6 +17,15 @@ class ProductPage {
     // Load product data (replace with actual API call)
     async loadProductData() {
         try {
+            const selectedProduct = this.loadSelectedProduct();
+            if (selectedProduct) {
+                this.currentProduct = selectedProduct;
+                this.relatedProducts = this.getRelatedProductsFromCatalog(selectedProduct);
+                this.renderMainProduct();
+                this.renderRelatedProducts();
+                return;
+            }
+
             // Simulate API call - replace with actual endpoint
             const response = await this.fetchProductData();
             this.currentProduct = response.mainProduct;
@@ -601,6 +611,46 @@ class ProductPage {
         URL.revokeObjectURL(link.href);
         
         this.showMessage(`ZIP file "${filename}" is being downloaded to your default download folder!`, 'success');
+    }
+
+    loadSelectedProduct() {
+        try {
+            const stored = localStorage.getItem('selectedProduct');
+            return stored ? JSON.parse(stored) : null;
+        } catch (error) {
+            console.error('Failed to parse selected product', error);
+            return null;
+        }
+    }
+
+    loadProductCatalog() {
+        try {
+            const stored = localStorage.getItem('productCatalog');
+            return stored ? JSON.parse(stored) : [];
+        } catch (error) {
+            console.error('Failed to parse product catalog', error);
+            return [];
+        }
+    }
+
+    getRelatedProductsFromCatalog(product) {
+        if (!product || !this.productCatalog || this.productCatalog.length === 0) {
+            return [];
+        }
+
+        const related = this.productCatalog.filter((item) => {
+            if (item.id === product.id) return false;
+            const sameCategory = item.category?.name && product.category?.name && item.category.name === product.category.name;
+            const sameBrand = item.brand?.name && product.brand?.name && item.brand.name === product.brand.name;
+            return sameCategory || sameBrand;
+        });
+
+        if (related.length < 4) {
+            const fillers = this.productCatalog.filter((item) => item.id !== product.id && !related.includes(item));
+            related.push(...fillers);
+        }
+
+        return related.slice(0, 6);
     }
 
     showMessage(message, type = 'info') {
