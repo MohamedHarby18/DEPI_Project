@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\Attachments\Products\" />
-    <Folder Include="wwwroot\JS\" />
   </ItemGroup>
 
 </Project>
