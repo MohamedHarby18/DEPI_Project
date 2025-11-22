@@ -1,5 +1,8 @@
 ﻿const API_BASE = 'https://localhost:7000/api/Category';
+
 const tbody = document.getElementById('tbody');
+const searchInput = document.getElementById('searchInput');
+const addProductBtn = document.getElementById('addProductBtn');
 
 const overlayAddEdit = document.getElementById('modalOverlay');
 const overlayView = document.getElementById('viewOverlay');
@@ -9,27 +12,25 @@ const modalTitle = document.getElementById('modalTitle');
 const modalForm = document.getElementById('modalForm');
 const productIdInput = document.getElementById('productId');
 const pName = document.getElementById('pName');
+const cancelModalBtn = document.getElementById('cancelModal');
 
 const viewName = document.getElementById('viewName');
 const closeViewBtn = document.getElementById('closeView');
 
-const cancelModalBtn = document.getElementById('cancelModal');
+const deleteMsg = document.getElementById('deleteMsg');
 const confirmDeleteBtn = document.getElementById('confirmDelete');
 const cancelDeleteBtn = document.getElementById('cancelDelete');
 
 let currentEditId = null;
 let deleteId = null;
 
-// Escape HTML
 function escapeHtml(str) {
     if (!str) return '';
     return String(str).replace(/[&<>"'`=\/]/g, s => ({
-        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;',
-        "'": '&#39;', '/': '&#x2F;', '`': '&#x60;', '=': '&#x3D;'
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;", "/": "&#x2F;", "`": "&#x60;", "=": "&#x3D;"
     }[s]));
 }
 
-// Render row (category name + actions)
 function renderRow(cat) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -45,22 +46,19 @@ function renderRow(cat) {
     return tr;
 }
 
-// Render table
 function renderTable(categories) {
     tbody.innerHTML = '';
-    if (!categories || categories.length === 0) {
+    if (!categories.length) {
         tbody.innerHTML = `<tr><td colspan="2" style="text-align:center;color:gray;padding:20px;">No categories found.</td></tr>`;
         return;
     }
-    categories.forEach(c => tbody.appendChild(renderRow(c)));
-    attachRowButtons();
+    categories.forEach(cat => tbody.appendChild(renderRow(cat)));
 }
 
-// Fetch all categories
 async function fetchAndRender() {
     try {
         const res = await fetch(API_BASE);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) throw new Error(res.statusText);
         const cats = await res.json();
         renderTable(cats.map(c => ({ id: c.id, name: c.name })));
     } catch (err) {
@@ -69,77 +67,51 @@ async function fetchAndRender() {
     }
 }
 
-// Add category
-document.getElementById('addProductBtn').addEventListener('click', () => {
-    modalTitle.textContent = 'Add Category';
-    modalForm.reset();
-    productIdInput.value = '';
+// --- Add / Edit Modal ---
+addProductBtn.addEventListener('click', () => {
     currentEditId = null;
-    overlayAddEdit.style.display = 'flex';
+    modalTitle.textContent = 'Add Category';
+    productIdInput.value = '';
+    pName.value = '';
+    overlayAddEdit.classList.add('show');
 });
 
-// Edit category
 async function openEditModal(id) {
     currentEditId = id;
+    console.log(currentEditId)
     modalTitle.textContent = 'Edit Category';
-    overlayAddEdit.style.display = 'flex';
     try {
         const res = await fetch(`${API_BASE}/${id}`);
-        if (!res.ok) throw new Error('Failed to fetch category');
+        if (!res.ok) throw new Error(res.statusText);
         const cat = await res.json();
         productIdInput.value = cat.id;
         pName.value = cat.name || '';
+        overlayAddEdit.classList.add('show');
     } catch (err) {
         console.error(err);
         alert('Failed to load category.');
     }
 }
 
-// View category
-function openViewModal(id) {
-    fetch(`${API_BASE}/${id}`)
-        .then(res => res.json())
-        .then(cat => {
-            viewName.textContent = cat.name || '';
-            overlayView.style.display = 'flex';
-        })
-        .catch(err => {
-            console.error(err);
-            alert('Failed to load category.');
-        });
-}
-
-// Delete category
-function openDeleteModal(id) {
-    deleteId = id;
-    overlayDelete.style.display = 'flex';
-}
-
-confirmDeleteBtn.addEventListener('click', async () => {
-    if (!deleteId) return;
-    try {
-        const res = await fetch(`${API_BASE}/${deleteId}`, { method: 'DELETE' });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        overlayDelete.style.display = 'none';
-        fetchAndRender();
-    } catch (err) {
-        console.error(err);
-        alert('Failed to delete category.');
-    }
-});
-
-// Save category (add/edit)
 modalForm.addEventListener('submit', async e => {
     e.preventDefault();
-    const data = { name: pName.value, id: productIdInput.value };
+    const name = pName.value.trim();
+    const id = currentEditId;
+    if (!name) { alert('Name is required'); return; }
+    if (currentEditId) { var data = { id, name }; }
+    else { var data = { name }; }
+    
     try {
-        const res = await fetch(API_BASE + (currentEditId ? `/${currentEditId}` : ''), {
-            method: currentEditId ? 'PUT' : 'POST',
+        const url =  API_BASE;
+        const method = currentEditId ? 'PUT' : 'POST';
+        const res = await fetch(url, {
+            method,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(data)
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        overlayAddEdit.style.display = 'none';
+        if (!res.ok) throw new Error(res.statusText);
+        overlayAddEdit.classList.remove('show');
+        currentEditId = null;
         fetchAndRender();
     } catch (err) {
         console.error(err);
@@ -147,27 +119,74 @@ modalForm.addEventListener('submit', async e => {
     }
 });
 
-// Attach row buttons
-function attachRowButtons() {
-    document.querySelectorAll('.viewBtn').forEach(btn => btn.addEventListener('click', () => openViewModal(btn.dataset.id)));
-    document.querySelectorAll('.editBtn').forEach(btn => btn.addEventListener('click', () => openEditModal(btn.dataset.id)));
-    document.querySelectorAll('.delBtn').forEach(btn => btn.addEventListener('click', () => openDeleteModal(btn.dataset.id)));
+// --- View Modal ---
+function openViewModal(id) {
+    fetch(`${API_BASE}/${id}`)
+        .then(res => res.json())
+        .then(cat => {
+            viewName.textContent = cat.name || '';
+            overlayView.classList.add('show');
+        })
+        .catch(err => {
+            console.error(err);
+            alert('Failed to load category.');
+        });
 }
 
-// Close modals
-[cancelModalBtn, closeViewBtn, cancelDeleteBtn].forEach(btn =>
+// --- Delete Modal ---
+function openDeleteModal(id) {
+    deleteId = id;
+    deleteMsg.textContent = 'Are you sure you want to delete this category?';
+    overlayDelete.classList.add('show');
+}
+
+confirmDeleteBtn.addEventListener('click', async () => {
+    if (!deleteId) return;
+    try {
+        const res = await fetch(`${API_BASE}/${deleteId}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error(res.statusText);
+        overlayDelete.classList.remove('show');
+        deleteId = null;
+        fetchAndRender();
+    } catch (err) {
+        console.error(err);
+        alert('Failed to delete category.');
+    }
+});
+
+// --- Event delegation for table buttons ---
+tbody.addEventListener('click', e => {
+    const btn = e.target.closest('button');
+    if (!btn || !btn.dataset.id) return;
+    const id = btn.dataset.id;
+
+    if (btn.classList.contains('viewBtn')) openViewModal(id);
+    else if (btn.classList.contains('editBtn')) openEditModal(id);
+    else if (btn.classList.contains('delBtn')) openDeleteModal(id);
+});
+
+// --- Close modals ---
+[cancelModalBtn, closeViewBtn, cancelDeleteBtn].forEach(btn => {
     btn.addEventListener('click', () => {
-        overlayAddEdit.style.display = 'none';
-        overlayView.style.display = 'none';
-        overlayDelete.style.display = 'none';
-    })
-);
+        overlayAddEdit.classList.remove('show');
+        overlayView.classList.remove('show');
+        overlayDelete.classList.remove('show');
+    });
+});
 
-// Click outside modal closes it
+// --- Click outside modal closes it ---
 [overlayAddEdit, overlayView, overlayDelete].forEach(ov =>
-    ov.addEventListener('click', e => { if (e.target === ov) ov.style.display = 'none'; })
+    ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('show'); })
 );
 
-// Init
+// --- Search ---
+searchInput.addEventListener('input', () => {
+    const term = searchInput.value.trim().toLowerCase();
+    Array.from(tbody.children).forEach(tr => {
+        const name = tr.children[0].textContent.toLowerCase();
+        tr.style.display = name.includes(term) ? '' : 'none';
+    });
+});
+
+// --- Initialize table ---
 fetchAndRender();
- 

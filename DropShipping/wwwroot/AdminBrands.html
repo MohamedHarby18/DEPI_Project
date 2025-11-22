@@ -569,10 +569,10 @@
         </header>
 
         <div class="filters">
-            <div class="filter">
-                <label>Category</label>
+            <!--<div class="filter">
+                <label>Category</label>-->
                 <!-- category dropdown will be populated by script (data-id = GUID) -->
-                <div class="dropdown" data-type="category" id="categoryDropdown">
+                <!--<div class="dropdown" data-type="category" id="categoryDropdown">
                     Loading...
                     <div class="dropdown-menu" id="categoryMenu"></div>
                 </div>
@@ -584,7 +584,7 @@
                     Loading...
                     <div class="dropdown-menu" id="brandMenu"></div>
                 </div>
-            </div>
+            </div>-->
 
             <!-- <div class="filter">
               <label>Sort</label>
@@ -599,14 +599,11 @@
             </div> -->
         </div>
 
-        <table aria-label="Products table">
+        <table aria-label="Brands table">
             <thead>
                 <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Category Name</th>
+                   
                     <th>Brand Name</th>
-                    <th>Price</th>
                     <th style="text-align:right">Actions</th>
                 </tr>
             </thead>
@@ -619,7 +616,7 @@
     </div>
     <!-- Add / Edit Modal -->
     <div class="overlay" id="modalOverlay">
-        <div class="modal" id="modalBox" style="width: 900px; height: 500px;">
+        <div class="modal" id="modalBox" style="width: 900px; height: 220px;">
             <h2 id="modalTitle">Edit Product</h2>
             <form id="modalForm" enctype="multipart/form-data">
                 <input type="hidden" id="productId">
@@ -630,50 +627,10 @@
                         <label>Name</label>
                         <input id="pName" required>
                     </div>
-                    <div style="flex:1">
-                        <label>Description</label>
-                        <input id="pDescription" required>
-                    </div>
+            
                 </div>
 
-                <!-- Row 2: Model Year and Price -->
-                <div class="row" style="margin-bottom:10px; display:flex; gap:10px;">
-                    <div style="flex:1">
-                        <label>Model Year</label>
-                        <input id="pYear" type="number" min="1900" step="1">
-                    </div>
-                    <div style="flex:1">
-                        <label>Price (USD)</label>
-                        <input id="pPrice" type="number" min="0" step="0.01">
-                    </div>
-                </div>
-
-                <!-- Row 3: Image and Category -->
-                <div class="row" style="margin-bottom:10px; display:flex; gap:10px;">
-                    <div style="flex:1">
-                        <label>Brand</label>
-                        <select id="pBrand" required>
-                            <option value="">Select Brand</option>
-                            <!-- Options will be populated dynamically -->
-                        </select>
-                    </div>
-                    <div style="flex:1;">
-                        <label>Category</label>
-                        <select id="pCategory" required>
-                            <option value="">Select Category</option>
-                            <!-- Options will be populated dynamically -->
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Row 4: Brand (full width since it's the last one) -->
-                <div class="row" style="margin-bottom:10px;">
-
-                    <div style="flex:1">
-                        <label>Image</label>
-                        <input id="pImg" type="file" multiple>
-                    </div>
-                </div>
+          
                 <div id="error-message" style="color: red;"></div>
                 <div class="actions-row">
                     <button type="button" class="btn-muted" id="cancelModal">Cancel</button>
@@ -701,11 +658,7 @@
                 <!-- Details Section -->
                 <div class="details-section">
                     <div id="viewName" class="product-name"></div>
-                    <div id="viewDescription" class="product-description"></div>
-                    <div id="viewPrice" class="product-price"></div>
-                    <div id="viewBrand" class="product-brand"></div>
-                    <div id="viewCategory" class="product-category"></div>
-                    <div id="viewYear" class="product-year"></div>
+                   
                 </div>
             </div>
 
@@ -730,6 +683,6 @@
 
 
 
-    <script src="js/AdminProducts.js"></script>
+    <script src="js/AdminBrands.js"></script>
 </body>
 </html>

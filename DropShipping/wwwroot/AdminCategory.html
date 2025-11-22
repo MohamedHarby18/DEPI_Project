@@ -1,0 +1,232 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Admin — Categories (API)</title>
+
+    <style>
+        :root {
+            --bg: #f9fafb;
+            --card: #fff;
+            --border: #e5e7eb;
+            --shadow: rgba(0,0,0,0.08);
+            --muted: #6b7280;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: #111;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--card);
+            border-radius: 12px;
+            padding: 18px;
+            box-shadow: 0 6px 24px var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .search {
+            display: flex;
+            align-items: center;
+            background: #f3f4f6;
+            padding: 8px 10px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+
+            .search input {
+                border: 0;
+                background: transparent;
+                outline: none;
+                padding-left: 8px;
+            }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 10px;
+            color: var(--muted);
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 12px 10px;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #fff;
+            box-shadow: 0 6px 12px var(--shadow);
+            transform: scale(1.01);
+        }
+
+        .actions {
+            display: flex;
+            gap: 6px;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--card);
+            cursor: pointer;
+            padding: 8px 10px;
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+            .overlay.show {
+                display: flex;
+                z-index: 9999;
+            }
+
+        .modal {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            animation: pop .25s ease;
+        }
+
+        @keyframes pop {
+            from {
+                opacity: 0;
+                transform: scale(.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        .btn-primary {
+            background: #111;
+            color: #fff;
+            border: none;
+            padding: 10px 14px;
+            border-radius: 8px;
+        }
+
+        .btn-muted {
+            background: #f3f4f6;
+            border: none;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>Categories — Admin</h1>
+                <div style="margin-top:8px;color:var(--muted);font-size:13px">Search & manage categories (API-driven)</div>
+            </div>
+
+            <div style="display:flex;gap:12px;align-items:center">
+                <div class="search">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 21l-4.35-4.35"></path>
+                        <circle cx="11" cy="11" r="6"></circle>
+                    </svg>
+                    <input id="searchInput" placeholder="Search term" />
+                </div>
+                <button id="addProductBtn" class="btn">+ Add</button>
+            </div>
+        </header>
+
+        <table aria-label="Categories table">
+            <thead>
+                <tr>
+                    <th>Category Name</th>
+                    <th style="text-align:right">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+        </table>
+    </div>
+
+    <!-- Add / Edit Modal -->
+    <div class="overlay" id="modalOverlay">
+        <div class="modal" id="modalBox" style="width: 500px;">
+            <h2 id="modalTitle">Edit Category</h2>
+            <form id="modalForm">
+                <input type="hidden" id="productId">
+                <div class="row" style="margin-bottom:10px; display:flex; gap:10px;">
+                    <div style="flex:1">
+                        <label>Name</label>
+                        <input id="pName" required>
+                    </div>
+                </div>
+                <div id="error-message" style="color: red;"></div>
+                <div class="actions-row">
+                    <button type="button" class="btn-muted" id="cancelModal">Cancel</button>
+                    <button type="submit" class="btn-primary" id="saveModal">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Modal -->
+    <div class="overlay" id="viewOverlay">
+        <div class="modal view-modal" style="width: 500px;">
+            <h2 id="viewTitle">Category Details</h2>
+            <div class="details-section">
+                <div id="viewName" class="product-name"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-muted" id="closeView">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="overlay" id="deleteOverlay">
+        <div class="modal" style="max-width:420px">
+            <h2>Delete category?</h2>
+            <div id="deleteMsg" style="color:var(--muted);margin-top:8px">Are you sure?</div>
+            <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:14px">
+                <button class="btn-muted" id="cancelDelete">Cancel</button>
+                <button class="btn-primary" id="confirmDelete">Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/AdminCategories.js"></script>
+</body>
+</html>
