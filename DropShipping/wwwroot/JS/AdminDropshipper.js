@@ -4,7 +4,7 @@
 const API_BASE = "https://localhost:7000/api/Dropshipper";
 
 /** ============================
- *  DOM Refs
+ *  DOM References
  * ============================ */
 const tbody = document.querySelector("#tbody");
 
@@ -15,7 +15,7 @@ const overlayDelete = document.querySelector("#deleteOverlay");
 const modalTitle = document.querySelector("#modalTitle");
 const modalForm = document.querySelector("#modalForm");
 
-const productIdInput = document.querySelector("#productId");
+const customerIdInput = document.querySelector("#productId"); // hidden input
 const userNameInput = document.querySelector("#userName");
 const emailInput = document.querySelector("#email");
 const phoneInput = document.querySelector("#phoneNumber");
@@ -46,7 +46,7 @@ const escapeHtml = (str = "") =>
     }[s]));
 
 /** ============================
- *  RENDER
+ *  RENDER ROWS
  * ============================ */
 function renderRow(d) {
     const tr = document.createElement("tr");
@@ -78,14 +78,13 @@ function renderTable(list) {
     }
 
     list.forEach(item => tbody.appendChild(renderRow(item)));
-
     attachRowEvents();
 }
 
 /** ============================
- *  SEARCH CONFIG
+ *  SEARCH
  * ============================ */
-let globalData = []; // holds ALL dropshippers
+let globalData = [];
 
 function debounce(fn, delay = 300) {
     let timer;
@@ -109,14 +108,11 @@ function filterData(keyword) {
 }
 
 const searchInput = document.querySelector("#searchInput");
-
 const handleSearch = debounce(() => {
     filterData(searchInput.value.trim());
 }, 300);
 
-if (searchInput) {
-    searchInput.addEventListener("input", handleSearch);
-}
+if (searchInput) searchInput.addEventListener("input", handleSearch);
 
 /** ============================
  *  FETCH & LOAD
@@ -165,7 +161,7 @@ async function openEditModal(id) {
 
         const d = await res.json();
 
-        productIdInput.value = d.id;
+        customerIdInput.value = d.id;
         userNameInput.value = d.userName;
         emailInput.value = d.email;
         phoneInput.value = d.phoneNumber;
@@ -175,7 +171,7 @@ async function openEditModal(id) {
         cityInput.value = d.address?.city ?? "";
         countryInput.value = d.address?.country ?? "";
 
-    } catch (err) {
+    } catch {
         alert("Failed to load dropshipper");
     }
 }
@@ -183,7 +179,7 @@ async function openEditModal(id) {
 async function openViewModal(id) {
     try {
         const res = await fetch(`${API_BASE}/${id}`);
-        if (!res.ok) throw new Error("Failed to load");
+        if (!res.ok) throw new Error();
 
         const d = await res.json();
 
@@ -195,12 +191,13 @@ async function openViewModal(id) {
         document.getElementById("viewCategory").textContent = "City: " + (d.address?.city ?? "");
         document.getElementById("viewYear").textContent = "Country: " + (d.address?.country ?? "");
 
-        document.querySelector(".image-section").style.display = "none";
+        // Hide image section (not used for dropshippers)
+        const imgSection = document.querySelector(".image-section");
+        if (imgSection) imgSection.style.display = "none";
 
         overlayView.style.display = "flex";
 
-    } catch (err) {
-        console.error(err);
+    } catch {
         alert("Failed to load details");
     }
 }
@@ -265,15 +262,11 @@ modalForm.onsubmit = async e => {
 
 confirmDeleteBtn.onclick = async () => {
     try {
-        const res = await fetch(`${API_BASE}/${deleteId}`, {
-            method: "DELETE"
-        });
-
+        const res = await fetch(`${API_BASE}/${deleteId}`, { method: "DELETE" });
         if (!res.ok) throw new Error();
 
         overlayDelete.style.display = "none";
         fetchAndRender();
-
     } catch {
         alert("Failed to delete");
     }
@@ -302,5 +295,4 @@ document.getElementById("closeView").onclick = () =>
  *  INIT
  * ============================ */
 document.getElementById("addProductBtn").onclick = openAddModal;
-
 fetchAndRender();

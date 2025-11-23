@@ -5,168 +5,53 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Admin — Categories (API)</title>
 
-    <style>
-        :root {
-            --bg: #f9fafb;
-            --card: #fff;
-            --border: #e5e7eb;
-            --shadow: rgba(0,0,0,0.08);
-            --muted: #6b7280;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Inter, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: #111;
-            padding: 24px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: var(--card);
-            border-radius: 12px;
-            padding: 18px;
-            box-shadow: 0 6px 24px var(--shadow);
-            border: 1px solid var(--border);
-        }
-
-        header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-
-        .search {
-            display: flex;
-            align-items: center;
-            background: #f3f4f6;
-            padding: 8px 10px;
-            border-radius: 10px;
-            border: 1px solid var(--border);
-        }
-
-            .search input {
-                border: 0;
-                background: transparent;
-                outline: none;
-                padding-left: 8px;
-            }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 16px;
-        }
-
-        th {
-            text-align: left;
-            padding: 12px 10px;
-            color: var(--muted);
-            border-bottom: 1px solid var(--border);
-        }
-
-        td {
-            padding: 12px 10px;
-            vertical-align: middle;
-        }
-
-        tbody tr:hover {
-            background: #fff;
-            box-shadow: 0 6px 12px var(--shadow);
-            transform: scale(1.01);
-        }
-
-        .actions {
-            display: flex;
-            gap: 6px;
-            justify-content: flex-end;
-        }
-
-        .btn {
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            background: var(--card);
-            cursor: pointer;
-            padding: 8px 10px;
-        }
-
-        .overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(255,255,255,0.7);
-            backdrop-filter: blur(6px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 100;
-        }
-
-            .overlay.show {
-                display: flex;
-                z-index: 9999;
-            }
-
-        .modal {
-            background: #fff;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            animation: pop .25s ease;
-        }
-
-        @keyframes pop {
-            from {
-                opacity: 0;
-                transform: scale(.95);
-            }
-
-            to {
-                opacity: 1;
-                transform: none;
-            }
-        }
-
-        .btn-primary {
-            background: #111;
-            color: #fff;
-            border: none;
-            padding: 10px 14px;
-            border-radius: 8px;
-        }
-
-        .btn-muted {
-            background: #f3f4f6;
-            border: none;
-            padding: 10px 12px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-    </style>
+    <link rel="stylesheet" href="CSS/index.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2><i class="fas fa-chart-line"></i> <span>AdminPanel</span></h2>
+        </div>
+        <div class="sidebar-menu">
+            <ul>
+                <li class="active"><a href="admin.html"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+                <li><a href="AdminProducts.html"><i class="fas fa-box"></i> <span>Products</span></a></li>
+                <li class="active"><a href="AdminCategory.html"><i class="fas fa-tags"></i> <span>Categories</span></a></li>
+                <li><a href="AdminBrands.html"><i class="fas fa-star"></i> <span>Brands</span></a></li>
+                <li><a href="AdminOrders.html"><i class="fas fa-shopping-cart"></i> <span>Orders</span></a></li>
+                <li><a href="AdminDropshipper.html"><i class="fas fa-users"></i> <span>Customers</span></a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> <span>Settings</span></a></li>
+            </ul>
+        </div>
+    </div>
+
     <div class="container">
-        <header>
-            <div>
+
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-left">
                 <h1>Categories — Admin</h1>
-                <div style="margin-top:8px;color:var(--muted);font-size:13px">Search & manage categories (API-driven)</div>
+                <div class="muted" style="font-size:13px;margin-top:6px;">Search & manage categories (API-driven)</div>
             </div>
 
-            <div style="display:flex;gap:12px;align-items:center">
-                <div class="search">
+            <div class="header-right">
+                <div class="search" title="Search">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 21l-4.35-4.35"></path>
                         <circle cx="11" cy="11" r="6"></circle>
                     </svg>
                     <input id="searchInput" placeholder="Search term" />
                 </div>
+
                 <button id="addProductBtn" class="btn">+ Add</button>
+
+                <div class="user-profile" style="margin-left:8px;">
+                    <div class="user-avatar">M</div>
+                    <div class="muted" style="font-size:14px;">Mohamed</div>
+                </div>
             </div>
         </header>
 
@@ -177,8 +62,12 @@
                     <th style="text-align:right">Actions</th>
                 </tr>
             </thead>
-            <tbody id="tbody"></tbody>
+            <tbody id="tbody">
+                <!-- Rows loaded dynamically via AdminCategories.js -->
+            </tbody>
         </table>
+
+        <div id="pagination" style="margin-top:20px;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;"></div>
     </div>
 
     <!-- Add / Edit Modal -->
