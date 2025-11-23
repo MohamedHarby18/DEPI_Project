@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Admin — Products (API)</title>
+    <title>Admin — DropShipper (API)</title>
 
     <style>
         :root {
@@ -558,7 +558,7 @@
     <div class="container">
         <header>
             <div>
-                <h1>Brands — Admin</h1>
+                <h1>DropShipper — Admin</h1>
                 <div style="margin-top:8px;color:var(--muted);font-size:13px">Search & manage products (API-driven)</div>
             </div>
 
@@ -599,11 +599,15 @@
             </div> -->
         </div>
 
-        <table aria-label="Brands table">
+        <table aria-label="Products table">
             <thead>
                 <tr>
-                   
-                    <th>Brand Name</th>
+                    <!--<th>Image</th>-->
+                    <th>Name</th>
+                    <th>Email</th>
+                    
+                    <th>Phone Number</th>
+                    <th>Address</th>
                     <th style="text-align:right">Actions</th>
                 </tr>
             </thead>
@@ -616,27 +620,59 @@
     </div>
     <!-- Add / Edit Modal -->
     <div class="overlay" id="modalOverlay">
-        <div class="modal" id="modalBox" style="width: 900px; height: 220px;">
-            <h2 id="modalTitle">Edit Product</h2>
-            <form id="modalForm" enctype="multipart/form-data">
+        <div class="modal" id="modalBox" style="width: 900px; height: 500px;">
+            <h2 id="modalTitle"> Product Management</h2>
+            <form id="modalForm">
                 <input type="hidden" id="productId">
 
-                <!-- Row 1: Name and Description -->
                 <div class="row" style="margin-bottom:10px; display:flex; gap:10px;">
                     <div style="flex:1">
-                        <label>Name</label>
-                        <input id="pName" required>
+                        <label>User Name</label>
+                        <input id="userName" required>
                     </div>
-            
+                    <div style="flex:1">
+                        <label>Email</label>
+                        <input id="email" type="email" required>
+                    </div>
                 </div>
 
-          
-                <div id="error-message" style="color: red;"></div>
+                <div class="row" style="margin-bottom:10px; display:flex; gap:10px;">
+                    <div style="flex:1">
+                        <label>Phone Number</label>
+                        <input id="phoneNumber" required>
+                    </div>
+                    <div style="flex:1">
+                        <label>Password</label>
+                        <input id="password" type="password" required>
+                    </div>
+                </div>
+
+                <h3 style="margin-top:10px">Address</h3>
+
+                <div class="row" style="margin-bottom:10px; display:flex; gap:10px;">
+                    <div style="flex:1">
+                        <label>Street</label>
+                        <input id="street" required>
+                    </div>
+                    <div style="flex:1">
+                        <label>City</label>
+                        <input id="city" required>
+                    </div>
+                </div>
+
+                <div class="row" style="margin-bottom:10px; display:flex; gap:10px;">
+                    <div style="flex:1">
+                        <label>Country</label>
+                        <input id="country" required>
+                    </div>
+                </div>
+
                 <div class="actions-row">
-                    <button type="button" class="btn-muted" id="cancelModal">Cancel</button>
-                    <button type="submit" class="btn-primary" id="saveModal">Save</button>
+                    <button type="button" id="cancelModal" class="btn-muted">Cancel</button>
+                    <button class="btn-primary">Save</button>
                 </div>
             </form>
+
         </div>
     </div>
 
@@ -658,7 +694,11 @@
                 <!-- Details Section -->
                 <div class="details-section">
                     <div id="viewName" class="product-name"></div>
-                   
+                    <div id="viewDescription" class="product-description"></div>
+                    <div id="viewPrice" class="product-price"></div>
+                    <div id="viewBrand" class="product-brand"></div>
+                    <div id="viewCategory" class="product-category"></div>
+                    <div id="viewYear" class="product-year"></div>
                 </div>
             </div>
 
@@ -683,6 +723,6 @@
 
 
 
-    <script src="js/AdminBrands.js"></script>
+    <script src="js/AdminDropshipper.js"></script>
 </body>
 </html>
