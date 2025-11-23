@@ -73,7 +73,7 @@ async function fetchAndRender() {
 // --- Add / Edit Modal ---
 addProductBtn.addEventListener('click', () => {
     currentEditId = null;
-    modalTitle.textContent = 'Add Category';
+    modalTitle.textContent = 'Add Brand';
     productIdInput.value = '';
     pName.value = '';
     overlayAddEdit.classList.add('show');
@@ -81,7 +81,7 @@ addProductBtn.addEventListener('click', () => {
 
 async function openEditModal(id) {
     currentEditId = id;
-    modalTitle.textContent = 'Edit Category';
+    modalTitle.textContent = 'Edit Brand';
     try {
         const res = await fetch(`${API_BASE}/${id}`);
         if (!res.ok) throw new Error(res.statusText);
@@ -91,7 +91,7 @@ async function openEditModal(id) {
         overlayAddEdit.classList.add('show');
     } catch (err) {
         console.error(err);
-        alert('Failed to load category.');
+        alert('Failed to load Brand.');
     }
 }
 
@@ -123,7 +123,7 @@ modalForm.addEventListener('submit', async e => {
         fetchAndRender();
     } catch (err) {
         console.error(err);
-        alert('Failed to save category.');
+        alert('Failed to save Brand.');
     }
 });
 
@@ -137,7 +137,7 @@ function openViewModal(id) {
         })
         .catch(err => {
             console.error(err);
-            alert('Failed to load category.');
+            alert('Failed to load Brand.');
         });
 }
 
@@ -158,7 +158,7 @@ confirmDeleteBtn.addEventListener('click', async () => {
         fetchAndRender();
     } catch (err) {
         console.error(err);
-        alert('Failed to delete category.');
+        alert('Failed to delete Brand.');
     }
 });
 
