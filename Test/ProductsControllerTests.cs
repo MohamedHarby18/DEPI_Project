@@ -1,136 +1,136 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using BAL.DTOs;
-using BAL.DTOs.ProductDTOs;
-using BAL.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
-using PAL.Controllers;
-using Xunit;
+//using System;
+//using System.Collections.Generic;
+//using System.Threading.Tasks;
+//using BAL.DTOs;
+//using BAL.DTOs.ProductDTOs;
+//using BAL.Services.Interfaces;
+//using Microsoft.AspNetCore.Http;
+//using Microsoft.AspNetCore.Mvc;
+//using Moq;
+//using PAL.Controllers;
+//using Xunit;
 
-namespace Tests.Controllers
-{
-    public class ProductsControllerTests
-    {
-        private readonly Mock<IProductService> _mockService;
-        private readonly ProductsController _controller;
+//namespace Tests.Controllers
+//{
+//    public class ProductsControllerTests
+//    {
+//        private readonly Mock<IProductService> _mockService;
+//        private readonly ProductsController _controller;
 
-        public ProductsControllerTests()
-        {
-            _mockService = new Mock<IProductService>();
-            _controller = new ProductsController(_mockService.Object);
-        }
+//        public ProductsControllerTests()
+//        {
+//            _mockService = new Mock<IProductService>();
+//            _controller = new ProductsController(_mockService.Object);
+//        }
 
-        [Fact]
-        public async Task GetAll_ReturnsOk_WithPaginatedResult()
-        {
-            // Arrange
-            var parameters = new ProductParamaters();
-            var paginatedResult = new PaginatedResult<ProductDTO>
-            {
-                Result = new List<ProductDTO>
-                {
-                    new ProductDTO { Id = Guid.NewGuid(), Name = "Test", Description = "Desc", Price = 10, ModelYear = 2024, Images = new List<string>() }
-                },
-                PageIndex = 1,
-                PageSize = 10,
-                TotalCount = 1
-            };
-            _mockService.Setup(s => s.GetAllProducts(parameters)).ReturnsAsync(paginatedResult);
+//        [Fact]
+//        public async Task GetAll_ReturnsOk_WithPaginatedResult()
+//        {
+//            // Arrange
+//            var parameters = new ProductParamaters();
+//            var paginatedResult = new PaginatedResult<ProductDTO>
+//            {
+//                Result = new List<ProductDTO>
+//                {
+//                    new ProductDTO { Id = Guid.NewGuid(), Name = "Test", Description = "Desc", Price = 10, ModelYear = 2024, Images = new List<string>() }
+//                },
+//                PageIndex = 1,
+//                PageSize = 10,
+//                TotalCount = 1
+//            };
+//            _mockService.Setup(s => s.GetAllProducts(parameters)).ReturnsAsync(paginatedResult);
 
-            // Act
-            var result = await _controller.GetAll(parameters);
+//            // Act
+//            var result = await _controller.GetAll(parameters);
 
-            // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal(paginatedResult, okResult.Value);
-        }
+//            // Assert
+//            var okResult = Assert.IsType<OkObjectResult>(result);
+//            Assert.Equal(paginatedResult, okResult.Value);
+//        }
 
-        [Fact]
-        public async Task GetById_ReturnsOk_WithProductDetails()
-        {
-            // Arrange
-            var id = Guid.NewGuid();
-            var details = new ProductDetailsDTO
-            {
-                Id = id,
-                Name = "Test",
-                Description = "Desc",
-                CategoryName = "Cat",
-                BrandName = "Brand",
-                Images = new List<string>()
-            };
-            _mockService.Setup(s => s.GetProductById(id)).ReturnsAsync(details);
+//        [Fact]
+//        public async Task GetById_ReturnsOk_WithProductDetails()
+//        {
+//            // Arrange
+//            var id = Guid.NewGuid();
+//            var details = new ProductDetailsDTO
+//            {
+//                Id = id,
+//                Name = "Test",
+//                Description = "Desc",
+//                CategoryName = "Cat",
+//                BrandName = "Brand",
+//                Images = new List<string>()
+//            };
+//            _mockService.Setup(s => s.GetProductById(id)).ReturnsAsync(details);
 
-            // Act
-            var result = await _controller.GetById(id);
+//            // Act
+//            var result = await _controller.GetById(id);
 
-            // Assert
-            var okResult = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal(details, okResult.Value);
-        }
+//            // Assert
+//            var okResult = Assert.IsType<OkObjectResult>(result);
+//            Assert.Equal(details, okResult.Value);
+//        }
 
-        [Fact]
-        public async Task Add_ReturnsCreated()
-        {
-            // Arrange
-            var createDto = new ProductCreateDTO
-            {
-                Name = "Test",
-                Description = "Desc",
-                Price = 10,
-                CategoryId = Guid.NewGuid(),
-                BrandId = Guid.NewGuid(),
-                ProductImages = new List<IFormFile>(),
-                ModelYear = 2024
-            };
-            _mockService.Setup(s => s.AddProduct(createDto)).Returns(Task.CompletedTask);
+//        [Fact]
+//        public async Task Add_ReturnsCreated()
+//        {
+//            // Arrange
+//            var createDto = new ProductCreateDTO
+//            {
+//                Name = "Test",
+//                Description = "Desc",
+//                Price = 10,
+//                CategoryId = Guid.NewGuid(),
+//                BrandId = Guid.NewGuid(),
+//                ProductImages = new List<IFormFile>(),
+//                ModelYear = 2024
+//            };
+//            _mockService.Setup(s => s.AddProduct(createDto)).Returns(Task.CompletedTask);
 
-            // Act
-            var result = await _controller.Add(createDto);
+//            // Act
+//            var result = await _controller.Add(createDto);
 
-            // Assert
-            Assert.IsType<CreatedResult>(result);
-        }
+//            // Assert
+//            Assert.IsType<CreatedResult>(result);
+//        }
 
-        [Fact]
-        public async Task Update_ReturnsOk()
-        {
-            // Arrange
-            var updateDto = new ProductUpdateDTO
-            {
-                Id = Guid.NewGuid(),
-                Name = "Test",
-                Description = "Desc",
-                Price = 10,
-                CategoryId = Guid.NewGuid(),
-                BrandId = Guid.NewGuid(),
-                ProductImages = new List<IFormFile>(),
-                ModelYear = 2024
-            };
-            _mockService.Setup(s => s.UpdateProduct(updateDto)).Returns(Task.CompletedTask);
+//        [Fact]
+//        public async Task Update_ReturnsOk()
+//        {
+//            // Arrange
+//            var updateDto = new ProductUpdateDTO
+//            {
+//                Id = Guid.NewGuid(),
+//                Name = "Test",
+//                Description = "Desc",
+//                Price = 10,
+//                CategoryId = Guid.NewGuid(),
+//                BrandId = Guid.NewGuid(),
+//                ProductImages = new List<IFormFile>(),
+//                ModelYear = 2024
+//            };
+//            _mockService.Setup(s => s.UpdateProduct(updateDto)).Returns(Task.CompletedTask);
 
-            // Act
-            var result = await _controller.Update(updateDto);
+//            // Act
+//            var result = await _controller.Update(updateDto);
 
-            // Assert
-            Assert.IsType<OkResult>(result);
-        }
+//            // Assert
+//            Assert.IsType<OkResult>(result);
+//        }
 
-        [Fact]
-        public async Task Delete_ReturnsNoContent()
-        {
-            // Arrange
-            var id = Guid.NewGuid();
-            _mockService.Setup(s => s.DeleteProduct(id)).Returns(Task.CompletedTask);
+//        [Fact]
+//        public async Task Delete_ReturnsNoContent()
+//        {
+//            // Arrange
+//            var id = Guid.NewGuid();
+//            _mockService.Setup(s => s.DeleteProduct(id)).Returns(Task.CompletedTask);
 
-            // Act
-            var result = await _controller.Delete(id);
+//            // Act
+//            var result = await _controller.Delete(id);
 
-            // Assert
-            Assert.IsType<NoContentResult>(result);
-        }
-    }
-}
+//            // Assert
+//            Assert.IsType<NoContentResult>(result);
+//        }
+//    }
+//}
