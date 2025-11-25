@@ -57,15 +57,41 @@
         </nav>
 
     </header>
-    <div class="container category-page">
+    <div class="container1 category-page">
 
         <!-- Related Products Section -->
         <div class="category-products">
             <h1>Category Name</h1>
-            <div class="products-grid" id="category-products">
+            <div class="products-grid" id="categoryProducts">
                 <!--products will be populated by JavaScript -->
             </div>
         </div>
     </div>
+    <div class="container category-page">
+
+        <div class="filters">
+            <h3>Brands</h3>
+            <div id="brandFilters"></div>
+            <button id="clearFilters">Clear Filters</button>
+        </div>
+
+        <div class="category-products">
+            <h1>Category Name</h1>
+
+            <p id="resultsCount"></p>
+
+            <div class="products-grid" id="categoryProducts"></div>
+
+            <div id="pagination"></div>
+        </div>
+
+    </div>
+
+    <!-- Cart Count -->
+    <span id="cartCount" class="cart-count">0</span>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+    <script src="assets/js/categorypage.js"></script>
 </body>
 </html>

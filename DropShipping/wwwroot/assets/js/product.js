@@ -650,7 +650,7 @@ class ProductPage {
             related.push(...fillers);
         }
 
-        return related.slice(0, 6);
+        return related.slice(0, 4);
     }
 
     showMessage(message, type = 'info') {
