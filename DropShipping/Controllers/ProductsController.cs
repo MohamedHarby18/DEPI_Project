@@ -8,6 +8,7 @@ namespace PAL.Controllers
 {
     [ApiController]
     [Route("api/[Controller]")]
+    [Authorize]
     public class ProductsController(IProductService productService):ControllerBase
     {
         [HttpGet]

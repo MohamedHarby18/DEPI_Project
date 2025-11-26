@@ -1,5 +1,6 @@
 ﻿using BAL.DTOs.BrandDTOs;
 using BAL.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ namespace PAL.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class BrandsController(IBrandService brandService):ControllerBase
     {
 

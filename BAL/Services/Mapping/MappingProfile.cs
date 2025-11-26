@@ -104,7 +104,8 @@ namespace BAL.Services.Mapping
 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.User.CreatedAt))
 .ReverseMap();
 
-
+            CreateMap<DAL.Models.WalletTransaction, BAL.DTOs.DropshipperDTOs.WalletTransaction>().ReverseMap();
+            CreateMap<DAL.Models.Wallet, BAL.DTOs.DropshipperDTOs.Wallet>().ReverseMap();
 
 
         }
