@@ -1,13 +1,15 @@
 ﻿using BAL.DTOs.LoginDTO;
 using BAL.DTOs.RegistrationDTOs;
+using DAL;
 using DAL.Models;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace PAL.Controllers
 {
@@ -17,14 +19,15 @@ namespace PAL.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _config;
+        private readonly DropShoppingDbContext _context;
 
-        public AuthController(UserManager<User> userManager, IConfiguration config)
+
+        public AuthController(UserManager<User> userManager, IConfiguration config, DropShoppingDbContext context)
         {
             _userManager = userManager;
             _config = config;
+            _context = context;
         }
-
-        // ---------------------- SIGNUP ---------------------------
         [HttpPost("signup")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
@@ -33,18 +36,17 @@ namespace PAL.Controllers
 
             var user = new User
             {
-                UserName = dto.Email,
+                UserName = dto.Name,
                 Email = dto.Email,
                 PhoneNumber = dto.Phone,
                 IsActive = true,
                 CreatedAt = DateOnly.FromDateTime(DateTime.Now),
                 Address = new Address()
                 {
-                    City=dto.Address_City,
-                    Country=dto.Address_Country,
-                    Street=dto.Address_Street
+                    City = dto.Address_City,
+                    Country = dto.Address_Country,
+                    Street = dto.Address_Street
                 }
-
             };
 
             var result = await _userManager.CreateAsync(user, dto.Password);
@@ -52,9 +54,26 @@ namespace PAL.Controllers
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
+            // Create Dropshipper row if needed
+            var User = await _userManager.FindByEmailAsync(user.Email);
+
+
+            var dropshipper = new Dropshipper
+            {
+                UserId = User.Id,
+                User = User,
+                Wallet = new Wallet()
+            };
+
+
+            _context.Dropshippers.Add(dropshipper);
+            await _context.SaveChangesAsync();
+
+
+
+
             return Ok(new { Message = "Account created successfully!" });
         }
-
 
         // ---------------------- LOGIN ----------------------------
         [HttpPost("login")]
@@ -75,7 +94,8 @@ namespace PAL.Controllers
             return Ok(new
             {
                 Token = token,
-                User = new { user.Id, user.Email }
+                User = new { user.Id, user.Email },
+                UserType = user.Dropshipper != null ? "DropShipper" : "Admin"
             });
         }
 

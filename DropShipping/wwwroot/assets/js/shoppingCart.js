@@ -89,7 +89,11 @@ class ShoppingCartPage {
 
         if (this.checkoutBtn) {
             this.checkoutBtn.addEventListener('click', () => {
-                alert('Checkout flow is not implemented yet.');
+                if (this.cartItems.length === 0) {
+                    alert('Your cart is empty. Please add items before checking out.');
+                    return;
+                }
+                window.location.href = 'checkout.html';
             });
         }
     }
@@ -128,4 +132,5 @@ class ShoppingCartPage {
 document.addEventListener('DOMContentLoaded', () => {
     new ShoppingCartPage();
 });
+
 
