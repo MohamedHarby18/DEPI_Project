@@ -30,7 +30,7 @@ class ProductPage {
             const response = await this.fetchProductData();
             this.currentProduct = response.mainProduct;
             this.relatedProducts = response.relatedProducts;
-            
+
             this.renderMainProduct();
             this.renderRelatedProducts();
         } catch (error) {
@@ -43,7 +43,7 @@ class ProductPage {
     async fetchProductData() {
         // Simulate API delay
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         return {
             mainProduct: {
                 id: "550e8400-e29b-41d4-a716-446655440000",
@@ -137,7 +137,7 @@ class ProductPage {
         if (!this.currentProduct) return;
 
         const product = this.currentProduct;
-        
+
         // Update product information
         document.getElementById('productName').textContent = product.name;
         document.getElementById('productBrand').textContent = product.brand.name;
@@ -158,7 +158,7 @@ class ProductPage {
 
         // Render thumbnails
         this.renderThumbnails(product.images);
-        
+
         // Setup main gallery arrow events
         this.setupMainGalleryArrows();
     }
@@ -185,7 +185,7 @@ class ProductPage {
 
     renderCurrentThumbnailSet(images) {
         const thumbnailWrapper = document.querySelector('.thumbnail-wrapper');
-        
+
         // If this is the first render, create all thumbnails
         if (thumbnailWrapper.children.length === 0) {
             images.forEach((imageData, index) => {
@@ -194,7 +194,7 @@ class ProductPage {
                 img.alt = `Thumbnail ${index + 1}`;
                 img.classList.add('thumbnail');
                 img.dataset.index = index;
-                
+
                 if (index === this.currentMainImageIndex) {
                     img.classList.add('active');
                 }
@@ -223,7 +223,7 @@ class ProductPage {
     applySlidingEffect() {
         const thumbnailWrapper = document.querySelector('.thumbnail-wrapper');
         const thumbnails = document.querySelectorAll('.thumbnail');
-        
+
         if (thumbnails.length <= 4) {
             // If 4 or fewer images, show all and don't slide
             thumbnails.forEach((thumb) => {
@@ -235,12 +235,12 @@ class ProductPage {
         // Calculate which thumbnails should be visible
         // Show 4 images, sliding when main image reaches the last of current set
         let startIndex, endIndex;
-        
+
         // Calculate the current set based on main image position
         const currentSet = Math.floor(this.currentMainImageIndex / 4);
         startIndex = currentSet * 4;
         endIndex = Math.min(startIndex + 3, thumbnails.length - 1);
-        
+
         // Show/hide thumbnails based on calculated range
         thumbnails.forEach((thumb, index) => {
             if (index >= startIndex && index <= endIndex) {
@@ -263,7 +263,7 @@ class ProductPage {
         document.querySelectorAll('.thumbnail').forEach(img => {
             img.classList.remove('active');
         });
-        
+
         // Add active class to clicked thumbnail
         activeImg.classList.add('active');
     }
@@ -272,7 +272,7 @@ class ProductPage {
     setupMainGalleryArrows() {
         const prevArrow = document.getElementById('mainPrevArrow');
         const nextArrow = document.getElementById('mainNextArrow');
-        
+
         if (!this.currentProduct || !this.currentProduct.images || this.currentProduct.images.length <= 1) {
             prevArrow.style.display = 'none';
             nextArrow.style.display = 'none';
@@ -296,10 +296,10 @@ class ProductPage {
 
         const totalImages = this.currentProduct.images.length;
         this.currentMainImageIndex = (this.currentMainImageIndex + direction + totalImages) % totalImages;
-        
+
         const newImageSrc = this.currentProduct.images[this.currentMainImageIndex].image;
         this.switchMainImage(newImageSrc);
-        
+
         // Update thumbnails with sliding effect
         this.renderCurrentThumbnailSet(this.currentProduct.images);
     }
@@ -322,16 +322,16 @@ class ProductPage {
     createProductCard(product) {
         const card = document.createElement('div');
         card.className = 'product-card';
-        
+
         // Initialize image index for this product
         this.productCardImages.set(product.id, 0);
-        
-        const imageSrc = product.images && product.images.length > 0 
-            ? product.images[0].image 
+
+        const imageSrc = product.images && product.images.length > 0
+            ? product.images[0].image
             : 'https://via.placeholder.com/300x200?text=No+Image';
 
         // Check if product has more than 5 images to show slider
-        const hasManyImages = product.images && product.images.length ;
+        const hasManyImages = product.images && product.images.length;
         const showSlider = hasManyImages;
 
         card.innerHTML = `
@@ -362,13 +362,20 @@ class ProductPage {
             </div>
         `;
 
-        
+
 
         // Setup arrow events for this card
         this.setupCardArrows(card, product);
-        
+
         // Setup action button event for this card
         this.setupCardActionButton(card, product);
+
+        // Setup click to view product
+        card.addEventListener('click', (e) => {
+            // Prevent if clicked on buttons
+            if (e.target.closest('button')) return;
+            this.viewProduct(product.id);
+        });
 
         return card;
     }
@@ -402,10 +409,10 @@ class ProductPage {
         const currentIndex = this.productCardImages.get(productId) || 0;
         const totalImages = product.images.length;
         const newIndex = (currentIndex + direction + totalImages) % totalImages;
-        
+
         this.productCardImages.set(productId, newIndex);
         imageElement.src = product.images[newIndex].image;
-        
+
         // Update image counter if it exists
         const card = imageElement.closest('.product-card');
         const currentImageSpan = card?.querySelector('.current-image');
@@ -431,27 +438,55 @@ class ProductPage {
 
         // Add visual feedback
         buttonElement.classList.add('active');
-        
+
+        // Load existing cart items
+        const cartItems = this.loadCartItems();
+
+        // Check if product already exists in cart
+        const existingItem = cartItems.find((item) => item.id === product.id);
+
+        if (existingItem) {
+            // Increment quantity if already in cart
+            existingItem.quantity += 1;
+        } else {
+            // Add new item to cart
+            cartItems.push({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.images?.[0]?.image || '',
+                quantity: 1,
+            });
+        }
+
+        // Save updated cart to localStorage
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+
+        // Update cart count in navbar
+        this.updateCartCount();
+
         // Show success message
         this.showMessage(`${product.name} added to cart!`, 'success');
-        
+
         // Log for debugging
-        console.log('Added to cart:', productId, product.name);
-        
+        console.log('Added to cart:', product.name);
+
         // Remove active state after animation
         setTimeout(() => {
             buttonElement.classList.remove('active');
         }, 1000);
-        
-        // Here you would typically call your cart API
-        // this.addToCartAPI(productId);
     }
 
-    
-    navigateToProduct(productId) {
-        // Replace with actual navigation logic
-        console.log(`Navigating to product: ${productId}`);
-        // Example: window.location.href = `/product/${productId}`;
+
+    viewProduct(productId) {
+        const product = this.relatedProducts.find((item) => item.id === productId);
+        if (!product) return;
+
+        // Save selected product to localStorage
+        localStorage.setItem('selectedProduct', JSON.stringify(product));
+
+        // Reload the page to show the new product
+        window.location.href = 'productpage.html';
     }
 
     setupEventListeners() {
@@ -468,12 +503,56 @@ class ProductPage {
 
     addToCart() {
         if (!this.currentProduct) return;
-        
-        // Replace with actual cart functionality
-        console.log('Adding to cart:', this.currentProduct.id);
-        
+
+        // Load existing cart items
+        const cartItems = this.loadCartItems();
+
+        // Check if product already exists in cart
+        const existingItem = cartItems.find((item) => item.id === this.currentProduct.id);
+
+        if (existingItem) {
+            // Increment quantity if already in cart
+            existingItem.quantity += 1;
+        } else {
+            // Add new item to cart
+            cartItems.push({
+                id: this.currentProduct.id,
+                name: this.currentProduct.name,
+                price: this.currentProduct.price,
+                image: this.currentProduct.images?.[0]?.image || '',
+                quantity: 1,
+            });
+        }
+
+        // Save updated cart to localStorage
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+
+        // Update cart count in navbar
+        this.updateCartCount();
+
         // Show success message
-        this.showMessage('Product added to cart!', 'success');
+        this.showMessage(`${this.currentProduct.name} added to cart!`, 'success');
+
+        console.log('Product added to cart:', this.currentProduct.name);
+    }
+
+    loadCartItems() {
+        try {
+            const stored = localStorage.getItem('cartItems');
+            return stored ? JSON.parse(stored) : [];
+        } catch (error) {
+            console.error('Failed to load cart items', error);
+            return [];
+        }
+    }
+
+    updateCartCount() {
+        const cartCountElement = document.getElementById('cartCount');
+        if (!cartCountElement) return;
+
+        const cartItems = this.loadCartItems();
+        const count = cartItems.reduce((total, item) => total + item.quantity, 0);
+        cartCountElement.textContent = count;
     }
 
     async downloadImages() {
@@ -485,61 +564,61 @@ class ProductPage {
         try {
             // Show loading message
             this.showMessage('Preparing images for download...', 'info');
-            
+
             const productName = this.currentProduct.name.replace(/[^a-zA-Z0-9]/g, '_');
             const images = this.currentProduct.images;
-            
+
             console.log('Starting download process for:', productName, 'with', images.length, 'images');
-            
+
             // Check if JSZip is available
             if (typeof JSZip === 'undefined') {
                 throw new Error('JSZip library not loaded');
             }
-            
+
             // Create ZIP file
             const zip = new JSZip();
             const folder = zip.folder(`${productName}_images`);
-            
+
             let successCount = 0;
-            
+
             // Add each image to the ZIP
             for (let i = 0; i < images.length; i++) {
                 const imageUrl = images[i].image;
                 const fileName = `image_${i + 1}.jpg`;
-                
+
                 try {
                     console.log(`Fetching image ${i + 1}:`, imageUrl);
                     const response = await fetch(imageUrl);
-                    
+
                     if (!response.ok) {
                         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                     }
-                    
+
                     const blob = await response.blob();
                     folder.file(fileName, blob);
                     successCount++;
                     console.log(`Successfully added image ${i + 1} to ZIP`);
-                    
+
                 } catch (error) {
                     console.error(`Error fetching image ${i + 1}:`, error);
                 }
             }
-            
+
             if (successCount === 0) {
                 throw new Error('No images could be downloaded');
             }
-            
+
             console.log(`Successfully processed ${successCount} out of ${images.length} images`);
-            
+
             // Generate ZIP file
             this.showMessage('Creating ZIP file...', 'info');
-            const zipBlob = await zip.generateAsync({type: 'blob'});
-            
+            const zipBlob = await zip.generateAsync({ type: 'blob' });
+
             console.log('ZIP file created successfully, size:', zipBlob.size, 'bytes');
-            
+
             // Try to use File System Access API for location selection
             await this.downloadWithLocationChoice(zipBlob, `${productName}_images.zip`);
-            
+
         } catch (error) {
             console.error('Error in downloadImages:', error);
             this.showMessage(`Failed to download images: ${error.message}`, 'error');
@@ -549,7 +628,7 @@ class ProductPage {
     async downloadWithLocationChoice(blob, filename) {
         try {
             console.log('Attempting to download file:', filename, 'size:', blob.size);
-            
+
             // Check if File System Access API is supported
             if ('showSaveFilePicker' in window) {
                 console.log('Using File System Access API');
@@ -564,15 +643,15 @@ class ProductPage {
                             }
                         }]
                     });
-                    
+
                     // Write the file
                     const writable = await fileHandle.createWritable();
                     await writable.write(blob);
                     await writable.close();
-                    
+
                     console.log('File saved successfully using File System Access API');
                     this.showMessage(`ZIP file saved successfully!`, 'success');
-                    
+
                 } catch (error) {
                     if (error.name === 'AbortError') {
                         console.log('User cancelled the download');
@@ -599,17 +678,17 @@ class ProductPage {
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
         link.download = filename;
-        
+
         // Add the link to the document temporarily
         document.body.appendChild(link);
-        
+
         // Trigger the download
         link.click();
-        
+
         // Clean up
         document.body.removeChild(link);
         URL.revokeObjectURL(link.href);
-        
+
         this.showMessage(`ZIP file "${filename}" is being downloaded to your default download folder!`, 'success');
     }
 
@@ -650,7 +729,7 @@ class ProductPage {
             related.push(...fillers);
         }
 
-        return related.slice(0, 6);
+        return related.slice(0, 4);
     }
 
     showMessage(message, type = 'info') {

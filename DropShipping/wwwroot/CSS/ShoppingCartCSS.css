@@ -11,10 +11,10 @@ body {
     color: #222;
 }
 
-.headName{
-  text-decoration: none;
-  color: white;
-  font-weight: bold;
+.headName {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
 
 }
 
@@ -24,6 +24,7 @@ body {
     max-width: 1200px;
     margin: auto;
 }
+
 .container2 {
     display: flex;
     justify-content: space-between;
@@ -31,72 +32,6 @@ body {
     padding: 2rem;
     width: 100%;
 }
-/* =======================
-   HEADER
-======================= */
-.header {
-    background: #007bff;
-    padding: 15px 0;
-}
-
-.header-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.logo {
-    color: white;
-    font-weight: 700;
-    font-size: 22px;
-}
-.logo h1 {
-    font-size: 1.2rem;
-    text-transform: uppercase;
-    text-align: center;
-    margin-top: 10px;
-    font-weight: bold;
-}
-.nav a {
-    color: white;
-    margin: 0 10px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: opacity 0.2s ease;
-}
-
-    .nav a:hover {
-        text-decoration: underline;
-        opacity: 0.9;
-    }
-
-.header-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.search-box {
-    padding: 6px 10px;
-    border: none;
-    border-radius: 3px;
-    outline: none;
-}
-
-.cart-icon {
-    color: white;
-    font-size: 20px;
-}
-
-.login {
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-    .login:hover {
-        text-decoration: underline;
-    }
 
 /* =======================
    CART SECTION
@@ -106,12 +41,12 @@ body {
     text-align: center;
 }
 
-    .cart-section h1 {
-        font-size: 32px;
-        font-weight: 700;
-        margin-bottom: 30px;
-        color: #1e293b;
-    }
+.cart-section h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: #1e293b;
+}
 
 /* Bootstrap table customization */
 .table {
@@ -120,25 +55,25 @@ body {
     overflow: hidden;
 }
 
-    .table thead {
-        background-color: #007bff !important;
-        color: white;
-    }
+.table thead {
+    background-color: #007bff !important;
+    color: white;
+}
 
-    .table th,
-    .table td {
-        vertical-align: middle;
-        font-size: 16px;
-    }
+.table th,
+.table td {
+    vertical-align: middle;
+    font-size: 16px;
+}
 
-    .table img {
-        border-radius: 8px;
-    }
+.table img {
+    border-radius: 8px;
+}
 
-    .table input[type="number"] {
-        text-align: center;
-        border-radius: 6px;
-    }
+.table input[type="number"] {
+    text-align: center;
+    border-radius: 6px;
+}
 
 /* Remove button style */
 .btn-danger.btn-sm {
@@ -147,9 +82,9 @@ body {
     transition: background 0.2s ease;
 }
 
-    .btn-danger.btn-sm:hover {
-        background-color: #b02a37;
-    }
+.btn-danger.btn-sm:hover {
+    background-color: #b02a37;
+}
 
 /* Cart Summary */
 .card {
@@ -157,24 +92,24 @@ body {
     border: none;
 }
 
-    .card h5 {
-        font-weight: 700;
-        color: #1e293b;
-    }
+.card h5 {
+    font-weight: 700;
+    color: #1e293b;
+}
 
-    .card strong {
-        color: #1e293b;
-    }
+.card strong {
+    color: #1e293b;
+}
 
-    .card .btn-primary {
-        background-color: #007bff;
-        border: none;
-        font-weight: 600;
-    }
+.card .btn-primary {
+    background-color: #007bff;
+    border: none;
+    font-weight: 600;
+}
 
-        .card .btn-primary:hover {
-            background-color: #0056cc;
-        }
+.card .btn-primary:hover {
+    background-color: #0056cc;
+}
 
 /* Return to shop button */
 .btn-secondary {
@@ -183,9 +118,9 @@ body {
     font-weight: 600;
 }
 
-    .btn-secondary:hover {
-        background-color: #565e64;
-    }
+.btn-secondary:hover {
+    background-color: #565e64;
+}
 
 /* =======================
    FOOTER
@@ -213,21 +148,21 @@ body {
     list-style: none;
 }
 
-    .footer-col ul li {
-        margin-bottom: 8px;
-    }
+.footer-col ul li {
+    margin-bottom: 8px;
+}
 
-        .footer-col ul li a {
-            color: #cbd5e1;
-            text-decoration: none;
-            font-size: 14px;
-            transition: color 0.2s ease;
-        }
+.footer-col ul li a {
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s ease;
+}
 
-            .footer-col ul li a:hover {
-                text-decoration: underline;
-                color: white;
-            }
+.footer-col ul li a:hover {
+    text-decoration: underline;
+    color: white;
+}
 
 .footer p {
     font-size: 14px;

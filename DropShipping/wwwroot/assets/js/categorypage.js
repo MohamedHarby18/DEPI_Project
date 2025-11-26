@@ -1,99 +1,137 @@
 ﻿class CategoryPage {
     constructor() {
-        this.products = this.getMockProducts();
-        this.filteredProducts = [...this.products];
+        this.products = [];        // Loaded from API
+        this.filteredProducts = [];
         this.currentPage = 1;
         this.perPage = 9;
         this.activeBrands = new Set();
         this.cartItems = this.loadCartItems();
+        this.productCardImages = new Map();
 
+        // DOM elements
         this.productsGrid = document.getElementById('categoryProducts');
         this.pagination = document.getElementById('pagination');
         this.brandFiltersContainer = document.getElementById('brandFilters');
         this.resultsCount = document.getElementById('resultsCount');
         this.clearFiltersBtn = document.getElementById('clearFilters');
         this.cartCountElement = document.getElementById('cartCount');
-        this.toastContainer = document.getElementById('toastContainer');
 
-        this.persistProductCatalog();
         this.init();
     }
 
-    init() {
+    async init() {
         if (!this.productsGrid) return;
-        this.renderBrandFilters();
+
+        await this.loadProductsFromApi();
+        await this.renderBrandFilters();
         this.attachEvents();
-        this.renderProducts();
-        this.renderPagination();
-        this.updateResultsCount();
+        this.applyFilters();
         this.updateCartCount();
     }
 
-    attachEvents() {
-        if (this.clearFiltersBtn) {
-            this.clearFiltersBtn.addEventListener('click', () => {
-                this.activeBrands.clear();
-                this.brandFiltersContainer
-                    .querySelectorAll('input[type="checkbox"]')
-                    .forEach((checkbox) => (checkbox.checked = false));
-                this.applyFilters();
-            });
-        }
+    /*-----------------------------------------------------------
+     |  LOAD PRODUCTS FROM API
+     -----------------------------------------------------------*/
+    async loadProductsFromApi() {
+        try {
+            const response = await fetch('/api/Products');
 
-        if (this.productsGrid) {
-            this.productsGrid.addEventListener('click', (event) => {
-                const button = event.target.closest('.card-action-button');
-                if (button) {
-                    event.stopPropagation();
-                    const productId = button.dataset.productId;
-                    const product = this.products.find((item) => item.id === productId);
-                    if (!product) return;
-                    this.addToCart(product);
-                    return;
-                }
+            if (!response.ok) {
+                throw new Error(`Failed to load products. Status: ${response.status}`);
+            }
 
-                const card = event.target.closest('.product-card');
-                if (!card) return;
+            const data = await response.json();
+            const apiProducts = data.result;
 
-                const productId = card.dataset.productId;
-                this.viewProduct(productId);
-            });
+            this.products = apiProducts.map(p => ({
+                id: p.id,
+                name: p.name,
+                price: p.price,
+                brand: { name: p.brandName },
+                category: { name: p.categoryName },
+                images: p.images.map(img => ({ image: img })),
+                modelYear: p.modelYear || "N/A",
+                description: ""
+            }));
+
+            this.filteredProducts = [...this.products];
+
+            localStorage.setItem('productCatalog', JSON.stringify(this.products));
+
+        } catch (error) {
+            console.error("Error loading products:", error);
+            this.showMessage("Failed loading products from server", "error");
         }
     }
 
-    renderBrandFilters() {
+    /*-----------------------------------------------------------
+     | BRAND FILTERS (FROM API)
+     -----------------------------------------------------------*/
+    async renderBrandFilters() {
         if (!this.brandFiltersContainer) return;
-        const brands = [...new Set(this.products.map((product) => product.brand.name))].sort();
 
-        this.brandFiltersContainer.innerHTML = brands
-            .map(
-                (brand) => `
+        try {
+            const response = await fetch('/api/Brands');
+            if (!response.ok) throw new Error("Failed to load brands");
+
+            const brands = await response.json();
+
+            const sortedBrands = brands.sort((a, b) => a.name.localeCompare(b.name));
+
+            this.brandFiltersContainer.innerHTML = sortedBrands
+                .map(brand => `
+                    <label class="filter-option">
+                        <input type="checkbox" value="${brand.name}" data-brand-id="${brand.id}">
+                        <span>${brand.name}</span>
+                    </label>
+                `)
+                .join('');
+
+            this.brandFiltersContainer.querySelectorAll("input").forEach(cb => {
+                cb.addEventListener("change", (e) => {
+                    const { value, checked } = e.target;
+                    if (checked) this.activeBrands.add(value);
+                    else this.activeBrands.delete(value);
+
+                    this.applyFilters();
+                });
+            });
+
+        } catch (error) {
+            console.error("Brand load failed. Using fallback:", error);
+            this.renderBrandFiltersFromProducts();
+        }
+    }
+
+    renderBrandFiltersFromProducts() {
+        const uniqueBrands = [...new Set(this.products.map(p => p.brand.name))].sort();
+
+        this.brandFiltersContainer.innerHTML = uniqueBrands
+            .map(brand => `
                 <label class="filter-option">
                     <input type="checkbox" value="${brand}">
                     <span>${brand}</span>
                 </label>
-            `
-            )
+            `)
             .join('');
 
-        this.brandFiltersContainer.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
-            checkbox.addEventListener('change', (event) => {
-                const { value, checked } = event.target;
-                if (checked) {
-                    this.activeBrands.add(value);
-                } else {
-                    this.activeBrands.delete(value);
-                }
+        this.brandFiltersContainer.querySelectorAll("input").forEach(cb => {
+            cb.addEventListener("change", e => {
+                const { value, checked } = e.target;
+                checked ? this.activeBrands.add(value) : this.activeBrands.delete(value);
                 this.applyFilters();
             });
         });
     }
 
+    /*-----------------------------------------------------------
+     | FILTER + PAGINATION
+     -----------------------------------------------------------*/
     applyFilters() {
-        const hasBrandFilters = this.activeBrands.size > 0;
+        const useBrand = this.activeBrands.size > 0;
 
-        this.filteredProducts = hasBrandFilters
-            ? this.products.filter((product) => this.activeBrands.has(product.brand.name))
+        this.filteredProducts = useBrand
+            ? this.products.filter(p => this.activeBrands.has(p.brand.name))
             : [...this.products];
 
         this.currentPage = 1;
@@ -103,292 +141,201 @@
     }
 
     renderProducts() {
-        if (!this.productsGrid) return;
-
         const start = (this.currentPage - 1) * this.perPage;
-        const paginatedProducts = this.filteredProducts.slice(start, start + this.perPage);
+        const items = this.filteredProducts.slice(start, start + this.perPage);
 
-        if (paginatedProducts.length === 0) {
-            this.productsGrid.innerHTML = '<div class="loading">No products found for the selected filters.</div>';
+        this.productsGrid.innerHTML = "";
+
+        if (items.length === 0) {
+            this.productsGrid.innerHTML = `<p>No products found.</p>`;
             return;
         }
 
-        this.productsGrid.innerHTML = paginatedProducts.map((product) => this.createProductCard(product)).join('');
-    }
-
-    createProductCard(product) {
-        const imageSrc =
-            product.images && product.images.length > 0
-                ? product.images[0].image
-                : 'https://via.placeholder.com/320x240?text=No+Image';
-
-        return `
-            <article class="product-card" data-product-id="${product.id}">
-                <div class="product-card-image">
-                    <img src="${imageSrc}" alt="${product.name}">
-                    <button class="card-action-button" type="button" data-product-id="${product.id}">
-                        <i class="fas fa-shopping-cart"></i>
-                    </button>
-                </div>
-
-                <div class="product-card-info">
-                    <h3 class="product-card-name">${product.name}</h3>
-                    <div class="product-card-brand">${product.brand.name}</div>
-                    <div class="product-card-price">$${product.price.toFixed(2)}</div>
-                    <div class="product-card-year">Model Year: ${product.modelYear}</div>
-                </div>
-            </article>
-        `;
+        items.forEach(product => {
+            const card = this.createProductCard(product);
+            this.productsGrid.appendChild(card);
+        });
     }
 
     renderPagination() {
-        if (!this.pagination) return;
+        const totalPages = Math.ceil(this.filteredProducts.length / this.perPage);
+        this.pagination.innerHTML = "";
 
-        const totalPages = Math.max(1, Math.ceil(this.filteredProducts.length / this.perPage));
-        this.pagination.innerHTML = '';
+        const addBtn = (label, page, disabled = false) => {
+            const btn = document.createElement("button");
+            btn.textContent = label;
+            btn.disabled = disabled;
+            if (page === this.currentPage) btn.classList.add("active");
 
-        const createButton = (label, page, disabled = false) => {
-            const button = document.createElement('button');
-            button.textContent = label;
-            button.disabled = disabled;
-
-            if (page === this.currentPage && !isNaN(page)) {
-                button.classList.add('active');
-            }
-
-            button.addEventListener('click', () => {
-                if (page === this.currentPage || disabled) return;
+            btn.addEventListener("click", () => {
                 this.currentPage = page;
                 this.renderProducts();
                 this.renderPagination();
+                this.updateResultsCount();
             });
 
-            return button;
+            this.pagination.appendChild(btn);
         };
 
-        // Previous button
-        this.pagination.appendChild(
-            createButton('‹', Math.max(1, this.currentPage - 1), this.currentPage === 1)
-        );
+        addBtn("‹", Math.max(1, this.currentPage - 1), this.currentPage === 1);
 
-        for (let page = 1; page <= totalPages; page++) {
-            this.pagination.appendChild(createButton(page.toString(), page));
-        }
+        for (let i = 1; i <= totalPages; i++) addBtn(i, i);
 
-        // Next button
-        this.pagination.appendChild(
-            createButton('›', Math.min(totalPages, this.currentPage + 1), this.currentPage === totalPages)
-        );
+        addBtn("›", Math.min(totalPages, this.currentPage + 1), this.currentPage === totalPages);
     }
 
     updateResultsCount() {
-        if (!this.resultsCount) return;
-
         const total = this.filteredProducts.length;
-        const start = (this.currentPage - 1) * this.perPage + 1;
-        const end = Math.min(start + this.perPage - 1, total);
-
         if (total === 0) {
-            this.resultsCount.textContent = 'No results';
+            this.resultsCount.textContent = "No results";
             return;
         }
+
+        const start = (this.currentPage - 1) * this.perPage + 1;
+        const end = Math.min(start + this.perPage - 1, total);
 
         this.resultsCount.textContent = `Showing ${start}-${end} of ${total} products`;
     }
 
+    /*-----------------------------------------------------------
+     | PRODUCT CARD
+     -----------------------------------------------------------*/
+    createProductCard(product) {
+        const card = document.createElement("div");
+        card.className = "product-card";
+        card.dataset.productId = product.id;
+
+        this.productCardImages.set(product.id, 0);
+
+        const firstImg = product.images?.[0]?.image || "https://via.placeholder.com/300";
+        const hasMultiple = product.images.length > 1;
+
+        card.innerHTML = `
+            <div class="product-card-image">
+                <img src="${firstImg}" alt="${product.name}">
+                <button class="card-action-button" data-product-id="${product.id}">
+                    <i class="fas fa-shopping-cart"></i>
+                </button>
+
+                ${hasMultiple ? `
+                    <button class="card-arrow card-arrow-left" data-direction="-1"><i class="fas fa-chevron-left"></i></button>
+                    <button class="card-arrow card-arrow-right" data-direction="1"><i class="fas fa-chevron-right"></i></button>
+                ` : ""}
+            </div>
+
+            <div class="product-card-info">
+                <h3>${product.name}</h3>
+                <div>${product.brand.name}</div>
+                <div class="product-card-price">$${product.price}</div>
+            </div>
+        `;
+
+        this.setupCardArrows(card, product);
+        this.setupCardActionButton(card, product);
+
+        card.addEventListener("click", (e) => {
+            if (e.target.closest("button")) return;
+            this.viewProduct(product.id);
+        });
+
+        return card;
+    }
+
+    setupCardArrows(card, product) {
+        if (product.images.length <= 1) return;
+        const imgEl = card.querySelector("img");
+
+        card.querySelectorAll(".card-arrow").forEach(btn => {
+            btn.addEventListener("click", e => {
+                e.stopPropagation();
+                const direction = parseInt(btn.dataset.direction);
+                this.navigateCardImage(product.id, direction, imgEl, product);
+            });
+        });
+    }
+
+    navigateCardImage(productId, direction, imgEl, product) {
+        const total = product.images.length;
+        let index = this.productCardImages.get(productId) || 0;
+
+        index = (index + direction + total) % total;
+        this.productCardImages.set(productId, index);
+
+        imgEl.src = product.images[index].image;
+    }
+
+    setupCardActionButton(card, product) {
+        const btn = card.querySelector(".card-action-button");
+        btn.addEventListener("click", e => {
+            e.stopPropagation();
+            this.addToCart(product);
+        });
+    }
+
+    /*-----------------------------------------------------------
+     | CART LOGIC
+     -----------------------------------------------------------*/
     addToCart(product) {
-        const existing = this.cartItems.find((item) => item.id === product.id);
-        if (existing) {
-            existing.quantity += 1;
-        } else {
+        const existing = this.cartItems.find(i => i.id === product.id);
+
+        if (existing) existing.quantity++;
+        else {
             this.cartItems.push({
                 id: product.id,
                 name: product.name,
                 price: product.price,
-                image: product.images?.[0]?.image || '',
-                quantity: 1,
+                image: product.images[0]?.image,
+                quantity: 1
             });
         }
 
         this.persistCartItems();
         this.updateCartCount();
-        this.showToast(`${product.name} added to cart`);
-    }
-
-    viewProduct(productId) {
-        const product = this.products.find((item) => item.id === productId);
-        if (!product) return;
-
-        localStorage.setItem('selectedProduct', JSON.stringify(product));
-        window.location.href = 'productpage.html';
-    }
-
-    loadCartItems() {
-        try {
-            const stored = localStorage.getItem('cartItems');
-            return stored ? JSON.parse(stored) : [];
-        } catch (error) {
-            console.error('Failed to load cart items', error);
-            return [];
-        }
-    }
-
-    persistCartItems() {
-        localStorage.setItem('cartItems', JSON.stringify(this.cartItems));
-    }
-
-    persistProductCatalog() {
-        localStorage.setItem('productCatalog', JSON.stringify(this.products));
+        this.showMessage(`${product.name} added to cart!`, "success");
     }
 
     updateCartCount() {
-        if (!this.cartCountElement) return;
-        const count = this.cartItems.reduce((total, item) => total + item.quantity, 0);
+        const count = this.cartItems.reduce((s, i) => s + i.quantity, 0);
         this.cartCountElement.textContent = count;
     }
 
-    showToast(message) {
-        if (!this.toastContainer) return;
-
-        const toast = document.createElement('div');
-        toast.className = 'toast';
-        toast.textContent = message;
-        this.toastContainer.appendChild(toast);
-
-        setTimeout(() => {
-            toast.remove();
-        }, 3000);
+    persistCartItems() {
+        localStorage.setItem("cartItems", JSON.stringify(this.cartItems));
     }
 
-    getMockProducts() {
-        return [
-            {
-                id: 'prd-001',
-                name: 'Wireless Noise-Canceling Headphones',
-                brand: { name: 'AudioTech' },
-                price: 299.99,
-                modelYear: 2024,
-                category: { name: 'Audio Equipment' },
-                description: 'Experience immersive sound with adaptive noise cancelation and 30-hour battery life.',
-                images: [{ image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=600&fit=crop' }],
-            },
-            {
-                id: 'prd-002',
-                name: 'Portable Bluetooth Speaker Pro',
-                brand: { name: 'SoundWave' },
-                price: 189.99,
-                modelYear: 2024,
-                category: { name: 'Audio Equipment' },
-                description: 'Compact yet powerful speaker with 360° audio and splash resistance.',
-                images: [{ image: 'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=600&h=600&fit=crop' }],
-            },
-            {
-                id: 'prd-003',
-                name: 'Studio Monitor Headphones',
-                brand: { name: 'Pulse' },
-                price: 219.99,
-                modelYear: 2023,
-                category: { name: 'Audio Equipment' },
-                description: 'Balanced studio monitors designed for mixing and long sessions.',
-                images: [{ image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&h=600&fit=crop' },
-                    { image: 'https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=600&h=600&fit=crop' }
-                ],
-            },
-            {
-                id: 'prd-004',
-                name: 'Gaming Headset X-Force',
-                brand: { name: 'NovaSound' },
-                price: 149.99,
-                modelYear: 2024,
-                category: { name: 'Gaming' },
-                description: 'Surround-sound gaming headset with noise-canceling mic.',
-                images: [{ image: 'https://images.unsplash.com/photo-1572536147248-ac59a8abfa4b?w=600&h=600&fit=crop' }],
-            },
-            {
-                id: 'prd-005',
-                name: 'Wireless Earbuds Elite',
-                brand: { name: 'AudioTech' },
-                price: 179.99,
-                modelYear: 2024,
-                category: { name: 'Audio Equipment' },
-                description: 'True wireless earbuds with ANC and wireless charging case.',
-                images: [{ image: 'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=600&h=600&fit=crop' }],
-            },
-            {
-                id: 'prd-006',
-                name: 'Smart Home Speaker Mini',
-                brand: { name: 'SoundWave' },
-                price: 129.99,
-                modelYear: 2023,
-                category: { name: 'Smart Home' },
-                description: 'Voice assistant speaker with room-filling sound.',
-                images: [{ image: 'https://images.unsplash.com/photo-1484708482671-9111ff987cc4?w=600&h=600&fit=crop' }],
-            },
-            {
-                id: 'prd-007',
-                name: 'Portable DJ Headphones',
-                brand: { name: 'Pulse' },
-                price: 159.99,
-                modelYear: 2022,
-                category: { name: 'Audio Equipment' },
-                description: 'Foldable DJ headphones with rotating cups and deep bass.',
-                images: [{ image: 'https://images.unsplash.com/photo-1466337105551-aa3ab789093c?w=600&h=600&fit=crop' }],
-            },
-            {
-                id: 'prd-008',
-                name: '360° Surround Speaker',
-                brand: { name: 'NovaSound' },
-                price: 249.99,
-                modelYear: 2024,
-                category: { name: 'Smart Home' },
-                description: 'Premium surround speaker with adaptive EQ.',
-                images: [{ image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=600&fit=crop' }],
-            },
-            {
-                id: 'prd-009',
-                name: 'Wireless Sport Earbuds',
-                brand: { name: 'AudioTech' },
-                price: 139.99,
-                modelYear: 2023,
-                category: { name: 'Audio Equipment' },
-                description: 'Sweat-resistant earbuds with secure fit for workouts.',
-                images: [{ image: 'https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=600&h=600&fit=crop' }],
-            },
-            {
-                id: 'prd-010',
-                name: 'Smart Soundbar Premium',
-                brand: { name: 'SoundWave' },
-                price: 329.99,
-                modelYear: 2024,
-                category: { name: 'Home Theater' },
-                description: 'Dolby Atmos soundbar with wireless subwoofer.',
-                images: [{ image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=600&h=600&fit=crop' }],
-            },
-            {
-                id: 'prd-011',
-                name: 'Classic Vinyl Headphones',
-                brand: { name: 'Pulse' },
-                price: 199.99,
-                modelYear: 2021,
-                category: { name: 'Audio Equipment' },
-                description: 'Retro-inspired headphones with warm analog tuning.',
-                images: [{ image: 'https://images.unsplash.com/photo-1614851099130-1c94251f2cfe?w=600&h=600&fit=crop' }],
-            },
-            {
-                id: 'prd-012',
-                name: 'Immersive Gaming Soundbar',
-                brand: { name: 'NovaSound' },
-                price: 279.99,
-                modelYear: 2024,
-                category: { name: 'Gaming' },
-                description: 'RGB-enabled gaming soundbar with virtual surround.',
-                images: [{ image: 'https://images.unsplash.com/photo-1472437774355-71ab6752b434?w=600&h=600&fit=crop' }],
-            },
-        ];
+    loadCartItems() {
+        return JSON.parse(localStorage.getItem("cartItems") || "[]");
+    }
+
+    /*-----------------------------------------------------------
+     | PRODUCT VIEW PAGE
+     -----------------------------------------------------------*/
+    viewProduct(productId) {
+        const item = this.products.find(p => p.id === productId);
+        localStorage.setItem("selectedProduct", JSON.stringify(item));
+        window.location.href = "productpage.html";
+    }
+
+    /*-----------------------------------------------------------
+     | UI MESSAGE
+     -----------------------------------------------------------*/
+    showMessage(text, type) {
+        const msg = document.createElement("div");
+        msg.className = "toast";
+        msg.textContent = text;
+
+        document.body.appendChild(msg);
+
+        setTimeout(() => msg.remove(), 3000);
+    }
+
+    attachEvents() {
+        this.clearFiltersBtn.addEventListener("click", () => {
+            this.activeBrands.clear();
+            this.brandFiltersContainer.querySelectorAll("input").forEach(cb => cb.checked = false);
+            this.applyFilters();
+        });
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    new CategoryPage();
-});
-
+document.addEventListener("DOMContentLoaded", () => new CategoryPage());

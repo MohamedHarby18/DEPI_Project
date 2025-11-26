@@ -89,11 +89,11 @@
     font-size: 0.95rem;
 }
 
-.filter-option input {
-    accent-color: #0f4c81;
-    width: 18px;
-    height: 18px;
-}
+    .filter-option input {
+        accent-color: #0f4c81;
+        width: 18px;
+        height: 18px;
+    }
 
 .category-products-wrapper {
     background: #fff;
@@ -146,10 +146,10 @@
     transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.category-products-wrapper .product-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 20px 45px rgba(15, 76, 129, 0.15);
-}
+    .category-products-wrapper .product-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 45px rgba(15, 76, 129, 0.15);
+    }
 
 .category-products-wrapper .product-card-image {
     flex: 0 0 200px;
@@ -170,24 +170,24 @@
     flex-wrap: wrap;
 }
 
-.pagination button {
-    min-width: 44px;
-    height: 44px;
-    border-radius: 12px;
-    border: 1px solid #d7e3ff;
-    background: #fff;
-    color: #0f4c81;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
+    .pagination button {
+        min-width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        border: 1px solid #d7e3ff;
+        background: #fff;
+        color: #0f4c81;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
 
-.pagination button.active,
-.pagination button:hover {
-    background: #0f4c81;
-    color: #fff;
-    border-color: #0f4c81;
-}
+        .pagination button.active,
+        .pagination button:hover {
+            background: #0f4c81;
+            color: #fff;
+            border-color: #0f4c81;
+        }
 
 @media (max-width: 1024px) {
     .category-layout {
@@ -240,14 +240,17 @@
         opacity: 0;
         transform: translateY(-10px);
     }
+
     10% {
         opacity: 1;
         transform: translateY(0);
     }
+
     90% {
         opacity: 1;
         transform: translateY(0);
     }
+
     100% {
         opacity: 0;
         transform: translateY(-10px);
