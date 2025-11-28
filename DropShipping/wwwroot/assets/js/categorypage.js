@@ -1,9 +1,10 @@
 ﻿class CategoryPage {
     constructor() {
-        this.products = [];        // Loaded from API
-        this.filteredProducts = [];
+        this.products = [];
         this.currentPage = 1;
-        this.perPage = 9;
+        this.pageSize = 9;
+        this.totalCount = 0;
+        this.categoryId = this.getCategoryIdFromUrl();
         this.activeBrands = new Set();
         this.cartItems = this.loadCartItems();
         this.productCardImages = new Map();
@@ -15,6 +16,7 @@
         this.resultsCount = document.getElementById('resultsCount');
         this.clearFiltersBtn = document.getElementById('clearFilters');
         this.cartCountElement = document.getElementById('cartCount');
+        this.categoryTitle = document.getElementById('categoryTitle');
 
         this.init();
     }
@@ -25,23 +27,73 @@
         await this.loadProductsFromApi();
         await this.renderBrandFilters();
         this.attachEvents();
-        this.applyFilters();
         this.updateCartCount();
+
+        if (this.categoryId) {
+            this.loadCategoryName();
+        }
+    }
+
+    getCategoryIdFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('categoryId');
+    }
+
+    async loadCategoryName() {
+        try {
+            // Try to find category name from the nav or fetch it
+            // For now, we'll just fetch all categories and find the one matching the ID
+            // Optimization: The backend could return the category name in the product response or a separate endpoint
+            const response = await fetch('/api/Category');
+            if (response.ok) {
+                const categories = await response.json();
+                const category = categories.find(c => c.id === this.categoryId);
+                if (category && this.categoryTitle) {
+                    this.categoryTitle.textContent = category.name;
+                }
+            }
+        } catch (error) {
+            console.error("Error loading category name:", error);
+        }
     }
 
     /*-----------------------------------------------------------
      |  LOAD PRODUCTS FROM API
      -----------------------------------------------------------*/
-    async loadProductsFromApi() {
+    async loadProductsFromApi(page = 1) {
         try {
-            const response = await fetch('/api/Products');
+            this.currentPage = page;
+            this.showLoading();
+
+            const params = new URLSearchParams();
+            params.append('PageIndex', this.currentPage);
+            params.append('PageSize', this.pageSize);
+
+            if (this.categoryId) {
+                params.append('CategoryId', this.categoryId);
+            }
+
+            // Note: Backend currently supports single BrandId. 
+            // If we have active brands, we'll send the first one for now.
+            if (this.activeBrands.size > 0) {
+                const brandId = this.getBrandIdByName([...this.activeBrands][0]);
+                if (brandId) {
+                    params.append('BrandId', brandId);
+                }
+            }
+
+            const response = await fetch(`/api/Products?${params.toString()}`);
 
             if (!response.ok) {
                 throw new Error(`Failed to load products. Status: ${response.status}`);
             }
 
             const data = await response.json();
-            const apiProducts = data.result;
+
+            // Handle PaginatedResult structure
+            const apiProducts = data.result || [];
+            this.totalCount = data.totalCount || 0;
+            this.currentPage = data.pageIndex || page;
 
             this.products = apiProducts.map(p => ({
                 id: p.id,
@@ -49,19 +101,24 @@
                 price: p.price,
                 brand: { name: p.brandName },
                 category: { name: p.categoryName },
-                images: p.images.map(img => ({ image: img })),
+                categoryId: p.categoryId, // Added categoryId
+                images: p.images ? p.images.map(img => ({ image: img })) : [],
                 modelYear: p.modelYear || "N/A",
-                description: ""
+                description: p.description || "No description available."
             }));
 
-            this.filteredProducts = [...this.products];
-
-            localStorage.setItem('productCatalog', JSON.stringify(this.products));
+            this.renderProducts();
+            this.renderPagination();
+            this.updateResultsCount();
 
         } catch (error) {
             console.error("Error loading products:", error);
-            this.showMessage("Failed loading products from server", "error");
+            this.productsGrid.innerHTML = `<p class="error-message">Failed to load products. Please try again later.</p>`;
         }
+    }
+
+    showLoading() {
+        this.productsGrid.innerHTML = '<div class="loading-spinner">Loading...</div>';
     }
 
     /*-----------------------------------------------------------
@@ -71,10 +128,18 @@
         if (!this.brandFiltersContainer) return;
 
         try {
-            const response = await fetch('/api/Brands');
+            console.log("Rendering brand filters. CategoryId:", this.categoryId);
+            let url = '/api/Brands';
+            if (this.categoryId) {
+                url += `?categoryId=${this.categoryId}`;
+            }
+            console.log("Fetching brands from:", url);
+
+            const response = await fetch(url);
             if (!response.ok) throw new Error("Failed to load brands");
 
             const brands = await response.json();
+            this.brandsMap = new Map(brands.map(b => [b.name, b.id]));
 
             const sortedBrands = brands.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -90,111 +155,124 @@
             this.brandFiltersContainer.querySelectorAll("input").forEach(cb => {
                 cb.addEventListener("change", (e) => {
                     const { value, checked } = e.target;
-                    if (checked) this.activeBrands.add(value);
-                    else this.activeBrands.delete(value);
 
-                    this.applyFilters();
+                    // Current backend limitation: Single brand filter
+                    // If checking a new one, uncheck others
+                    if (checked) {
+                        this.activeBrands.clear();
+                        this.brandFiltersContainer.querySelectorAll("input").forEach(otherCb => {
+                            if (otherCb !== cb) otherCb.checked = false;
+                        });
+                        this.activeBrands.add(value);
+                    } else {
+                        this.activeBrands.delete(value);
+                    }
+
+                    this.loadProductsFromApi(1); // Reload from page 1
                 });
             });
 
         } catch (error) {
-            console.error("Brand load failed. Using fallback:", error);
-            this.renderBrandFiltersFromProducts();
+            console.error("Brand load failed:", error);
         }
     }
 
-    renderBrandFiltersFromProducts() {
-        const uniqueBrands = [...new Set(this.products.map(p => p.brand.name))].sort();
-
-        this.brandFiltersContainer.innerHTML = uniqueBrands
-            .map(brand => `
-                <label class="filter-option">
-                    <input type="checkbox" value="${brand}">
-                    <span>${brand}</span>
-                </label>
-            `)
-            .join('');
-
-        this.brandFiltersContainer.querySelectorAll("input").forEach(cb => {
-            cb.addEventListener("change", e => {
-                const { value, checked } = e.target;
-                checked ? this.activeBrands.add(value) : this.activeBrands.delete(value);
-                this.applyFilters();
-            });
-        });
+    getBrandIdByName(name) {
+        return this.brandsMap ? this.brandsMap.get(name) : null;
     }
 
     /*-----------------------------------------------------------
-     | FILTER + PAGINATION
+     | RENDER PRODUCTS
      -----------------------------------------------------------*/
-    applyFilters() {
-        const useBrand = this.activeBrands.size > 0;
-
-        this.filteredProducts = useBrand
-            ? this.products.filter(p => this.activeBrands.has(p.brand.name))
-            : [...this.products];
-
-        this.currentPage = 1;
-        this.renderProducts();
-        this.renderPagination();
-        this.updateResultsCount();
-    }
-
     renderProducts() {
-        const start = (this.currentPage - 1) * this.perPage;
-        const items = this.filteredProducts.slice(start, start + this.perPage);
-
         this.productsGrid.innerHTML = "";
 
-        if (items.length === 0) {
+        if (this.products.length === 0) {
             this.productsGrid.innerHTML = `<p>No products found.</p>`;
             return;
         }
 
-        items.forEach(product => {
+        this.products.forEach(product => {
             const card = this.createProductCard(product);
             this.productsGrid.appendChild(card);
         });
     }
 
+    /*-----------------------------------------------------------
+     | PAGINATION
+     -----------------------------------------------------------*/
     renderPagination() {
-        const totalPages = Math.ceil(this.filteredProducts.length / this.perPage);
+        const totalPages = Math.ceil(this.totalCount / this.pageSize);
         this.pagination.innerHTML = "";
 
-        const addBtn = (label, page, disabled = false) => {
+        if (totalPages <= 1) return;
+
+        const addBtn = (label, page, disabled = false, isActive = false) => {
             const btn = document.createElement("button");
             btn.textContent = label;
             btn.disabled = disabled;
-            if (page === this.currentPage) btn.classList.add("active");
+            if (isActive) btn.classList.add("active");
 
             btn.addEventListener("click", () => {
-                this.currentPage = page;
-                this.renderProducts();
-                this.renderPagination();
-                this.updateResultsCount();
+                if (!disabled && page !== this.currentPage) {
+                    this.loadProductsFromApi(page);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
             });
 
             this.pagination.appendChild(btn);
         };
 
-        addBtn("‹", Math.max(1, this.currentPage - 1), this.currentPage === 1);
+        // Previous Button
+        addBtn("‹", this.currentPage - 1, this.currentPage === 1);
 
-        for (let i = 1; i <= totalPages; i++) addBtn(i, i);
+        // Page Numbers
+        // Simple logic: show all pages if <= 7, otherwise show range around current
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) {
+                addBtn(i, i, false, i === this.currentPage);
+            }
+        } else {
+            // Always show first
+            addBtn(1, 1, false, 1 === this.currentPage);
 
-        addBtn("›", Math.min(totalPages, this.currentPage + 1), this.currentPage === totalPages);
+            if (this.currentPage > 3) {
+                const span = document.createElement("span");
+                span.textContent = "...";
+                this.pagination.appendChild(span);
+            }
+
+            const start = Math.max(2, this.currentPage - 1);
+            const end = Math.min(totalPages - 1, this.currentPage + 1);
+
+            for (let i = start; i <= end; i++) {
+                addBtn(i, i, false, i === this.currentPage);
+            }
+
+            if (this.currentPage < totalPages - 2) {
+                const span = document.createElement("span");
+                span.textContent = "...";
+                this.pagination.appendChild(span);
+            }
+
+            // Always show last
+            addBtn(totalPages, totalPages, false, totalPages === this.currentPage);
+        }
+
+        // Next Button
+        addBtn("›", this.currentPage + 1, this.currentPage === totalPages);
     }
 
     updateResultsCount() {
-        const total = this.filteredProducts.length;
-        if (total === 0) {
+        if (this.totalCount === 0) {
             this.resultsCount.textContent = "No results";
             return;
         }
 
-        const start = (this.currentPage - 1) * this.perPage + 1;
-        const end = Math.min(start + this.perPage - 1, total);
+        const start = (this.currentPage - 1) * this.pageSize + 1;
+        const end = Math.min(start + this.pageSize - 1, this.totalCount);
 
-        this.resultsCount.textContent = `Showing ${start}-${end} of ${total} products`;
+        this.resultsCount.textContent = `Showing ${start}-${end} of ${this.totalCount} products`;
     }
 
     /*-----------------------------------------------------------
@@ -208,7 +286,7 @@
         this.productCardImages.set(product.id, 0);
 
         const firstImg = product.images?.[0]?.image || "https://via.placeholder.com/300";
-        const hasMultiple = product.images.length > 1;
+        const hasMultiple = product.images && product.images.length > 1;
 
         card.innerHTML = `
             <div class="product-card-image">
@@ -242,7 +320,7 @@
     }
 
     setupCardArrows(card, product) {
-        if (product.images.length <= 1) return;
+        if (!product.images || product.images.length <= 1) return;
         const imgEl = card.querySelector("img");
 
         card.querySelectorAll(".card-arrow").forEach(btn => {
@@ -296,7 +374,9 @@
 
     updateCartCount() {
         const count = this.cartItems.reduce((s, i) => s + i.quantity, 0);
-        this.cartCountElement.textContent = count;
+        if (this.cartCountElement) {
+            this.cartCountElement.textContent = count;
+        }
     }
 
     persistCartItems() {
@@ -312,8 +392,10 @@
      -----------------------------------------------------------*/
     viewProduct(productId) {
         const item = this.products.find(p => p.id === productId);
-        localStorage.setItem("selectedProduct", JSON.stringify(item));
-        window.location.href = "productpage.html";
+        if (item) {
+            localStorage.setItem("selectedProduct", JSON.stringify(item));
+            window.location.href = "productpage.html";
+        }
     }
 
     /*-----------------------------------------------------------
@@ -323,6 +405,7 @@
         const msg = document.createElement("div");
         msg.className = "toast";
         msg.textContent = text;
+        if (type === 'error') msg.style.backgroundColor = '#ff4444';
 
         document.body.appendChild(msg);
 
@@ -330,11 +413,13 @@
     }
 
     attachEvents() {
-        this.clearFiltersBtn.addEventListener("click", () => {
-            this.activeBrands.clear();
-            this.brandFiltersContainer.querySelectorAll("input").forEach(cb => cb.checked = false);
-            this.applyFilters();
-        });
+        if (this.clearFiltersBtn) {
+            this.clearFiltersBtn.addEventListener("click", () => {
+                this.activeBrands.clear();
+                this.brandFiltersContainer.querySelectorAll("input").forEach(cb => cb.checked = false);
+                this.loadProductsFromApi(1);
+            });
+        }
     }
 }
 

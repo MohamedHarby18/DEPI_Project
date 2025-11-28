@@ -1,4 +1,4 @@
-﻿using BAL.DTOs.BrandDTOs;
+using BAL.DTOs.BrandDTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +14,7 @@ namespace BAL.Services.Interfaces
         Task DeleteAsync(Guid id);
 
         Task<IEnumerable<BrandDTO>> GetAllAsync();
+        Task<IEnumerable<BrandDTO>> GetBrandsByCategoryId(Guid categoryId);
 
         Task<BrandDTO> GetByIdAsync(Guid id);
 

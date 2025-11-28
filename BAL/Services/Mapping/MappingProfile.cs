@@ -35,7 +35,10 @@ namespace BAL.Services.Mapping
                 .ForMember(dest => dest.BrandName, opt => opt.MapFrom(x => x.Brand.Name));
             CreateMap<Product, ProductDTO>()
                .ForMember(dest=>dest.CategoryName,opt=>opt.MapFrom(x=>x.Category.Name))
+               .ForMember(dest=>dest.CategoryId,opt=>opt.MapFrom(x=>x.CategoryId))
                .ForMember(dest=>dest.BrandName,opt=>opt.MapFrom(x=>x.Brand.Name))
+               .ForMember(dest=>dest.ModelYear,opt=>opt.MapFrom(x=>x.ModelYear))
+               .ForMember(dest=>dest.Description,opt=>opt.MapFrom(x=>x.Description))
                 .ForMember(dest => dest.Images, opt => opt.MapFrom<ProductImagesUrlResolver2>());
             
             //Category Mapping
@@ -103,7 +106,6 @@ namespace BAL.Services.Mapping
 .ForMember(dest => dest.IsActive, opt => opt.MapFrom(src => src.User.IsActive))
 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.User.CreatedAt))
 .ReverseMap();
-
 
 
 

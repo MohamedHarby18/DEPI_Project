@@ -1,4 +1,4 @@
-﻿using DAL.Models;
+using DAL.Models;
 using DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -27,6 +27,22 @@ namespace DAL.Repositories
         {
            var brands= await dbContext.Brands.Where(x=>!x.IsDeleted).ToListAsync();
             return brands;
+        }
+
+        public async Task<IEnumerable<Brand>> GetBrandsByCategoryId(Guid categoryId)
+        {
+            var brandIds = await dbContext.Products
+                .Where(p => p.CategoryId == categoryId && !p.IsDeleted)
+                .Select(p => p.BrandId)
+                .Distinct()
+                .ToListAsync();
+
+            if (!brandIds.Any())
+                return new List<Brand>();
+
+            return await dbContext.Brands
+                .Where(b => brandIds.Contains(b.Id) && !b.IsDeleted)
+                .ToListAsync();
         }
 
         public async Task<Brand> GetById(Guid id)
