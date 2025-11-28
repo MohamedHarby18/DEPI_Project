@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using BAL.DTOs.BrandDTOs;
 using BAL.Exceptions;
 using BAL.Services.Interfaces;
@@ -34,6 +34,12 @@ namespace BAL.Services
         {
       
             var brands = await brandRepository.GetAll();
+            return mapper.Map<IEnumerable<BrandDTO>>(brands);
+        }
+
+        public async Task<IEnumerable<BrandDTO>> GetBrandsByCategoryId(Guid categoryId)
+        {
+            var brands = await brandRepository.GetBrandsByCategoryId(categoryId);
             return mapper.Map<IEnumerable<BrandDTO>>(brands);
         }
 
