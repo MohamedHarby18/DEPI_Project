@@ -1,5 +1,6 @@
 ﻿<!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -38,14 +39,14 @@
                     </div>
                 </div>
 
-                <div class="container">
+    <div class="container">
 
-                    <!-- HEADER -->
-                    <header class="header">
-                        <div class="header-left">
-                            <h1>Categories — Admin</h1>
-                            <div class="muted" style="font-size:13px;margin-top:6px;">Search & manage categories (API-driven)</div>
-                        </div>
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-left">
+                <h1>Categories — Admin</h1>
+                <div class="muted" style="font-size:13px;margin-top:6px;">Search & manage categories (API-driven)</div>
+            </div>
 
                         <div class="header-right">
                             <div class="search" title="Search">
@@ -56,26 +57,26 @@
                                 <input id="searchInput" placeholder="Search term" />
                             </div>
 
-                            <button id="addProductBtn" class="btn">+ Add</button>
+                <button id="addProductBtn" class="btn">+ Add</button>
 
-                            <div class="user-profile" style="margin-left:8px;">
-                                <div class="user-avatar">M</div>
-                                <div class="muted" style="font-size:14px;">Mohamed</div>
-                            </div>
-                        </div>
-                    </header>
+                <div class="user-profile" style="margin-left:8px;">
+                    <div class="user-avatar">M</div>
+                    <div class="muted" style="font-size:14px;">Mohamed</div>
+                </div>
+            </div>
+        </header>
 
-                    <table aria-label="Categories table">
-                        <thead>
-                            <tr>
-                                <th>Category Name</th>
-                                <th style="text-align:right">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody">
-                            <!-- Rows loaded dynamically via AdminCategories.js -->
-                        </tbody>
-                    </table>
+        <table aria-label="Categories table">
+            <thead>
+                <tr>
+                    <th>Category Name</th>
+                    <th style="text-align:right">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="tbody">
+                <!-- Rows loaded dynamically via AdminCategories.js -->
+            </tbody>
+        </table>
 
                     <div id="pagination" style="margin-top:20px;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;"></div>
                 </div>
@@ -128,4 +129,9 @@
 
                 <script src="js/AdminCategories.js"></script>
     </body>
+</html>
+    <script src="assets/js/api.js"></script>
+    <script src="js/AdminCategories.js"></script>
+</body>
+
 </html>

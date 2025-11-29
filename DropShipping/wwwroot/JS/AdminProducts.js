@@ -272,6 +272,7 @@ modalForm.addEventListener('submit', async e => {
         const res = await fetch(url, {
             headers: authHeaders(),
             method: currentEditId ? 'PUT' : 'POST',
+            headers: getAuthHeaders(),
             body: formData
        
           
