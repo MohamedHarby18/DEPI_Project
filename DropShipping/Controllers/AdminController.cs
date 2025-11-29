@@ -8,7 +8,7 @@ namespace PAL.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class AdminController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
