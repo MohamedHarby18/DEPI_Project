@@ -21,17 +21,13 @@ namespace PAL.Controllers
         private readonly IConfiguration _config;
         private readonly DropShoppingDbContext _context;
 
-
-<<<<<<< HEAD
-        public AuthController(UserManager<User> userManager, IConfiguration config,DropShoppingDbContext context)
-=======
         public AuthController(UserManager<User> userManager, IConfiguration config, DropShoppingDbContext context)
->>>>>>> 34571b9042a52e3bd19a088e590a50dc4aafb64c
         {
             _userManager = userManager;
             _config = config;
             _context = context;
         }
+
         [HttpPost("signup")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
@@ -55,32 +51,11 @@ namespace PAL.Controllers
 
             var result = await _userManager.CreateAsync(user, dto.Password);
 
-
-
-
-
             if (!result.Succeeded)
                 return BadRequest(result.Errors);
 
             // Create Dropshipper row if needed
             var User = await _userManager.FindByEmailAsync(user.Email);
-<<<<<<< HEAD
-         
-                var dropshipper = new Dropshipper
-                {
-                    UserId = User.Id,
-                    User = User,
-                    Wallet = new Wallet()
-                };
-            
-           
-                _context.Dropshippers.Add(dropshipper);
-                await _context.SaveChangesAsync();
-           
-              
-            
-=======
-
 
             var dropshipper = new Dropshipper
             {
@@ -89,13 +64,8 @@ namespace PAL.Controllers
                 Wallet = new Wallet()
             };
 
-
             _context.Dropshippers.Add(dropshipper);
             await _context.SaveChangesAsync();
-
-
-
->>>>>>> 34571b9042a52e3bd19a088e590a50dc4aafb64c
 
             return Ok(new { Message = "Account created successfully!" });
         }
@@ -104,7 +74,9 @@ namespace PAL.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDTO dto)
         {
-            var user = await _userManager.FindByEmailAsync(dto.Email);
+            var user = await _userManager.Users
+                .Include(u => u.Dropshipper)
+                .FirstOrDefaultAsync(u => u.Email == dto.Email);
 
             if (user == null)
                 return Unauthorized("Invalid email or password");
@@ -123,7 +95,6 @@ namespace PAL.Controllers
                 UserType = user.Dropshipper != null ? "DropShipper" : "Admin"
             });
         }
-
 
         // ------------------- JWT GENERATION ----------------------
         private string GenerateJwtToken(User user)
