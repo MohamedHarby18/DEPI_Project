@@ -45,7 +45,7 @@
             let url = '/api/Products';
             if (q) url += `?SearchTerm=${encodeURIComponent(q)}`;
 
-            const response = await fetch(url);
+            const response = await fetch(url, { headers: getAuthHeaders() });
 
             if (!response.ok) {
                 throw new Error(`Failed to load products. Status: ${response.status}`);
@@ -82,7 +82,7 @@
         if (!this.brandFiltersContainer) return;
 
         try {
-            const response = await fetch('/api/Brands');
+            const response = await fetch('/api/Brands', { headers: getAuthHeaders() });
             if (!response.ok) throw new Error("Failed to load brands");
 
             const brands = await response.json();
