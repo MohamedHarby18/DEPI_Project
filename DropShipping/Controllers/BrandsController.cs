@@ -10,17 +10,19 @@ namespace PAL.Controllers
     [ApiController]
     [Route("api/[controller]")]
     [Authorize]
-    public class BrandsController(IBrandService brandService):ControllerBase
+    public class BrandsController(IBrandService brandService) : ControllerBase
     {
 
         [HttpGet]
+        [AllowAnonymous]
         public async Task<IActionResult> GetAll()
         {
-            var Brands= await brandService.GetAllAsync();
+            var Brands = await brandService.GetAllAsync();
             return Ok(Brands);
         }
 
         [HttpGet("{id}")]
+        [AllowAnonymous]
         public async Task<IActionResult> GetById(Guid id) => Ok(await brandService.GetByIdAsync(id));
 
 
@@ -28,7 +30,7 @@ namespace PAL.Controllers
         public async Task<IActionResult> Add([FromForm] BrandCreateDTO createDTO)
         {
             await brandService.AddAsync(createDTO);
-           return Created();
+            return Created();
         }
 
         [HttpDelete("{id}")]

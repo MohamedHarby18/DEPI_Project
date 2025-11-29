@@ -25,8 +25,8 @@ class NavigationCategories {
                 return;
             }
 
-            // Fetch categories from API
-            const response = await fetch(this.apiBaseUrl);
+            // Fetch categories from API (include auth token if present)
+            const response = await fetch(this.apiBaseUrl, { headers: getAuthHeaders() });
 
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);

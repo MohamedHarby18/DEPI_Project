@@ -150,33 +150,34 @@
     </div>
   </section>
   <section class="new-products">
-      <div class="product-grid" id="newProductsContainer">
-          <h2>Products</h2>
-          <a href="#" class="see-more">See more</a>
-      </div>
+    <div class="product-grid" id="newProductsContainer">
+      <h2>Products</h2>
+      <a href="#" class="see-more">See more</a>
+    </div>
   </section>
 
   <footer class="footer">
     <p>© 2025 Dropshipping. All rights reserved.</p>
   </footer>
+  <script src="./assets/js/api.js"></script>
   <script>
-      async function loadNewestProducts() {
-          const container = document.getElementById("newProductsContainer");
+    async function loadNewestProducts() {
+      const container = document.getElementById("newProductsContainer");
 
-          try {
-              const response = await fetch("https://localhost:7000/api/Products?pageIndex=1&pageSize=4");
-              const data = await response.json();
+      try {
+        const response = await fetch("https://localhost:7000/api/Products?pageIndex=1&pageSize=4", { headers: getAuthHeaders() });
+        const data = await response.json();
 
-              const products = data.result;
+        const products = data.result;
 
-              // Remove old static items if they exist
-              container.querySelectorAll(".product-item").forEach(item => item.remove());
+        // Remove old static items if they exist
+        container.querySelectorAll(".product-item").forEach(item => item.remove());
 
-              products.forEach(product => {
-                  const item = document.createElement("div");
-                  item.classList.add("product-item");
+        products.forEach(product => {
+          const item = document.createElement("div");
+          item.classList.add("product-item");
 
-                  item.innerHTML = `
+          item.innerHTML = `
                   <div class="product-item-image">
                       <img src="${product.images?.[0] ?? './images/default.png'}" alt="${product.name}" />
                   </div>
@@ -186,15 +187,28 @@
                   </div>
               `;
 
-                  container.appendChild(item);
-              });
+          container.appendChild(item);
+        });
 
-          } catch (error) {
-              console.error("Error loading products:", error);
-          }
+      } catch (error) {
+        console.error("Error loading products:", error);
       }
+    }
 
-      document.addEventListener("DOMContentLoaded", loadNewestProducts);
+    document.addEventListener("DOMContentLoaded", loadNewestProducts);
+    // header search behavior: redirect to category page with query q
+    (function () {
+      const input = document.querySelector('.search-bar input');
+      const btn = document.querySelector('.search-bar button');
+      if (!input) return;
+      const submit = () => {
+        const term = (input.value || '').trim();
+        if (!term) return;
+        window.location.href = `categorypage.html?q=${encodeURIComponent(term)}`;
+      };
+      btn?.addEventListener('click', submit);
+      input.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
+    })();
   </script>
   <script src="./assets/js/navigation.js"></script>
   <script src="./assets/js/cart.js"></script>

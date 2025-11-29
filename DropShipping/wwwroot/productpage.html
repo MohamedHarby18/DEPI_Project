@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,52 +11,71 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
+
 <body>
     <header class="main-header">
-    <div class="container">
-        <!-- Logo -->
-        <div class="logo">
-            <div class="circle"></div>
-            <a href="index.html" class="headName"><h1>DropZone</h1></a>
-        </div>
-
-        <!-- Search Bar -->
-        <div class="search-bar">
-            <input type="text" placeholder="Search product ..." />
-            <button><i class="fa fa-search"></i></button>
-        </div>
-
-        <div class="right-section">
-            <div class="cart">
-                <a href="ShoppingCart.html"><i class="fa fa-shopping-basket"></i></a>
-                <span class="cart-count" id="cartCount">0</span>
+        <div class="container">
+            <!-- Logo -->
+            <div class="logo">
+                <div class="circle"></div>
+                <a href="index.html" class="headName">
+                    <h1>DropZone</h1>
+                </a>
             </div>
-            <a href="#" class="login-link">Logout</a>
+
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <input type="text" placeholder="Search product ..." />
+                <button><i class="fa fa-search"></i></button>
+            </div>
+
+            <div class="right-section">
+                <div class="cart">
+                    <a href="ShoppingCart.html"><i class="fa fa-shopping-basket"></i></a>
+                    <span class="cart-count" id="cartCount">0</span>
+                </div>
+                <a href="#" class="login-link">Logout</a>
+            </div>
         </div>
-    </div>
 
-    <nav class="main-nav">
-        <ul>
-            <li class="dropdown">
-                <a href="#">All Products <i class="fa fa-caret-down"></i></a>
-                <ul class="dropdown-menu">
-                    <li><a href="#">Phones</a></li>
-                    <li><a href="#">Laptops</a></li>
-                    <li><a href="#">Headphones</a></li>
-                    <li><a href="#">Chargers</a></li>
-                    <li><a href="#">Cables</a></li>
-                    <li><a href="#">TVs</a></li>
-                    <li><a href="#">Home Appliances</a></li>
-                    <li><a href="#">Smartwatches</a></li>
-                </ul>
-            </li>
+        <nav class="main-nav">
+            <ul>
+                <li class="dropdown">
+                    <a href="#">All Products <i class="fa fa-caret-down"></i></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Phones</a></li>
+                        <li><a href="#">Laptops</a></li>
+                        <li><a href="#">Headphones</a></li>
+                        <li><a href="#">Chargers</a></li>
+                        <li><a href="#">Cables</a></li>
+                        <li><a href="#">TVs</a></li>
+                        <li><a href="#">Home Appliances</a></li>
+                        <li><a href="#">Smartwatches</a></li>
+                    </ul>
+                </li>
 
-            <li><a href="#">New Products</a></li>
-            <li><a href="#">Orders</a></li>
-            <li><a href="#">Profile</a></li>
-        </ul>
-    </nav>
-</header>
+                <li><a href="#">New Products</a></li>
+                <li><a href="#">Orders</a></li>
+                <li><a href="#">Profile</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <script>
+        // header search behavior: redirect user to listing page with q
+        (function () {
+            const input = document.querySelector('.search-bar input');
+            const btn = document.querySelector('.search-bar button');
+            if (!input) return;
+            const submit = () => {
+                const term = (input.value || '').trim();
+                if (!term) return;
+                window.location.href = `categorypage.html?q=${encodeURIComponent(term)}`;
+            };
+            btn?.addEventListener('click', submit);
+            input.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
+        })();
+    </script>
 
     <div class="container1">
         <!-- Main Product Section -->
@@ -132,4 +152,5 @@
     <script src="assets/js/product.js"></script>
     <script src="./assets/js/cart.js"></script>
 </body>
+
 </html>
