@@ -22,11 +22,7 @@ namespace PAL.Controllers
         private readonly DropShoppingDbContext _context;
 
 
-<<<<<<< HEAD
-        public AuthController(UserManager<User> userManager, IConfiguration config,DropShoppingDbContext context)
-=======
         public AuthController(UserManager<User> userManager, IConfiguration config, DropShoppingDbContext context)
->>>>>>> 34571b9042a52e3bd19a088e590a50dc4aafb64c
         {
             _userManager = userManager;
             _config = config;
@@ -63,39 +59,18 @@ namespace PAL.Controllers
                 return BadRequest(result.Errors);
 
             // Create Dropshipper row if needed
-            var User = await _userManager.FindByEmailAsync(user.Email);
-<<<<<<< HEAD
-         
-                var dropshipper = new Dropshipper
-                {
-                    UserId = User.Id,
-                    User = User,
-                    Wallet = new Wallet()
-                };
-            
-           
-                _context.Dropshippers.Add(dropshipper);
-                await _context.SaveChangesAsync();
-           
-              
-            
-=======
 
+            var createdUser = await _userManager.FindByEmailAsync(user.Email);
 
             var dropshipper = new Dropshipper
             {
-                UserId = User.Id,
-                User = User,
+                UserId = createdUser.Id,
+                User = createdUser,
                 Wallet = new Wallet()
             };
 
-
             _context.Dropshippers.Add(dropshipper);
             await _context.SaveChangesAsync();
-
-
-
->>>>>>> 34571b9042a52e3bd19a088e590a50dc4aafb64c
 
             return Ok(new { Message = "Account created successfully!" });
         }

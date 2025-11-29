@@ -22,7 +22,13 @@
     async init() {
         if (!this.productsGrid) return;
 
-        await this.loadProductsFromApi();
+        // If a search query (q) exists in the URL, use it to pre-populate the search input
+        this.searchInput = document.querySelector('.search-bar input');
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialQuery = (urlParams.get('q') || '').trim();
+        if (this.searchInput && initialQuery) this.searchInput.value = initialQuery;
+
+        await this.loadProductsFromApi(initialQuery);
         await this.renderBrandFilters();
         this.attachEvents();
         this.applyFilters();
@@ -32,9 +38,14 @@
     /*-----------------------------------------------------------
      |  LOAD PRODUCTS FROM API
      -----------------------------------------------------------*/
-    async loadProductsFromApi() {
+    async loadProductsFromApi(searchTerm = '') {
         try {
-            const response = await fetch('/api/Products');
+            // build url with optional search term
+            const q = (searchTerm || '').trim();
+            let url = '/api/Products';
+            if (q) url += `?SearchTerm=${encodeURIComponent(q)}`;
+
+            const response = await fetch(url);
 
             if (!response.ok) {
                 throw new Error(`Failed to load products. Status: ${response.status}`);
@@ -335,6 +346,30 @@
             this.brandFiltersContainer.querySelectorAll("input").forEach(cb => cb.checked = false);
             this.applyFilters();
         });
+        // wire up search input (debounced)
+        if (this.searchInput) {
+            let timer = null;
+            const doSearch = () => {
+                const term = (this.searchInput.value || '').trim();
+                // update URL param without reloading
+                const params = new URLSearchParams(window.location.search);
+                if (term) params.set('q', term); else params.delete('q');
+                history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`);
+
+                // reload products from server using new term
+                clearTimeout(timer);
+                timer = setTimeout(async () => {
+                    await this.loadProductsFromApi(term);
+                    this.applyFilters();
+                }, 350);
+            };
+
+            this.searchInput.addEventListener('input', doSearch);
+            // also support pressing Enter
+            this.searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') doSearch();
+            });
+        }
     }
 }
 
