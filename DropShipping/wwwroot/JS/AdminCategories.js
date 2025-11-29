@@ -57,7 +57,7 @@ function renderTable(categories) {
 
 async function fetchAndRender() {
     try {
-        const res = await fetch(API_BASE);
+        const res = await fetch(API_BASE, { headers: getAuthHeaders() });
         if (!res.ok) throw new Error(res.statusText);
         const cats = await res.json();
         renderTable(cats.map(c => ({ id: c.id, name: c.name })));
@@ -81,7 +81,7 @@ async function openEditModal(id) {
     console.log(currentEditId)
     modalTitle.textContent = 'Edit Category';
     try {
-        const res = await fetch(`${API_BASE}/${id}`);
+        const res = await fetch(`${API_BASE}/${id}`, { headers: getAuthHeaders() });
         if (!res.ok) throw new Error(res.statusText);
         const cat = await res.json();
         productIdInput.value = cat.id;
@@ -100,13 +100,13 @@ modalForm.addEventListener('submit', async e => {
     if (!name) { alert('Name is required'); return; }
     if (currentEditId) { var data = { id, name }; }
     else { var data = { name }; }
-    
+
     try {
-        const url =  API_BASE;
+        const url = API_BASE;
         const method = currentEditId ? 'PUT' : 'POST';
         const res = await fetch(url, {
             method,
-            headers: { 'Content-Type': 'application/json' },
+            headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
             body: JSON.stringify(data)
         });
         if (!res.ok) throw new Error(res.statusText);
@@ -121,7 +121,7 @@ modalForm.addEventListener('submit', async e => {
 
 // --- View Modal ---
 function openViewModal(id) {
-    fetch(`${API_BASE}/${id}`)
+    fetch(`${API_BASE}/${id}`, { headers: getAuthHeaders() })
         .then(res => res.json())
         .then(cat => {
             viewName.textContent = cat.name || '';
@@ -143,7 +143,7 @@ function openDeleteModal(id) {
 confirmDeleteBtn.addEventListener('click', async () => {
     if (!deleteId) return;
     try {
-        const res = await fetch(`${API_BASE}/${deleteId}`, { method: 'DELETE' });
+        const res = await fetch(`${API_BASE}/${deleteId}`, { method: 'DELETE', headers: getAuthHeaders() });
         if (!res.ok) throw new Error(res.statusText);
         overlayDelete.classList.remove('show');
         deleteId = null;

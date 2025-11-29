@@ -1,5 +1,6 @@
 ﻿<!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -7,8 +8,9 @@
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-<link rel="stylesheet" href="CSS/index.css" />
+    <link rel="stylesheet" href="CSS/index.css" />
 </head>
+
 <body>
 
     <!-- SIDEBAR -->
@@ -19,8 +21,9 @@
 
         <div class="sidebar-menu">
             <ul>
-                <li ><a href="admin.html"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
-                <li class="active"><a href="AdminProducts.html"><i class="fas fa-box"></i> <span>Products</span></a></li>
+                <li><a href="admin.html"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+                <li class="active"><a href="AdminProducts.html"><i class="fas fa-box"></i> <span>Products</span></a>
+                </li>
                 <li><a href="AdminCategory.html"><i class="fas fa-tags"></i> <span>Categories</span></a></li>
                 <li><a href="AdminBrands.html"><i class="fas fa-star"></i> <span>Brands</span></a></li>
                 <li><a href="AdminOrders.html"><i class="fas fa-shopping-cart"></i> <span>Orders</span></a></li>
@@ -42,7 +45,11 @@
 
             <div class="header-right">
                 <div class="search" title="Search">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 21l-4.35-4.35"></path><circle cx="11" cy="11" r="6"></circle></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 21l-4.35-4.35"></path>
+                        <circle cx="11" cy="11" r="6"></circle>
+                    </svg>
                     <input id="searchInput" placeholder="Search term (e.g. tablet)" />
                 </div>
 
@@ -103,7 +110,8 @@
                     </tbody>
                 </table>
 
-                <div id="pagination" style="margin-top:20px;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;"></div>
+                <div id="pagination"
+                    style="margin-top:20px;display:flex;justify-content:center;gap:6px;flex-wrap:wrap;"></div>
             </div>
         </div>
     </div>
@@ -119,11 +127,13 @@
                 <div class="row" style="margin-bottom:10px; display:flex; gap:10px; flex-wrap:wrap;">
                     <div style="flex:1; min-width:200px">
                         <label>Name</label>
-                        <input id="pName" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border)">
+                        <input id="pName" required
+                            style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border)">
                     </div>
                     <div style="flex:1; min-width:200px">
                         <label>Description</label>
-                        <input id="pDescription" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border)">
+                        <input id="pDescription" required
+                            style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border)">
                     </div>
                 </div>
 
@@ -131,11 +141,13 @@
                 <div class="row" style="margin-bottom:10px; display:flex; gap:10px; flex-wrap:wrap;">
                     <div style="flex:1; min-width:200px">
                         <label>Model Year</label>
-                        <input id="pYear" type="number" min="1900" step="1" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border)">
+                        <input id="pYear" type="number" min="1900" step="1"
+                            style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border)">
                     </div>
                     <div style="flex:1; min-width:200px">
                         <label>Price (USD)</label>
-                        <input id="pPrice" type="number" min="0" step="0.01" style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border)">
+                        <input id="pPrice" type="number" min="0" step="0.01"
+                            style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border)">
                     </div>
                 </div>
 
@@ -143,13 +155,15 @@
                 <div class="row" style="margin-bottom:10px; display:flex; gap:10px; flex-wrap:wrap;">
                     <div style="flex:1; min-width:200px">
                         <label>Brand</label>
-                        <select id="pBrand" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border)">
+                        <select id="pBrand" required
+                            style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border)">
                             <option value="">Select Brand</option>
                         </select>
                     </div>
                     <div style="flex:1; min-width:200px;">
                         <label>Category</label>
-                        <select id="pCategory" required style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border)">
+                        <select id="pCategory" required
+                            style="width:100%; padding:10px; border-radius:8px; border:1px solid var(--border)">
                             <option value="">Select Category</option>
                         </select>
                     </div>
@@ -213,6 +227,7 @@
     </div>
 
     <!-- Your script (unchanged path) -->
+    <script src="assets/js/api.js"></script>
     <script src="js/AdminProducts.js"></script>
 
     <!-- Small helper script for collapse toggle & dropdown demo -->
@@ -251,4 +266,5 @@
         });
     </script>
 </body>
+
 </html>

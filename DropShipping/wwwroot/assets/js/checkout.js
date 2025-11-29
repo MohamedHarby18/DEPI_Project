@@ -6,10 +6,10 @@ class CheckoutPage {
         this.totalValue = document.getElementById('totalValue');
         this.placeOrderBtn = document.getElementById('placeOrderBtn');
         this.checkoutForm = document.getElementById('checkoutForm');
-        
+
         this.cartItems = this.loadCartItems();
         this.apiBaseUrl = '/api/Order'; // Update this if your API is hosted elsewhere
-        
+
         this.init();
     }
 
@@ -125,9 +125,7 @@ class CheckoutPage {
             // Send order to backend
             const response = await fetch(this.apiBaseUrl, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: getAuthHeaders({ 'Content-Type': 'application/json' }),
                 body: JSON.stringify(orderData)
             });
 
