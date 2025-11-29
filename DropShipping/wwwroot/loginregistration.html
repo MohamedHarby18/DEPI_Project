@@ -166,8 +166,14 @@
                     alert(data.message || "Login failed");
                     return;
                 }
-                if (data.token) localStorage.setItem("token", data.token);
-                if (data.userType) localStorage.setItem("userType",data.userType)
+                // accept either camelCase or PascalCase from server responses
+                const tokenValue = data.token ?? data.Token;
+                if (tokenValue) localStorage.setItem("token", tokenValue);
+                const userTypeValue = data.userType ?? data.UserType;
+                if (userTypeValue) localStorage.setItem("userType", userTypeValue);
+                // store user id if provided (supports either shape)
+                const userId = data.user?.id ?? data.user?.Id ?? data.User?.id ?? data.User?.Id;
+                if (userId) localStorage.setItem("userId", userId);
                 alert("Login successful!");
                 window.location.href = "index.html";
             } catch (error) {
