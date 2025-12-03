@@ -7,7 +7,6 @@
     <title>Orders - DropZone</title>
     <link rel="stylesheet" href="./home.css">
     <link rel="stylesheet" href="./assets/css/product.css">
-
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <style>
@@ -43,7 +42,6 @@
                 background: #55afd3;
             }
 
-        /* Add Order Form */
         .order-form {
             background: #ffffff;
             padding: 20px;
@@ -81,7 +79,6 @@
                 font-size: 1rem;
             }
 
-        /* Orders Table */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -91,7 +88,8 @@
             box-shadow: var(--shadow);
         }
 
-        th, td {
+        th,
+        td {
             padding: 15px;
             text-align: left;
             border-bottom: 1px solid #f1f1f1;
@@ -126,7 +124,26 @@
                 background: #5cb85c;
             }
 
-        /* Footer */
+        .action-btn {
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            border: none;
+            margin-right: 5px;
+        }
+
+        .edit-btn {
+            background: #6EC1E4;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #E74C3C;
+            color: white;
+        }
+
+        /* FOOTER */
         .footer {
             background-color: #2C3742;
             color: white;
@@ -162,7 +179,9 @@
             <div class="container">
                 <div class="logo">
                     <div class="circle"></div>
-                    <a href="index.html" class="headName"><h1>DropZone</h1></a>
+                    <a href="index.html" class="headName">
+                        <h1>DropZone</h1>
+                    </a>
                 </div>
 
                 <div class="search-bar">
@@ -181,8 +200,10 @@
 
             <nav class="main-nav">
                 <ul>
-                    <li class="dropdown"><a href="#">All Products</a></li>
-                    <li><a href="#">New Products</a></li>
+                    <li class="dropdown">
+                        <a href="#">All Categories</a>
+                        <ul class="dropdown-menu"></ul>
+                    </li>
                     <li><a href="Orders.html" style="color:#6EC1E4; font-weight:700;">Orders</a></li>
                     <li><a href="#">Profile</a></li>
                 </ul>
@@ -197,88 +218,178 @@
                 <button class="add-order-btn" onclick="toggleForm()">Add Order</button>
             </div>
 
-            <!-- Add Order Form -->
+            <!-- ORDER FORM -->
             <div class="order-form" id="orderForm">
-                <h3>Add New Order</h3>
+                <h3 id="formTitle">Add / Edit Order</h3>
 
-                <input type="text" placeholder="Product Name">
-                <input type="text" placeholder="Customer Name">
-                <input type="text" placeholder="Address">
-                <input type="number" placeholder="Price">
-                <input type="number" placeholder="Discount (%)">
-
-                <select>
-                    <option>Status</option>
-                    <option>Pending</option>
-                    <option>Shipped</option>
-                    <option>Delivered</option>
+                <input type="text" id="orderId" placeholder="Order ID (for edit only)">
+                <input type="number" id="orderPrice" placeholder="Order Price">
+                <input type="number" id="orderDiscount" placeholder="Order Discount">
+                <select id="orderStatus">
+                    <option value="0">Pending</option>
+                    <option value="1">Shipped</option>
+                    <option value="2">Delivered</option>
                 </select>
+                <input type="date" id="shippedDate" placeholder="Shipped Date">
 
-                <input type="date" placeholder="Shipped Date">
-
-                <button>Add Order</button>
+                <button onclick="editOrder()">Submit Order</button>
             </div>
 
-            <!-- Orders Table -->
-            <table>
+            <table id="ordersTable">
                 <thead>
                     <tr>
-                        <th>Product</th>
-                        <th>Customer Name</th>
-                        <th>Address</th>
-                        <th>Price</th>
-                        <th>Discount</th>
-                        <th>Status</th>
-                        <th>Shipped Date</th>
+                        <th>Order ID</th>
+                        <th>Dropshipper</th>
+                        <th>Customer</th>
+                        <th>Items Count</th>
+                        <th>Date</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
-
-                <tbody>
-                    <tr>
-                        <td>Wireless Headphones</td>
-                        <td>Ahmed Hassan</td>
-                        <td>Cairo, Nasr City</td>
-                        <td>$45</td>
-                        <td>10%</td>
-                        <td><span class="status pending">Pending</span></td>
-                        <td>—</td>
-                    </tr>
-
-                    <tr>
-                        <td>Smart Watch X2</td>
-                        <td>Mona Samir</td>
-                        <td>Alexandria</td>
-                        <td>$60</td>
-                        <td>0%</td>
-                        <td><span class="status shipped">Shipped</span></td>
-                        <td>2025-01-22</td>
-                    </tr>
-
-                    <tr>
-                        <td>Bluetooth Speaker</td>
-                        <td>Omar Tarek</td>
-                        <td>Giza</td>
-                        <td>$35</td>
-                        <td>5%</td>
-                        <td><span class="status delivered">Delivered</span></td>
-                        <td>2025-01-10</td>
-                    </tr>
-                </tbody>
+                <tbody id="ordersBody"></tbody>
             </table>
 
         </div>
     </div>
 
-    <footer class="footer" style="margin-top: auto;">
+    <footer class="footer">
         <p>© 2025 Dropshipping. All rights reserved.</p>
     </footer>
 
     <script>
+        // -----------------------------
+        // Navigation Categories Loader
+        // -----------------------------
+        class NavigationCategories {
+            constructor() {
+                this.apiBaseUrl = '/api/Category';
+                this.dropdownMenu = null;
+                this.init();
+            }
+
+            async init() {
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', () => this.loadCategories());
+                } else {
+                    await this.loadCategories();
+                }
+            }
+
+            async loadCategories() {
+                try {
+                    this.dropdownMenu = document.querySelector('.dropdown-menu');
+                    if (!this.dropdownMenu) return;
+
+                    const response = await fetch(this.apiBaseUrl);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                    const categories = await response.json();
+                    this.populateDropdown(categories);
+                } catch (error) {
+                    console.error('Error loading categories:', error);
+                }
+            }
+
+            populateDropdown(categories) {
+                if (!categories || categories.length === 0) return;
+                this.dropdownMenu.innerHTML = '';
+                categories.forEach(category => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = `categorypage.html?categoryId=${category.id}`;
+                    a.textContent = category.name;
+                    li.appendChild(a);
+                    this.dropdownMenu.appendChild(li);
+                });
+            }
+        }
+
+        new NavigationCategories();
+
+        // -----------------------------
+        // Orders Table Logic
+        // -----------------------------
+        let orders = [];
+
+        async function fetchOrders() {
+            try {
+                const response = await fetch("/api/Order");
+                const data = await response.json();
+                orders = data.result || [];
+                loadTable();
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function loadTable() {
+            const body = document.getElementById("ordersBody");
+            body.innerHTML = "";
+
+            if (orders.length === 0) {
+                body.innerHTML = `<tr><td colspan="6" style="text-align:center">No orders found</td></tr>`;
+                return;
+            }
+
+            orders.forEach(order => {
+                body.innerHTML += `
+                        <tr>
+                            <td>${order.id}</td>
+                            <td>${order.dropshipperId}</td>
+                            <td>${order.customer?.name}</td>
+                            <td>${order.items?.length}</td>
+                            <td>${order.createdAt || "—"}</td>
+                            <td>
+                                <button class="action-btn edit-btn" onclick="fillEditForm('${order.id}', ${order.orderPrice || 0}, ${order.orderDiscount || 0}, ${order.orderStatus || 0}, '${order.shippedDate || ''}')">Edit</button>
+                                <button class="action-btn delete-btn" onclick="deleteOrder('${order.id}')">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+            });
+        }
+
         function toggleForm() {
             document.getElementById("orderForm").classList.toggle("active");
         }
+
+        function fillEditForm(id, price, discount, status, shippedDate) {
+            document.getElementById("orderId").value = id;
+            document.getElementById("orderPrice").value = price;
+            document.getElementById("orderDiscount").value = discount;
+            document.getElementById("orderStatus").value = status;
+            document.getElementById("shippedDate").value = shippedDate ? shippedDate.split('T')[0] : '';
+            document.getElementById("orderForm").classList.add("active");
+        }
+
+        async function editOrder() {
+            const body = {
+                id: document.getElementById("orderId").value,
+                orderPrice: Number(document.getElementById("orderPrice").value),
+                orderDiscount: Number(document.getElementById("orderDiscount").value),
+                orderStatus: Number(document.getElementById("orderStatus").value),
+                shippedDate: document.getElementById("shippedDate").value
+            };
+            if (!body.id) return alert("Order ID is required to edit an order.");
+            try {
+                const response = await fetch("/api/Order", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+                if (!response.ok) return alert("Failed to edit order");
+                alert("Order edited successfully!");
+                fetchOrders();
+            } catch (err) { console.error(err); alert("Error editing order"); }
+        }
+
+        async function deleteOrder(id) {
+            if (!confirm("Are you sure you want to delete this order?")) return;
+            try {
+                const response = await fetch(`/api/Order/${id}`, { method: "DELETE" });
+                if (!response.ok) return alert("Failed to delete order");
+                alert("Order deleted successfully!");
+                fetchOrders();
+            } catch (err) { console.error(err); alert("Error deleting order"); }
+        }
+
+        fetchOrders();
     </script>
 
 </body>
-
 </html>
