@@ -1,11 +1,13 @@
 ﻿using BAL.DTOs.CategoryDTOs;
 using BAL.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace PAL.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+
     public class CategoryController(ICategoryService categoryService) : ControllerBase
     {
         [HttpGet]
@@ -17,6 +19,7 @@ namespace PAL.Controllers
             => Ok(await categoryService.GetCategoryById(id));
 
         [HttpPost]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<IActionResult> Add([FromBody] CategoryCreateDTO createDTO)
         {
@@ -25,6 +28,7 @@ namespace PAL.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         public async Task<IActionResult> Update([FromBody] CategoryUpdateDTO updateDTO)
         {
             await categoryService.UpdateCategory(updateDTO);
@@ -32,6 +36,7 @@ namespace PAL.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Delete(Guid id)
         {

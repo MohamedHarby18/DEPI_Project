@@ -8,7 +8,7 @@ namespace PAL.Controllers
 {
     [ApiController]
     [Route("api/[Controller]")]
-    //[Authorize]
+   
     public class ProductsController(IProductService productService) : ControllerBase
     {
         [HttpGet]
@@ -22,6 +22,7 @@ namespace PAL.Controllers
 
 
         [HttpPost]
+        [Authorize]
 
         [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<IActionResult> Add([FromForm] ProductCreateDTO createDTO)
@@ -31,6 +32,7 @@ namespace PAL.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         public async Task<IActionResult> Update([FromForm] ProductUpdateDTO updateDTO)
         {
             await productService.UpdateProduct(updateDTO);
@@ -38,6 +40,7 @@ namespace PAL.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<IActionResult> Delete(Guid id)
         {

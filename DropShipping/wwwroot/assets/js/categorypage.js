@@ -9,7 +9,6 @@
         this.cartItems = this.loadCartItems();
         this.productCardImages = new Map();
 
-        // DOM elements
         this.productsGrid = document.getElementById('categoryProducts');
         this.pagination = document.getElementById('pagination');
         this.brandFiltersContainer = document.getElementById('brandFilters');
@@ -41,9 +40,6 @@
 
     async loadCategoryName() {
         try {
-            // Try to find category name from the nav or fetch it
-            // For now, we'll just fetch all categories and find the one matching the ID
-            // Optimization: The backend could return the category name in the product response or a separate endpoint
             const response = await fetch('/api/Category');
             if (response.ok) {
                 const categories = await response.json();
@@ -57,9 +53,6 @@
         }
     }
 
-    /*-----------------------------------------------------------
-     |  LOAD PRODUCTS FROM API
-     -----------------------------------------------------------*/
     async loadProductsFromApi(page = 1) {
         try {
             this.currentPage = page;
@@ -73,39 +66,33 @@
                 params.append('CategoryId', this.categoryId);
             }
 
-            // Note: Backend currently supports single BrandId. 
-            // If we have active brands, we'll send the first one for now.
             if (this.activeBrands.size > 0) {
                 const brandId = this.getBrandIdByName([...this.activeBrands][0]);
-                if (brandId) {
-                    params.append('BrandId', brandId);
-                }
+                if (brandId) params.append('BrandId', brandId);
             }
 
             const response = await fetch(`/api/Products?${params.toString()}`);
 
             if (!response.ok) {
-                throw new Error(Failed to load products.Status: ${ response.status });
+                throw new Error(`Failed to load products. Status: ${response.status}`);
             }
 
             const data = await response.json();
 
-            // Handle PaginatedResult structure
-            const apiProducts = data.result || [];
-            this.totalCount = data.totalCount || 0;
-            this.currentPage = data.pageIndex || page;
-
-            this.products = apiProducts.map(p => ({
+            this.products = (data.result || []).map(p => ({
                 id: p.id,
                 name: p.name,
                 price: p.price,
                 brand: { name: p.brandName },
                 category: { name: p.categoryName },
-                categoryId: p.categoryId, // Added categoryId
+                categoryId: p.categoryId,
                 images: p.images ? p.images.map(img => ({ image: img })) : [],
                 modelYear: p.modelYear || "N/A",
                 description: p.description || "No description available."
             }));
+
+            this.totalCount = data.totalCount || 0;
+            this.currentPage = data.pageIndex || page;
 
             this.renderProducts();
             this.renderPagination();
@@ -121,19 +108,14 @@
         this.productsGrid.innerHTML = '<div class="loading-spinner">Loading...</div>';
     }
 
-    /*-----------------------------------------------------------
-     | BRAND FILTERS (FROM API)
-     -----------------------------------------------------------*/
     async renderBrandFilters() {
         if (!this.brandFiltersContainer) return;
 
         try {
-            console.log("Rendering brand filters. CategoryId:", this.categoryId);
             let url = '/api/Brands';
             if (this.categoryId) {
                 url += `?categoryId=${this.categoryId}`;
             }
-            console.log("Fetching brands from:", url);
 
             const response = await fetch(url);
             if (!response.ok) throw new Error("Failed to load brands");
@@ -156,8 +138,6 @@
                 cb.addEventListener("change", (e) => {
                     const { value, checked } = e.target;
 
-                    // Current backend limitation: Single brand filter
-                    // If checking a new one, uncheck others
                     if (checked) {
                         this.activeBrands.clear();
                         this.brandFiltersContainer.querySelectorAll("input").forEach(otherCb => {
@@ -168,7 +148,7 @@
                         this.activeBrands.delete(value);
                     }
 
-                    this.loadProductsFromApi(1); // Reload from page 1
+                    this.loadProductsFromApi(1);
                 });
             });
 
@@ -181,9 +161,6 @@
         return this.brandsMap ? this.brandsMap.get(name) : null;
     }
 
-    /*-----------------------------------------------------------
-     | RENDER PRODUCTS
-     -----------------------------------------------------------*/
     renderProducts() {
         this.productsGrid.innerHTML = "";
 
@@ -198,9 +175,6 @@
         });
     }
 
-    /*-----------------------------------------------------------
-     | PAGINATION
-     -----------------------------------------------------------*/
     renderPagination() {
         const totalPages = Math.ceil(this.totalCount / this.pageSize);
         this.pagination.innerHTML = "";
@@ -223,24 +197,16 @@
             this.pagination.appendChild(btn);
         };
 
-        // Previous Button
         addBtn("‹", this.currentPage - 1, this.currentPage === 1);
 
-        // Page Numbers
-        // Simple logic: show all pages if <= 7, otherwise show range around current
         if (totalPages <= 7) {
             for (let i = 1; i <= totalPages; i++) {
                 addBtn(i, i, false, i === this.currentPage);
             }
         } else {
-            // Always show first
             addBtn(1, 1, false, 1 === this.currentPage);
 
-            if (this.currentPage > 3) {
-                const span = document.createElement("span");
-                span.textContent = "...";
-                this.pagination.appendChild(span);
-            }
+            if (this.currentPage > 3) this.pagination.append("...");
 
             const start = Math.max(2, this.currentPage - 1);
             const end = Math.min(totalPages - 1, this.currentPage + 1);
@@ -249,17 +215,11 @@
                 addBtn(i, i, false, i === this.currentPage);
             }
 
-            if (this.currentPage < totalPages - 2) {
-                const span = document.createElement("span");
-                span.textContent = "...";
-                this.pagination.appendChild(span);
-            }
+            if (this.currentPage < totalPages - 2) this.pagination.append("...");
 
-            // Always show last
             addBtn(totalPages, totalPages, false, totalPages === this.currentPage);
         }
 
-        // Next Button
         addBtn("›", this.currentPage + 1, this.currentPage === totalPages);
     }
 
@@ -275,9 +235,6 @@
         this.resultsCount.textContent = `Showing ${start}-${end} of ${this.totalCount} products`;
     }
 
-    /*-----------------------------------------------------------
-     | PRODUCT CARD
-     -----------------------------------------------------------*/
     createProductCard(product) {
         const card = document.createElement("div");
         card.className = "product-card";
@@ -296,8 +253,12 @@
                 </button>
 
                 ${hasMultiple ? `
-                    <button class="card-arrow card-arrow-left" data-direction="-1"><i class="fas fa-chevron-left"></i></button>
-                    <button class="card-arrow card-arrow-right" data-direction="1"><i class="fas fa-chevron-right"></i></button>
+                    <button class="card-arrow card-arrow-left" data-direction="-1">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="card-arrow card-arrow-right" data-direction="1">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 ` : ""}
             </div>
 
@@ -350,9 +311,6 @@
         });
     }
 
-    /*-----------------------------------------------------------
-     | CART LOGIC
-     -----------------------------------------------------------*/
     addToCart(product) {
         const existing = this.cartItems.find(i => i.id === product.id);
 
@@ -369,7 +327,7 @@
 
         this.persistCartItems();
         this.updateCartCount();
-        this.showMessage(${ product.name } added to cart!, "success");
+        this.showMessage(`${product.name} added to cart!`, "success");
     }
 
     updateCartCount() {
@@ -387,9 +345,6 @@
         return JSON.parse(localStorage.getItem("cartItems") || "[]");
     }
 
-    /*-----------------------------------------------------------
-     | PRODUCT VIEW PAGE
-     -----------------------------------------------------------*/
     viewProduct(productId) {
         const item = this.products.find(p => p.id === productId);
         if (item) {
@@ -398,9 +353,6 @@
         }
     }
 
-    /*-----------------------------------------------------------
-     | UI MESSAGE
-     -----------------------------------------------------------*/
     showMessage(text, type) {
         const msg = document.createElement("div");
         msg.className = "toast";

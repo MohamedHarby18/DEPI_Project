@@ -23,14 +23,12 @@ body {
     line-height: 1.6;
     color: var(--e-global-color-text);
     background-color: var(--white);
-
 }
 
 .container1 {
     margin: auto;
     padding: 20px;
     max-width: 80%;
-
 }
 
 .SiteName {
@@ -54,7 +52,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
-
 }
 
 .main-image-container {
@@ -74,16 +71,16 @@ body {
     position: relative;
 }
 
-.main-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease, opacity 0.3s ease;
-}
+    .main-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+    }
 
-.main-image img:hover {
-    transform: scale(1.05);
-}
+        .main-image img:hover {
+            transform: scale(1.05);
+        }
 
 /* Gallery Arrow Navigation */
 .gallery-arrow {
@@ -104,11 +101,11 @@ body {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.gallery-arrow:hover {
-    background: var(--white);
-    transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
+    .gallery-arrow:hover {
+        background: var(--white);
+        transform: translateY(-50%) scale(1.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
 
 .gallery-arrow-left {
     left: 15px;
@@ -155,11 +152,11 @@ body {
     position: relative;
 }
 
-.thumbnail-images img:hover,
-.thumbnail-images img.active {
-    border-color: var(--e-global-color-primary);
-    transform: scale(1.1);
-}
+    .thumbnail-images img:hover,
+    .thumbnail-images img.active {
+        border-color: var(--e-global-color-primary);
+        transform: scale(1.1);
+    }
 
 /* Product Info */
 .product-info {
@@ -168,9 +165,9 @@ body {
     gap: 20px;
 }
 
-.product-info>* {
-    transition: opacity 0.3s ease, transform 0.3s ease;
-}
+    .product-info > * {
+        transition: opacity 0.3s ease, transform 0.3s ease;
+    }
 
 .product-header h1 {
     font-size: 2.5rem;
@@ -238,14 +235,13 @@ body {
     background: var(--e-global-color-primary);
     color: var(--white);
     flex: 1;
-
 }
 
-.btn-primary:hover {
-    background: #5bb3d6;
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-hover);
-}
+    .btn-primary:hover {
+        background: #5bb3d6;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-hover);
+    }
 
 .btn-secondary {
     background: transparent;
@@ -253,7 +249,8 @@ body {
     border: 2px solid var(--e-global-color-secondary);
 }
 
-.btn-secondary:hover {}
+    .btn-secondary:hover {
+    }
 
 color: var(--white);
 }
@@ -273,9 +270,9 @@ color: var(--white);
     border-bottom: 1px solid var(--border-color);
 }
 
-.spec-item:last-child {
-    border-bottom: none;
-}
+    .spec-item:last-child {
+        border-bottom: none;
+    }
 
 .spec-label {
     font-weight: 600;
@@ -291,12 +288,12 @@ color: var(--white);
     margin-top: 40px;
 }
 
-.related-products h2 {
-    font-size: 2rem;
-    color: var(--e-global-color-secondary);
-    margin-bottom: 30px;
-    text-align: center;
-}
+    .related-products h2 {
+        font-size: 2rem;
+        color: var(--e-global-color-secondary);
+        margin-bottom: 30px;
+        text-align: center;
+    }
 
 /* White container for related products */
 .related-products-container {
@@ -315,11 +312,11 @@ color: var(--white);
     margin-bottom: 18px;
 }
 
-.related-header h2 {
-    margin: 0;
-    font-size: 1.6rem;
-    color: var(--e-global-color-secondary);
-}
+    .related-header h2 {
+        margin: 0;
+        font-size: 1.6rem;
+        color: var(--e-global-color-secondary);
+    }
 
 .see-more-btn {
     display: inline-flex;
@@ -335,11 +332,11 @@ color: var(--white);
     transition: all 0.2s ease;
 }
 
-.see-more-btn:hover {
-    background: var(--e-global-color-primary);
-    color: var(--white);
-    border-color: var(--e-global-color-primary);
-}
+    .see-more-btn:hover {
+        background: var(--e-global-color-primary);
+        color: var(--white);
+        border-color: var(--e-global-color-primary);
+    }
 
 .products-grid {
     display: grid;
@@ -347,37 +344,37 @@ color: var(--white);
     gap: 25px;
 }
 
-/* When there are fewer than 4 items, limit each card width and center them */
-.products-grid.one-item,
-.products-grid.two-items,
-.products-grid.three-items {
-    /* Align tracks and items to the start (left) when fewer than 4 products */
-    justify-content: start;
-    justify-items: start;
-    grid-auto-flow: row;
-}
+    /* When there are fewer than 4 items, limit each card width and center them */
+    .products-grid.one-item,
+    .products-grid.two-items,
+    .products-grid.three-items {
+        /* Align tracks and items to the start (left) when fewer than 4 products */
+        justify-content: start;
+        justify-items: start;
+        grid-auto-flow: row;
+    }
 
-/* Card sizing for fewer-than-4 items */
-.products-grid.one-item .product-card,
-.products-grid.two-items .product-card,
-.products-grid.three-items .product-card {
-    width: 100%;
-    max-width: 300px;
-    margin: 0;
-}
+        /* Card sizing for fewer-than-4 items */
+        .products-grid.one-item .product-card,
+        .products-grid.two-items .product-card,
+        .products-grid.three-items .product-card {
+            width: 100%;
+            max-width: 300px;
+            margin: 0;
+        }
 
-/* Gap rules per count */
-.products-grid.one-item,
-.products-grid.two-items,
-.products-grid.three-items {
-    gap: 20px; /* consistent 20px gap when fewer than four items */
-}
+    /* Gap rules per count */
+    .products-grid.one-item,
+    .products-grid.two-items,
+    .products-grid.three-items {
+        gap: 20px; /* consistent 20px gap when fewer than four items */
+    }
 
-/* Exactly 4 items: use 4 equal columns so spacing between cards is equal */
-.products-grid.four-items {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 25px; /* default gap for 4 items (adjust as needed) */
-}
+    /* Exactly 4 items: use 4 equal columns so spacing between cards is equal */
+    .products-grid.four-items {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 25px; /* default gap for 4 items (adjust as needed) */
+    }
 
 .product-card {
     background: var(--white);
@@ -388,10 +385,10 @@ color: var(--white);
     cursor: pointer;
 }
 
-.product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-hover);
-}
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-hover);
+    }
 
 .product-card-image {
     width: 100%;
@@ -401,12 +398,12 @@ color: var(--white);
     position: relative;
 }
 
-.product-card-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
+    .product-card-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
 
 .product-card:hover .product-card-image img {
     transform: scale(1.1);
@@ -457,9 +454,9 @@ color: var(--white);
     transform: scale(1.2);
 }
 
-.card-action-button.active i {
-    color: var(--white);
-}
+    .card-action-button.active i {
+        color: var(--white);
+    }
 
 /* Product Card Arrow Navigation */
 .card-arrow {
@@ -577,16 +574,16 @@ color: var(--white);
     color: var(--e-global-color-text);
 }
 
-.loading::after {
-    content: '';
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--e-global-color-primary);
-    border-top: 2px solid transparent;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    margin-left: 10px;
-}
+    .loading::after {
+        content: '';
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--e-global-color-primary);
+        border-top: 2px solid transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-left: 10px;
+    }
 
 @keyframes spin {
     0% {
@@ -698,10 +695,10 @@ color: var(--white);
     z-index: 10000;
 }
 
-.lightbox-close:hover,
-.lightbox-close:focus {
-    color: #bbb;
-}
+    .lightbox-close:hover,
+    .lightbox-close:focus {
+        color: #bbb;
+    }
 
 .lightbox-caption {
     margin: auto;
