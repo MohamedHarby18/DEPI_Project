@@ -1,22 +1,22 @@
-﻿class CategoryPage {
+class SearchPage {
     constructor() {
         this.products = [];
         this.currentPage = 1;
         this.pageSize = 9;
         this.totalCount = 0;
-        this.categoryId = this.getCategoryIdFromUrl();
+        this.searchTerm = this.getSearchTermFromUrl();
         this.activeBrands = new Set();
         this.cartItems = this.loadCartItems();
         this.productCardImages = new Map();
 
         // DOM elements
-        this.productsGrid = document.getElementById('categoryProducts');
+        this.productsGrid = document.getElementById('searchProducts');
         this.pagination = document.getElementById('pagination');
         this.brandFiltersContainer = document.getElementById('brandFilters');
         this.resultsCount = document.getElementById('resultsCount');
         this.clearFiltersBtn = document.getElementById('clearFilters');
         this.cartCountElement = document.getElementById('cartCount');
-        this.categoryTitle = document.getElementById('categoryTitle');
+        this.searchTitle = document.getElementById('searchTitle');
         this.searchInput = document.getElementById('searchInput');
         this.searchBtn = document.getElementById('searchBtn');
 
@@ -26,36 +26,26 @@
     async init() {
         if (!this.productsGrid) return;
 
+        // Set the search input value
+        if (this.searchInput && this.searchTerm) {
+            this.searchInput.value = this.searchTerm;
+        }
+
         await this.loadProductsFromApi();
         await this.renderBrandFilters();
         this.attachEvents();
         this.updateCartCount();
-
-        if (this.categoryId) {
-            this.loadCategoryName();
-        }
+        this.updateSearchTitle();
     }
 
-    getCategoryIdFromUrl() {
+    getSearchTermFromUrl() {
         const params = new URLSearchParams(window.location.search);
-        return params.get('categoryId');
+        return params.get('q') || '';
     }
 
-    async loadCategoryName() {
-        try {
-            // Try to find category name from the nav or fetch it
-            // For now, we'll just fetch all categories and find the one matching the ID
-            // Optimization: The backend could return the category name in the product response or a separate endpoint
-            const response = await fetch('/api/Category');
-            if (response.ok) {
-                const categories = await response.json();
-                const category = categories.find(c => c.id === this.categoryId);
-                if (category && this.categoryTitle) {
-                    this.categoryTitle.textContent = category.name;
-                }
-            }
-        } catch (error) {
-            console.error("Error loading category name:", error);
+    updateSearchTitle() {
+        if (this.searchTitle && this.searchTerm) {
+            this.searchTitle.textContent = `Search Results for "${this.searchTerm}"`;
         }
     }
 
@@ -71,8 +61,8 @@
             params.append('PageIndex', this.currentPage);
             params.append('PageSize', this.pageSize);
 
-            if (this.categoryId) {
-                params.append('CategoryId', this.categoryId);
+            if (this.searchTerm) {
+                params.append('SearchTerm', this.searchTerm);
             }
 
             // Note: Backend currently supports single BrandId. 
@@ -84,10 +74,10 @@
                 }
             }
 
-            const response = await fetch(/api/Products ? ${ params.toString() });
+            const response = await fetch(`/api/Products?${params.toString()}`);
 
             if (!response.ok) {
-                throw new Error(Failed to load products.Status: ${ response.status });
+                throw new Error(`Failed to load products. Status: ${response.status}`);
             }
 
             const data = await response.json();
@@ -103,7 +93,7 @@
                 price: p.price,
                 brand: { name: p.brandName },
                 category: { name: p.categoryName },
-                categoryId: p.categoryId, // Added categoryId
+                categoryId: p.categoryId,
                 images: p.images ? p.images.map(img => ({ image: img })) : [],
                 modelYear: p.modelYear || "N/A",
                 description: p.description || "No description available."
@@ -115,7 +105,7 @@
 
         } catch (error) {
             console.error("Error loading products:", error);
-            this.productsGrid.innerHTML = <p class="error-message">Failed to load products. Please try again later.</p>;
+            this.productsGrid.innerHTML = '<p class="error-message">Failed to load products. Please try again later.</p>';
         }
     }
 
@@ -130,14 +120,7 @@
         if (!this.brandFiltersContainer) return;
 
         try {
-            console.log("Rendering brand filters. CategoryId:", this.categoryId);
-            let url = '/api/Brands';
-            if (this.categoryId) {
-                url += ? categoryId = ${ this.categoryId };
-            }
-            console.log("Fetching brands from:", url);
-
-            const response = await fetch(url);
+            const response = await fetch('/api/Brands');
             if (!response.ok) throw new Error("Failed to load brands");
 
             const brands = await response.json();
@@ -190,7 +173,7 @@
         this.productsGrid.innerHTML = "";
 
         if (this.products.length === 0) {
-            this.productsGrid.innerHTML = <p>No products found.</p>;
+            this.productsGrid.innerHTML = '<p>No products found. Try a different search term.</p>';
             return;
         }
 
@@ -274,7 +257,7 @@
         const start = (this.currentPage - 1) * this.pageSize + 1;
         const end = Math.min(start + this.pageSize - 1, this.totalCount);
 
-        this.resultsCount.textContent = Showing ${ start } -${ end } of ${ this.totalCount } products;
+        this.resultsCount.textContent = `Showing ${start} - ${end} of ${this.totalCount} products`;
     }
 
     /*-----------------------------------------------------------
@@ -371,7 +354,7 @@
 
         this.persistCartItems();
         this.updateCartCount();
-        this.showMessage(${ product.name } added to cart!, "success");
+        this.showMessage(`${product.name} added to cart!`, "success");
     }
 
     updateCartCount() {
@@ -415,6 +398,7 @@
     }
 
     attachEvents() {
+        // Clear filters button
         if (this.clearFiltersBtn) {
             this.clearFiltersBtn.addEventListener("click", () => {
                 this.activeBrands.clear();
@@ -445,4 +429,4 @@
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => new CategoryPage());
+document.addEventListener("DOMContentLoaded", () => new SearchPage());
