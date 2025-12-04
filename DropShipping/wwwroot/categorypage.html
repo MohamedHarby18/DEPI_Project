@@ -126,6 +126,21 @@
     <script src="assets/js/api.js"></script>
     <script src="assets/js/navigation.js"></script>
     <script src="assets/js/categorypage.js"></script>
+    <script>
+        // Wire header search bar to redirect to categorypage with search query
+        (function () {
+            const input = document.querySelector('.search-bar input');
+            const btn = document.querySelector('.search-bar button');
+            if (!input) return;
+            const submit = () => {
+                const term = (input.value || '').trim();
+                if (!term) return;
+                window.location.href = `categorypage.html?q=${encodeURIComponent(term)}`;
+            };
+            btn?.addEventListener('click', submit);
+            input.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
+        })();
+    </script>
 </body>
 
 </html>
