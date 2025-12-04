@@ -8,7 +8,6 @@ using DAL.Models;
 using DAL.Repositories;
 using DAL.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using System.Text;
 //using AutoMapper.Extensions.Microsoft.DependencyInjection;
 
 namespace DropShipping
@@ -29,36 +28,11 @@ namespace DropShipping
                 .AddDefaultTokenProviders();
 
 
-            
-          
-            var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-            var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
-
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.RequireHttpsMetadata = false;
-                options.SaveToken = true;
-
-                options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-
-                    ValidIssuer = jwtSettings["Issuer"],
-                    ValidAudience = jwtSettings["Audience"],
-                    IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(key)
-                };
-            });
 
 
 
+
+            // 1?? Add CORS service
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowFrontend",
@@ -95,9 +69,9 @@ namespace DropShipping
            
             //app.UseHttpsRedirection();
             app.UseCors("AllowFrontend");
-            app.UseAuthentication();
+
             app.UseAuthorization();
-           
+            app.UseAuthentication();
             app.UseStaticFiles();
 
             app.MapControllers();

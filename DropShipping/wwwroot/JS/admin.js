@@ -109,7 +109,7 @@ async function loadProducts(showNotif = false) {
     const empty = document.getElementById('products-empty');
     try {
         loading.style.display = 'flex'; table.style.display = 'none'; empty.style.display = 'none';
-        const res = await fetch(API_BASE, { headers: getAuthHeaders() });
+        const res = await fetch(API_BASE);
         if (!res.ok) throw new Error(res.statusText);
         const data = await res.json();
         products = data.result || [];
@@ -135,7 +135,7 @@ async function loadCategories(showNotif = false) {
     const empty = document.getElementById('categories-empty');
     try {
         loading.style.display = 'flex'; table.style.display = 'none'; empty.style.display = 'none';
-        const res = await fetch(CAT_API, { headers: getAuthHeaders() });
+        const res = await fetch(CAT_API);
         if (!res.ok) throw new Error(res.statusText);
         categories = await res.json();
         filteredCategories = [...categories];
@@ -159,7 +159,7 @@ async function loadBrands(showNotif = false) {
     const empty = document.getElementById('brands-empty');
     try {
         loading.style.display = 'flex'; table.style.display = 'none'; empty.style.display = 'none';
-        const res = await fetch(BRAND_API, { headers: getAuthHeaders() });
+        const res = await fetch(BRAND_API);
         if (!res.ok) throw new Error(res.statusText);
         brands = await res.json();
         filteredBrands = [...brands];
@@ -183,7 +183,7 @@ async function loadOrders(showNotif = false) {
     const empty = document.getElementById('orders-empty');
     try {
         loading.style.display = 'flex'; table.style.display = 'none'; empty.style.display = 'none';
-        const res = await fetch(ORDERS_API, { headers: getAuthHeaders() });
+        const res = await fetch(ORDERS_API);
         if (!res.ok) throw new Error(res.statusText);
         const data = await res.json();
         orders = data.result || [];

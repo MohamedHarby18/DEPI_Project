@@ -71,15 +71,6 @@ namespace BAL.Services
             return mapped;
         }
 
-        public async Task<DTOs.DropshipperDTOs.Wallet> GetDropshipperWalletByIdAsync(string userId)
-        {
-            var wallet = await dropshipperRepository.GetDropshipperWalletById(userId);
-            if (wallet == null)
-                return null;
-
-            var mappedWallet = mapper.Map<DTOs.DropshipperDTOs.Wallet>(wallet);
-            return mappedWallet;
-        }
 
         public async Task<DropshipperUpdate?> UpdateDropshipperAsync(DropshipperUpdate dropshipperDto)
         {

@@ -1,6 +1,5 @@
 using BAL.DTOs.BrandDTOs;
 using BAL.Services.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
@@ -9,8 +8,7 @@ namespace PAL.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
-    public class BrandsController(IBrandService brandService) : ControllerBase
+    public class BrandsController(IBrandService brandService):ControllerBase
     {
 
         [HttpGet]
@@ -29,7 +27,6 @@ namespace PAL.Controllers
         }
 
         [HttpGet("{id}")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetById(Guid id) => Ok(await brandService.GetByIdAsync(id));
 
 
@@ -37,7 +34,7 @@ namespace PAL.Controllers
         public async Task<IActionResult> Add([FromForm] BrandCreateDTO createDTO)
         {
             await brandService.AddAsync(createDTO);
-            return Created();
+           return Created();
         }
 
         [HttpDelete("{id}")]

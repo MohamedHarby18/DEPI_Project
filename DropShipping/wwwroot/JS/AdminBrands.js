@@ -1,22 +1,5 @@
-﻿
-// =======================
-// CONFIG
-// =======================
-const API_BASE = 'https://localhost:7000/api/Brands';
+﻿const API_BASE = 'https://localhost:7000/api/Brands';
 
-// --- Get JWT token from localStorage ---
-function authHeaders() {
-    const token = localStorage.getItem("token");
-    console.log(token);
-    return {
-        "Authorization": `Bearer ${token}`,
-        
-    };
-}
-
-// =======================
-// DOM ELEMENTS
-// =======================
 const tbody = document.getElementById('tbody');
 const searchInput = document.getElementById('searchInput');
 const addProductBtn = document.getElementById('addProductBtn');
@@ -41,9 +24,7 @@ const cancelDeleteBtn = document.getElementById('cancelDelete');
 let currentEditId = null;
 let deleteId = null;
 
-// =======================
-// HELPERS
-// =======================
+// --- Escape HTML for security ---
 function escapeHtml(str) {
     if (!str) return '';
     return String(str).replace(/[&<>"'`=\/]/g, s => ({
@@ -51,6 +32,7 @@ function escapeHtml(str) {
     }[s]));
 }
 
+// --- Render table rows ---
 function renderRow(cat) {
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -69,25 +51,17 @@ function renderRow(cat) {
 function renderTable(categories) {
     tbody.innerHTML = '';
     if (!categories.length) {
-        tbody.innerHTML = `<tr><td colspan="2" style="text-align:center;color:gray;padding:20px;">No Brands found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="2" style="text-align:center;color:gray;padding:20px;">No categories found.</td></tr>`;
         return;
     }
     categories.forEach(cat => tbody.appendChild(renderRow(cat)));
 }
 
-// =======================
-// FETCH DATA (GET ALL)
-// =======================
+// --- Fetch categories ---
 async function fetchAndRender() {
     try {
-        const res = await fetch(API_BASE
-            , {
-            headers: authHeaders()
-            }
-        );
-
+        const res = await fetch(API_BASE);
         if (!res.ok) throw new Error(res.statusText);
-
         const cats = await res.json();
         renderTable(cats.map(c => ({ id: c.id, name: c.name })));
     } catch (err) {
@@ -96,9 +70,7 @@ async function fetchAndRender() {
     }
 }
 
-// =======================
-// OPEN ADD MODAL
-// =======================
+// --- Add / Edit Modal ---
 addProductBtn.addEventListener('click', () => {
     currentEditId = null;
     modalTitle.textContent = 'Add Brand';
@@ -107,20 +79,12 @@ addProductBtn.addEventListener('click', () => {
     overlayAddEdit.classList.add('show');
 });
 
-// =======================
-// OPEN EDIT MODAL
-// =======================
 async function openEditModal(id) {
     currentEditId = id;
     modalTitle.textContent = 'Edit Brand';
-
     try {
-        const res = await fetch(`${API_BASE}/${id}`, {
-            headers: authHeaders()
-        });
-
+        const res = await fetch(`${API_BASE}/${id}`);
         if (!res.ok) throw new Error(res.statusText);
-
         const cat = await res.json();
         productIdInput.value = cat.id;
         pName.value = cat.name || '';
@@ -131,29 +95,24 @@ async function openEditModal(id) {
     }
 }
 
-// =======================
-// SUBMIT ADD / EDIT FORM
-// =======================
+// --- Submit modal form (POST / PUT) as form data ---
 modalForm.addEventListener('submit', async e => {
     e.preventDefault();
-
     const name = pName.value.trim();
     const id = currentEditId;
     if (!name) { alert('Name is required'); return; }
 
+    // Prepare form-encoded data
     const formData = new URLSearchParams();
     if (currentEditId) formData.append('id', id);
     formData.append('name', name);
 
     try {
+        const url = API_BASE;
         const method = currentEditId ? 'PUT' : 'POST';
-
-        const res = await fetch(API_BASE, {
+        const res = await fetch(url, {
             method,
-            headers: {
-                ...authHeaders({}),
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: formData.toString()
         });
 
@@ -168,13 +127,9 @@ modalForm.addEventListener('submit', async e => {
     }
 });
 
-// =======================
-// VIEW BRAND MODAL
-// =======================
+// --- View Modal ---
 function openViewModal(id) {
-    fetch(`${API_BASE}/${id}`, {
-        headers: authHeaders()
-    })
+    fetch(`${API_BASE}/${id}`)
         .then(res => res.json())
         .then(cat => {
             viewName.textContent = cat.name || '';
@@ -186,9 +141,7 @@ function openViewModal(id) {
         });
 }
 
-// =======================
-// DELETE MODAL
-// =======================
+// --- Delete Modal ---
 function openDeleteModal(id) {
     deleteId = id;
     deleteMsg.textContent = 'Are you sure you want to delete this category?';
@@ -197,15 +150,9 @@ function openDeleteModal(id) {
 
 confirmDeleteBtn.addEventListener('click', async () => {
     if (!deleteId) return;
-
     try {
-        const res = await fetch(`${API_BASE}/${deleteId}`, {
-            method: 'DELETE',
-            headers: authHeaders()
-        });
-
+        const res = await fetch(`${API_BASE}/${deleteId}`, { method: 'DELETE' });
         if (!res.ok) throw new Error(res.statusText);
-
         overlayDelete.classList.remove('show');
         deleteId = null;
         fetchAndRender();
@@ -215,13 +162,10 @@ confirmDeleteBtn.addEventListener('click', async () => {
     }
 });
 
-// =======================
-// TABLE BUTTON ACTIONS
-// =======================
+// --- Event delegation for table buttons ---
 tbody.addEventListener('click', e => {
     const btn = e.target.closest('button');
     if (!btn || !btn.dataset.id) return;
-
     const id = btn.dataset.id;
 
     if (btn.classList.contains('viewBtn')) openViewModal(id);
@@ -229,9 +173,7 @@ tbody.addEventListener('click', e => {
     else if (btn.classList.contains('delBtn')) openDeleteModal(id);
 });
 
-// =======================
-// CLOSE MODALS
-// =======================
+// --- Close modals ---
 [cancelModalBtn, closeViewBtn, cancelDeleteBtn].forEach(btn => {
     btn.addEventListener('click', () => {
         overlayAddEdit.classList.remove('show');
@@ -240,15 +182,12 @@ tbody.addEventListener('click', e => {
     });
 });
 
+// --- Click outside modal closes it ---
 [overlayAddEdit, overlayView, overlayDelete].forEach(ov =>
-    ov.addEventListener('click', e => {
-        if (e.target === ov) ov.classList.remove('show');
-    })
+    ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('show'); })
 );
 
-// =======================
-// SEARCH FUNCTION
-// =======================
+// --- Search ---
 searchInput.addEventListener('input', () => {
     const term = searchInput.value.trim().toLowerCase();
     Array.from(tbody.children).forEach(tr => {
@@ -257,7 +196,5 @@ searchInput.addEventListener('input', () => {
     });
 });
 
-// =======================
-// INIT
-// =======================
+// --- Initialize table ---
 fetchAndRender();

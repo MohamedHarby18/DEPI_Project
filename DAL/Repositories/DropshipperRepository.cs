@@ -27,20 +27,7 @@ namespace DAL.Repositories
          .FirstOrDefaultAsync(x => x.UserId == userId))!;
         }
 
-        public async Task<Wallet> GetDropshipperWalletById(string userId)
-        {
-            var wallet = await dbContext.Wallets
-                .Include(x => x.WalletTransactions)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.DropshipperId == userId);
-
-            if (wallet == null)
-                throw new Exception("Wallet not found for this dropshipper.");
-
-            return wallet;
-        }
-
-        public async Task CreateDropshipperAsync(Dropshipper dropshipper ,string UserId)
+       public async Task CreateDropshipperAsync(Dropshipper dropshipper ,string UserId)
         {
             var dropshipper1 = new Dropshipper
             {
@@ -65,7 +52,5 @@ namespace DAL.Repositories
                 dbContext.Dropshippers.Remove(dropshipper);
                 return true;
         }
-
-   
     }
 }

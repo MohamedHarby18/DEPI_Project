@@ -1,6 +1,5 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -31,23 +30,23 @@
             background-color: white;
             padding: 1rem 2rem;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             margin: 1rem;
             flex: 1 1 200px;
             text-align: center;
         }
 
-        .card h3 {
-            margin: 0;
-            font-size: 1.2rem;
-            color: #333;
-        }
+            .card h3 {
+                margin: 0;
+                font-size: 1.2rem;
+                color: #333;
+            }
 
-        .card p {
-            font-size: 2rem;
-            margin: 0.5rem 0 0 0;
-            color: #2980b9;
-        }
+            .card p {
+                font-size: 2rem;
+                margin: 0.5rem 0 0 0;
+                color: #2980b9;
+            }
 
         .tables-section {
             margin: 2rem;
@@ -59,20 +58,18 @@
             margin-bottom: 2rem;
         }
 
-        table th,
-        table td {
-            padding: 0.8rem;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
+            table th, table td {
+                padding: 0.8rem;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
 
-        table th {
-            background-color: #2980b9;
-            color: white;
-        }
+            table th {
+                background-color: #2980b9;
+                color: white;
+            }
     </style>
 </head>
-
 <body>
 
     <header>
@@ -128,7 +125,6 @@
         </section>
     </main>
 
-    <script src="assets/js/api.js"></script>
     <script>
         const API_BASE = 'https://localhost:7000/api/Products';
         const CAT_API = 'https://localhost:7000/api/Category';
@@ -142,23 +138,23 @@
         async function fetchData() {
             try {
                 // Products
-                const productsRes = await fetch(API_BASE, { headers: getAuthHeaders() });
+                const productsRes = await fetch(API_BASE);
                 const products = await productsRes.json();
                 document.getElementById('products-count').textContent = products.length;
                 populateProductsTable(products);
 
                 // Categories
-                const categoriesRes = await fetch(CAT_API, { headers: getAuthHeaders() });
+                const categoriesRes = await fetch(CAT_API);
                 const categories = await categoriesRes.json();
                 document.getElementById('categories-count').textContent = categories.length;
 
                 // Brands
-                const brandsRes = await fetch(BRAND_API, { headers: getAuthHeaders() });
+                const brandsRes = await fetch(BRAND_API);
                 const brands = await brandsRes.json();
                 document.getElementById('brands-count').textContent = brands.length;
 
                 // Orders
-                const ordersRes = await fetch(ORDERS_API, { headers: getAuthHeaders() });
+                const ordersRes = await fetch(ORDERS_API);
                 const orders = await ordersRes.json();
                 document.getElementById('orders-count').textContent = orders.length;
                 populateOrdersTable(orders);
@@ -200,5 +196,4 @@
     </script>
 
 </body>
-
 </html>

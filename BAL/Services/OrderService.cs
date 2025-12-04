@@ -2,7 +2,6 @@
 using BAL.DTOs;
 using BAL.DTOs.OrderDTOs;
 using BAL.DTOs.OrderItemDTOs;
-using BAL.DTOs.WalletDTOs;
 using BAL.Services.Interfaces;
 using DAL;
 using DAL.Models;
@@ -104,30 +103,9 @@ namespace BAL.Services.Implementations
                 order.OrderDiscount = 0; // Future feature
                 _context.Orders.Update(order);
 
-
-
-                var Wallet= await _context.Wallets.Where(w => w.DropshipperId == createDto.DropshipperId).FirstOrDefaultAsync();
-
-                var wallet = new WalletCreateDTO
-                {
-                    Balance = Wallet.Balance + totalPrice,
-                    DropshipperId = createDto.DropshipperId,
-                    WalletTransactionDTO = new WalletCreateTransactionDTO
-                    {
-
-                        Amount = totalPrice,
-                        TransactionDate = DateTime.Now,
-                        Description = "Order Payment",
-                        WalletId = Wallet.WalletId
-                    }
-                };
-                var walletMapped= _mapper.Map<Wallet>(wallet);
-                await _context.Wallets.AddAsync(walletMapped);
-
-
-
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
+
                 // Reload order with all relationships for mapping
                 var savedOrder = await _context.Orders
                     .Include(o => o.Customer)

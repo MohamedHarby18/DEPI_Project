@@ -85,7 +85,7 @@
             const response = await fetch(`/api/Products?${params.toString()}`);
 
             if (!response.ok) {
-                throw new Error(Failed to load products.Status: ${ response.status });
+                throw new Error(`Failed to load products. Status: ${response.status}`);
             }
 
             const data = await response.json();
@@ -369,7 +369,7 @@
 
         this.persistCartItems();
         this.updateCartCount();
-        this.showMessage(${ product.name } added to cart!, "success");
+        this.showMessage(`${product.name} added to cart!`, "success");
     }
 
     updateCartCount() {

@@ -32,17 +32,6 @@ namespace PAL.Controllers
             return Ok(dropshipper);
         }
 
-        [HttpGet("Wallet/{userId}")]
-        public async Task<IActionResult> GetDropshipperWalletById(string userId)
-        {
-            var dropshipper = await _dropshipperService.GetDropshipperWalletByIdAsync(userId);
-            if (dropshipper == null)
-                return NotFound();
-
-            return Ok(dropshipper);
-        }
-
-
         [HttpPost]
         public  Task<IActionResult> CreateDropshipper([FromBody] DropshipperDto dropshipperDto)
         {

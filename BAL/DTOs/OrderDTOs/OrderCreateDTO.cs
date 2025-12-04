@@ -14,7 +14,5 @@ namespace BAL.DTOs.OrderDTOs
         public List<OrderItemCreateDTO> Items { get; set; } = new();
 
         public CustomerDetailsDTO Customer { get; set; }
-
-        public DateOnly? ShippedDate { get; set; }
     }
 }

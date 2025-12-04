@@ -81,7 +81,7 @@ function attachRowEvents() {
 // Fetch orders from API
 async function fetchOrders(page = 1) {
     try {
-        const res = await fetch(`${API_ORDERS}?page=${page}&pageSize=${pageSize}`, { headers: getAuthHeaders() });
+        const res = await fetch(`${API_ORDERS}?page=${page}&pageSize=${pageSize}`);
         if (!res.ok) throw new Error("Failed to fetch orders");
 
         const data = await res.json();
@@ -142,7 +142,7 @@ function openDeleteModal(id) {
 confirmDeleteBtn.addEventListener('click', async () => {
     if (!deleteId) return;
     try {
-        const res = await fetch(`${API_ORDERS}/${deleteId}`, { method: 'DELETE', headers: getAuthHeaders() });
+        const res = await fetch(`${API_ORDERS}/${deleteId}`, { method: 'DELETE' });
         if (!res.ok) throw new Error("Failed to delete order");
         overlayDelete.classList.remove('show');
         deleteId = null;

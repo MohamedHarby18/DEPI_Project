@@ -119,7 +119,7 @@ if (searchInput) searchInput.addEventListener("input", handleSearch);
  * ============================ */
 async function fetchAndRender() {
     try {
-        const res = await fetch(API_BASE, { headers: getAuthHeaders() });
+        const res = await fetch(API_BASE);
         if (!res.ok) throw new Error("Failed to load dropshippers");
 
         const json = await res.json();
@@ -156,7 +156,7 @@ async function openEditModal(id) {
         editId = id;
         overlayAddEdit.style.display = "flex";
 
-        const res = await fetch(`${API_BASE}/${id}`, { headers: getAuthHeaders() });
+        const res = await fetch(`${API_BASE}/${id}`);
         if (!res.ok) throw new Error();
 
         const d = await res.json();
@@ -178,7 +178,7 @@ async function openEditModal(id) {
 
 async function openViewModal(id) {
     try {
-        const res = await fetch(`${API_BASE}/${id}`, { headers: getAuthHeaders() });
+        const res = await fetch(`${API_BASE}/${id}`);
         if (!res.ok) throw new Error();
 
         const d = await res.json();
@@ -246,7 +246,7 @@ modalForm.onsubmit = async e => {
             API_BASE + (editId ? `/${editId}` : ""),
             {
                 method: editId ? "PUT" : "POST",
-                headers: getAuthHeaders({ "Content-Type": "application/json" }),
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             }
         );
@@ -262,7 +262,7 @@ modalForm.onsubmit = async e => {
 
 confirmDeleteBtn.onclick = async () => {
     try {
-        const res = await fetch(`${API_BASE}/${deleteId}`, { method: "DELETE", headers: getAuthHeaders() });
+        const res = await fetch(`${API_BASE}/${deleteId}`, { method: "DELETE" });
         if (!res.ok) throw new Error();
 
         overlayDelete.style.display = "none";

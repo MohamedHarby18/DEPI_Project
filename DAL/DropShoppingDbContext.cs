@@ -24,7 +24,7 @@ namespace DAL
         public DbSet<Dropshipper> Dropshippers { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
         public DbSet<WalletTransaction> WalletTransactions { get; set; }
-       
+
 
 
         public DropShoppingDbContext(DbContextOptions<DropShoppingDbContext> options) : base(options)

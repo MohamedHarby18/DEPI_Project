@@ -1,4 +1,4 @@
-﻿ using BAL.DTOs.ProductDTOs;
+﻿using BAL.DTOs.ProductDTOs;
 using BAL.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,30 +8,27 @@ namespace PAL.Controllers
 {
     [ApiController]
     [Route("api/[Controller]")]
-    //[Authorize]
-    public class ProductsController(IProductService productService) : ControllerBase
+    public class ProductsController(IProductService productService):ControllerBase
     {
         [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetAll([FromQuery] ProductParamaters paramaters) => Ok(await productService.GetAllProducts(paramaters));
+        public async Task<IActionResult> GetAll([FromQuery]ProductParamaters paramaters) => Ok(await productService.GetAllProducts(paramaters));
 
 
         [HttpGet("{id}")]
-        [AllowAnonymous]
         public async Task<IActionResult> GetById(Guid id) => Ok(await productService.GetProductById(id));
 
 
         [HttpPost]
-
+        
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<IActionResult> Add([FromForm] ProductCreateDTO createDTO)
+        public async Task<IActionResult> Add([FromForm]ProductCreateDTO createDTO)
         {
             await productService.AddProduct(createDTO);
             return Created();
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromForm] ProductUpdateDTO updateDTO)
+        public async Task<IActionResult> Update([FromForm]ProductUpdateDTO updateDTO)
         {
             await productService.UpdateProduct(updateDTO);
             return Ok();
