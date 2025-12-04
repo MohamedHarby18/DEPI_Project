@@ -39,98 +39,75 @@ class ProductPage {
         }
     }
 
-    // Mock data - replace with actual API call
-    async fetchProductData() {
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 500));
+    async fetchRelatedProducts(categoryId) {
+        try {
+            const maxNeeded = 4;
+            const candidates = [];
 
-        return {
-            mainProduct: {
-                id: "550e8400-e29b-41d4-a716-446655440000",
-                name: "Premium Wireless Headphones",
-                description: "Experience crystal-clear audio with our premium wireless headphones featuring advanced noise cancellation, 30-hour battery life, and superior comfort. Perfect for music lovers and professionals alike.",
-                categoryId: "550e8400-e29b-41d4-a716-446655440001",
-                category: { name: "Audio Equipment" },
-                brandId: "550e8400-e29b-41d4-a716-446655440002",
-                brand: { name: "AudioTech" },
-                price: 299.99,
-                modelYear: 2024,
-                images: [
-                    { image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop" },
-                    { image: "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=500&h=500&fit=crop" }
-                ]
-            },
-            relatedProducts: [
-                {
-                    id: "550e8400-e29b-41d4-a716-446655440003",
-                    name: "Bluetooth Speaker Pro",
-                    description: "Portable Bluetooth speaker with exceptional sound quality",
-                    categoryId: "550e8400-e29b-41d4-a716-446655440001",
-                    category: { name: "Audio Equipment" },
-                    brandId: "550e8400-e29b-41d4-a716-446655440002",
-                    brand: { name: "AudioTech" },
-                    price: 149.99,
-                    modelYear: 2024,
-                    images: [
-                        { image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500&h=500&fit=crop" },
-                        { image: "https://images.unsplash.com/photo-1543512214-318c7553f230?w=500&h=500&fit=crop" },
-                        { image: "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=500&h=500&fit=crop" },
-                        { image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop" },
-                        { image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=500&h=500&fit=crop" },
-                        { image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&h=500&fit=crop" },
-                        { image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&h=500&fit=crop" }
-                    ]
-                },
-                {
-                    id: "550e8400-e29b-41d4-a716-446655440004",
-                    name: "Studio Monitor Headphones",
-                    description: "Professional studio monitor headphones for audio production",
-                    categoryId: "550e8400-e29b-41d4-a716-446655440001",
-                    category: { name: "Audio Equipment" },
-                    brandId: "550e8400-e29b-41d4-a716-446655440002",
-                    brand: { name: "AudioTech" },
-                    price: 199.99,
-                    modelYear: 2024,
-                    images: [
-                        { image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&h=500&fit=crop" },
-                        { image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop" },
-                        { image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=500&h=500&fit=crop" }
-                    ]
-                },
-                {
-                    id: "550e8400-e29b-41d4-a716-446655440005",
-                    name: "Wireless Earbuds",
-                    description: "True wireless earbuds with active noise cancellation",
-                    categoryId: "550e8400-e29b-41d4-a716-446655440001",
-                    category: { name: "Audio Equipment" },
-                    brandId: "550e8400-e29b-41d4-a716-446655440002",
-                    brand: { name: "AudioTech" },
-                    price: 179.99,
-                    modelYear: 2024,
-                    images: [
-                        { image: "https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=500&h=500&fit=crop" },
-                        { image: "https://images.unsplash.com/photo-1583394838336-acd977736f90?w=500&h=500&fit=crop" },
-                        { image: "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=500&h=500&fit=crop" }
-                    ]
-                },
-                {
-                    id: "550e8400-e29b-41d4-a716-446655440006",
-                    name: "Gaming Headset",
-                    description: "High-performance gaming headset with surround sound",
-                    categoryId: "550e8400-e29b-41d4-a716-446655440001",
-                    category: { name: "Audio Equipment" },
-                    brandId: "550e8400-e29b-41d4-a716-446655440002",
-                    brand: { name: "AudioTech" },
-                    price: 129.99,
-                    modelYear: 2024,
-                    images: [
-                        { image: "https://images.unsplash.com/photo-1572536147248-ac59a8abfa4b?w=500&h=500&fit=crop" },
-                        { image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop" },
-                        { image: "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=500&h=500&fit=crop" }
-                    ]
+            // 1) Try to fetch candidates from same category (if provided)
+            let url = `/api/Products?PageSize=${maxNeeded * 2}`; // ask for extra to have options
+            if (categoryId) url += `&CategoryId=${encodeURIComponent(categoryId)}`;
+
+            let response = await fetch(url);
+            if (response.ok) {
+                const data = await response.json();
+                const products = data.result || [];
+                products.forEach(p => {
+                    if (!this.currentProduct || p.id !== this.currentProduct.id) {
+                        if (!candidates.find(c => c.id === p.id)) candidates.push(p);
+                    }
+                });
+            }
+
+            // 2) If we still need more, fetch global products to fill remaining slots
+            if (candidates.length < maxNeeded) {
+                const needed = maxNeeded - candidates.length;
+                const globalUrl = `/api/Products?PageSize=${needed * 3}`; // a bit extra
+                const gResp = await fetch(globalUrl);
+                if (gResp.ok) {
+                    const gData = await gResp.json();
+                    const gProducts = gData.result || [];
+                    gProducts.forEach(p => {
+                        if (!this.currentProduct || p.id !== this.currentProduct.id) {
+                            if (!candidates.find(c => c.id === p.id)) candidates.push(p);
+                        }
+                    });
                 }
-            ]
-        };
+            }
+
+            // 3) Map and limit to maxNeeded
+            this.relatedProducts = candidates
+                .slice(0, maxNeeded)
+                .map(p => ({
+                    id: p.id,
+                    name: p.name,
+                    price: p.price,
+                    brand: { name: p.brandName },
+                    category: { name: p.categoryName },
+                    categoryId: p.categoryId,
+                    images: p.images ? p.images.map(img => ({ image: img })) : [],
+                    modelYear: p.modelYear || "N/A",
+                    description: p.description || ""
+                }));
+
+            this.renderRelatedProducts();
+
+            // Apply per-count grid classes so we can control gaps for 1/2/3/4 items
+            const grid = document.getElementById('relatedProductsGrid');
+            if (grid) {
+                grid.classList.remove('few-items', 'four-items', 'one-item', 'two-items', 'three-items');
+                const len = this.relatedProducts.length;
+                if (len === 1) grid.classList.add('one-item');
+                else if (len === 2) grid.classList.add('two-items');
+                else if (len === 3) grid.classList.add('three-items');
+                else if (len === 4) grid.classList.add('four-items');
+            }
+
+        } catch (error) {
+            console.error("Error fetching related products:", error);
+            this.relatedProducts = [];
+            this.renderRelatedProducts();
+        }
     }
 
     renderMainProduct() {
