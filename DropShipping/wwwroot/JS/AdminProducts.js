@@ -2,7 +2,7 @@
 const API_BASE = 'https://localhost:7000/api/Products';
 const CAT_API = 'https://localhost:7000/api/Category';
 const BRAND_API = 'https://localhost:7000/api/Brands';
-const PAGE_SIZE = 2;
+const PAGE_SIZE = 10;
 
 let currentPage = 1;
 let totalPages = 1;

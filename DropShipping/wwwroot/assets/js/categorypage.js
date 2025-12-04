@@ -17,8 +17,6 @@
         this.clearFiltersBtn = document.getElementById('clearFilters');
         this.cartCountElement = document.getElementById('cartCount');
         this.categoryTitle = document.getElementById('categoryTitle');
-        this.searchInput = document.getElementById('searchInput');
-        this.searchBtn = document.getElementById('searchBtn');
 
         this.init();
     }
@@ -84,7 +82,7 @@
                 }
             }
 
-            const response = await fetch(/api/Products ? ${ params.toString() });
+            const response = await fetch(`/api/Products?${params.toString()}`);
 
             if (!response.ok) {
                 throw new Error(Failed to load products.Status: ${ response.status });
@@ -115,7 +113,7 @@
 
         } catch (error) {
             console.error("Error loading products:", error);
-            this.productsGrid.innerHTML = <p class="error-message">Failed to load products. Please try again later.</p>;
+            this.productsGrid.innerHTML = `<p class="error-message">Failed to load products. Please try again later.</p>`;
         }
     }
 
@@ -133,7 +131,7 @@
             console.log("Rendering brand filters. CategoryId:", this.categoryId);
             let url = '/api/Brands';
             if (this.categoryId) {
-                url += ? categoryId = ${ this.categoryId };
+                url += `?categoryId=${this.categoryId}`;
             }
             console.log("Fetching brands from:", url);
 
@@ -190,7 +188,7 @@
         this.productsGrid.innerHTML = "";
 
         if (this.products.length === 0) {
-            this.productsGrid.innerHTML = <p>No products found.</p>;
+            this.productsGrid.innerHTML = `<p>No products found.</p>`;
             return;
         }
 
@@ -274,7 +272,7 @@
         const start = (this.currentPage - 1) * this.pageSize + 1;
         const end = Math.min(start + this.pageSize - 1, this.totalCount);
 
-        this.resultsCount.textContent = Showing ${ start } -${ end } of ${ this.totalCount } products;
+        this.resultsCount.textContent = `Showing ${start}-${end} of ${this.totalCount} products`;
     }
 
     /*-----------------------------------------------------------
@@ -421,26 +419,6 @@
                 this.brandFiltersContainer.querySelectorAll("input").forEach(cb => cb.checked = false);
                 this.loadProductsFromApi(1);
             });
-        }
-
-        // Search input and button handlers
-        if (this.searchBtn) {
-            this.searchBtn.addEventListener("click", () => this.performSearch());
-        }
-
-        if (this.searchInput) {
-            this.searchInput.addEventListener("keypress", (e) => {
-                if (e.key === 'Enter') {
-                    this.performSearch();
-                }
-            });
-        }
-    }
-
-    performSearch() {
-        const searchTerm = this.searchInput.value.trim();
-        if (searchTerm) {
-            window.location.href = `search.html?q=${encodeURIComponent(searchTerm)}`;
         }
     }
 }

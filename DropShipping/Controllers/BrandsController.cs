@@ -1,4 +1,4 @@
-﻿using BAL.DTOs.BrandDTOs;
+using BAL.DTOs.BrandDTOs;
 using BAL.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -14,11 +14,18 @@ namespace PAL.Controllers
     {
 
         [HttpGet]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAll([FromQuery] Guid? categoryId)
         {
-            var Brands = await brandService.GetAllAsync();
-            return Ok(Brands);
+            if (categoryId.HasValue)
+            {
+                var brands = await brandService.GetBrandsByCategoryId(categoryId.Value);
+                return Ok(brands);
+            }
+            else
+            {
+                var brands = await brandService.GetAllAsync();
+                return Ok(brands);
+            }
         }
 
         [HttpGet("{id}")]

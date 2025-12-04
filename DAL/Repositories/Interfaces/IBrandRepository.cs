@@ -15,6 +15,7 @@ namespace DAL.Repositories.Interfaces
         Task<Brand> GetById(Guid id);
         Task<bool> IsExisted(Guid id);
         Task<IEnumerable<Brand>> GetAll();
+        Task<IEnumerable<Brand>> GetBrandsByCategoryId(Guid categoryId);
 
     }
 }
