@@ -27,58 +27,6 @@
                 font-size: 2rem;
             }
 
-        .add-order-btn {
-            padding: 10px 20px;
-            background: #6EC1E4;
-            color: #fff;
-            border-radius: 8px;
-            cursor: pointer;
-            border: none;
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-            .add-order-btn:hover {
-                background: #55afd3;
-            }
-
-        .order-form {
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            box-shadow: var(--shadow);
-            display: none;
-        }
-
-            .order-form.active {
-                display: block;
-            }
-
-            .order-form h3 {
-                margin-bottom: 15px;
-                color: #54595F;
-            }
-
-            .order-form input,
-            .order-form select {
-                width: 100%;
-                padding: 12px;
-                margin-bottom: 15px;
-                border: 1px solid #e0e0e0;
-                border-radius: 6px;
-            }
-
-            .order-form button {
-                padding: 12px 20px;
-                background: #61CE70;
-                color: #fff;
-                border: none;
-                border-radius: 8px;
-                cursor: pointer;
-                font-size: 1rem;
-            }
-
         table {
             width: 100%;
             border-collapse: collapse;
@@ -124,24 +72,26 @@
                 background: #5cb85c;
             }
 
-        .action-btn {
-            cursor: pointer;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            border: none;
-            margin-right: 5px;
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+            gap: 10px;
         }
 
-        .edit-btn {
-            background: #6EC1E4;
-            color: white;
-        }
+            .pagination button {
+                padding: 8px 15px;
+                border: none;
+                background: #6EC1E4;
+                color: white;
+                border-radius: 5px;
+                cursor: pointer;
+            }
 
-        .delete-btn {
-            background: #E74C3C;
-            color: white;
-        }
+                .pagination button:disabled {
+                    background: #ccc;
+                    cursor: not-allowed;
+                }
 
         /* FOOTER */
         .footer {
@@ -173,8 +123,6 @@
 <body style="display: flex; flex-direction: column; min-height: 100vh;">
 
     <div style="flex: 1;">
-
-        <!-- HEADER -->
         <header class="main-header">
             <div class="container">
                 <div class="logo">
@@ -183,12 +131,10 @@
                         <h1>DropZone</h1>
                     </a>
                 </div>
-
                 <div class="search-bar">
                     <input type="text" placeholder="Search product ..." />
                     <button><i class="fa fa-search"></i></button>
                 </div>
-
                 <div class="right-section">
                     <div class="cart">
                         <a href="ShoppingCart.html"><i class="fa fa-shopping-basket"></i></a>
@@ -197,7 +143,6 @@
                     <a href="#" class="login-link">Logout</a>
                 </div>
             </div>
-
             <nav class="main-nav">
                 <ul>
                     <li class="dropdown">
@@ -210,37 +155,17 @@
             </nav>
         </header>
 
-        <!-- ORDERS PAGE -->
         <div class="orders-container">
-
             <div class="orders-header">
                 <h1>Your Orders</h1>
-                <button class="add-order-btn" onclick="toggleForm()">Add Order</button>
-            </div>
-
-            <!-- ORDER FORM -->
-            <div class="order-form" id="orderForm">
-                <h3 id="formTitle">Add / Edit Order</h3>
-
-                <input type="text" id="orderId" placeholder="Order ID (for edit only)">
-                <input type="number" id="orderPrice" placeholder="Order Price">
-                <input type="number" id="orderDiscount" placeholder="Order Discount">
-                <select id="orderStatus">
-                    <option value="0">Pending</option>
-                    <option value="1">Shipped</option>
-                    <option value="2">Delivered</option>
-                </select>
-                <input type="date" id="shippedDate" placeholder="Shipped Date">
-
-                <button onclick="editOrder()">Submit Order</button>
             </div>
 
             <table id="ordersTable">
                 <thead>
                     <tr>
-                        <th>Order ID</th>
-                        <th>Dropshipper</th>
-                        <th>Customer</th>
+                        <th>Customer Data</th>
+                        <th>Product</th>
+                        <th>Status</th>
                         <th>Items Count</th>
                         <th>Date</th>
                         <th>Actions</th>
@@ -249,6 +174,12 @@
                 <tbody id="ordersBody"></tbody>
             </table>
 
+            <!-- Pagination Controls -->
+            <div class="pagination">
+                <button id="prevPage">Previous</button>
+                <span id="pageInfo"></span>
+                <button id="nextPage">Next</button>
+            </div>
         </div>
     </div>
 
@@ -257,68 +188,28 @@
     </footer>
 
     <script>
-        // -----------------------------
-        // Navigation Categories Loader
-        // -----------------------------
-        class NavigationCategories {
-            constructor() {
-                this.apiBaseUrl = '/api/Category';
-                this.dropdownMenu = null;
-                this.init();
-            }
-
-            async init() {
-                if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', () => this.loadCategories());
-                } else {
-                    await this.loadCategories();
-                }
-            }
-
-            async loadCategories() {
-                try {
-                    this.dropdownMenu = document.querySelector('.dropdown-menu');
-                    if (!this.dropdownMenu) return;
-
-                    const response = await fetch(this.apiBaseUrl);
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-                    const categories = await response.json();
-                    this.populateDropdown(categories);
-                } catch (error) {
-                    console.error('Error loading categories:', error);
-                }
-            }
-
-            populateDropdown(categories) {
-                if (!categories || categories.length === 0) return;
-                this.dropdownMenu.innerHTML = '';
-                categories.forEach(category => {
-                    const li = document.createElement('li');
-                    const a = document.createElement('a');
-                    a.href = `categorypage.html?categoryId=${category.id}`;
-                    a.textContent = category.name;
-                    li.appendChild(a);
-                    this.dropdownMenu.appendChild(li);
-                });
-            }
-        }
-
-        new NavigationCategories();
-
-        // -----------------------------
-        // Orders Table Logic
-        // -----------------------------
         let orders = [];
+        let pageIndex = 1;
+        const pageSize = 5; // Number of orders per page
+        let totalCount = 0;
 
-        async function fetchOrders() {
+        async function fetchOrders(page = 1) {
             try {
-                const response = await fetch("/api/Order");
+                const response = await fetch(`/api/Order?pageIndex=${page}&pageSize=${pageSize}`);
+                if (!response.ok) throw new Error("Failed to fetch orders");
+
                 const data = await response.json();
-                orders = data.result || [];
+                orders = data.result || data || [];
+                pageIndex = data.pageIndex || page;
+                totalCount = data.totalCount || orders.length;
+
                 loadTable();
+                updatePagination();
             } catch (err) {
-                console.error(err);
+                console.error("Error fetching orders:", err);
+                document.getElementById("ordersBody").innerHTML = `
+                        <tr><td colspan="6" style="text-align:center">Failed to load orders</td></tr>
+                    `;
             }
         }
 
@@ -331,63 +222,50 @@
                 return;
             }
 
+            const statusMap = {
+                1: { text: "Pending", class: "status pending" },
+                0: { text: "Shipped", class: "status shipped" },
+                2: { text: "Canceled", class: "status delivered" }
+            };
+
             orders.forEach(order => {
+                const productName = order.items?.[0]?.productName || "No product";
+                const status = statusMap[order.orderStatus] || { text: "Unknown", class: "" };
+
                 body.innerHTML += `
                         <tr>
-                            <td>${order.id}</td>
-                            <td>${order.dropshipperId}</td>
-                            <td>${order.customer?.name}</td>
-                            <td>${order.items?.length}</td>
-                            <td>${order.createdAt || "—"}</td>
                             <td>
-                                <button class="action-btn edit-btn" onclick="fillEditForm('${order.id}', ${order.orderPrice || 0}, ${order.orderDiscount || 0}, ${order.orderStatus || 0}, '${order.shippedDate || ''}')">Edit</button>
-                                <button class="action-btn delete-btn" onclick="deleteOrder('${order.id}')">Delete</button>
+                                ${order.customerName || "No name"}<br>
+                                ${order.customerEmail ? order.customerEmail + "<br>" : ""}
+                                ${order.customerAddress || ""}<br>
+                                ${order.customerPhone || ""}
                             </td>
+                            <td>${productName}</td>
+                            <td><span class="${status.class}">${status.text}</span></td>
+                            <td>${order.items?.length || 0}</td>
+                            <td>${order.createdAt ? order.createdAt.split("T")[0] : "—"}</td>
+                            <td><!-- Actions can go here --></td>
                         </tr>
                     `;
             });
         }
 
-        function toggleForm() {
-            document.getElementById("orderForm").classList.toggle("active");
+        function updatePagination() {
+            const prevBtn = document.getElementById("prevPage");
+            const nextBtn = document.getElementById("nextPage");
+            const pageInfo = document.getElementById("pageInfo");
+
+            const totalPages = Math.ceil(totalCount / pageSize);
+            pageInfo.textContent = `Page ${pageIndex} of ${totalPages}`;
+
+            prevBtn.disabled = pageIndex <= 1;
+            nextBtn.disabled = pageIndex >= totalPages;
+
+            prevBtn.onclick = () => fetchOrders(pageIndex - 1);
+            nextBtn.onclick = () => fetchOrders(pageIndex + 1);
         }
 
-        function fillEditForm(id, price, discount, status, shippedDate) {
-            document.getElementById("orderId").value = id;
-            document.getElementById("orderPrice").value = price;
-            document.getElementById("orderDiscount").value = discount;
-            document.getElementById("orderStatus").value = status;
-            document.getElementById("shippedDate").value = shippedDate ? shippedDate.split('T')[0] : '';
-            document.getElementById("orderForm").classList.add("active");
-        }
-
-        async function editOrder() {
-            const body = {
-                id: document.getElementById("orderId").value,
-                orderPrice: Number(document.getElementById("orderPrice").value),
-                orderDiscount: Number(document.getElementById("orderDiscount").value),
-                orderStatus: Number(document.getElementById("orderStatus").value),
-                shippedDate: document.getElementById("shippedDate").value
-            };
-            if (!body.id) return alert("Order ID is required to edit an order.");
-            try {
-                const response = await fetch("/api/Order", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-                if (!response.ok) return alert("Failed to edit order");
-                alert("Order edited successfully!");
-                fetchOrders();
-            } catch (err) { console.error(err); alert("Error editing order"); }
-        }
-
-        async function deleteOrder(id) {
-            if (!confirm("Are you sure you want to delete this order?")) return;
-            try {
-                const response = await fetch(`/api/Order/${id}`, { method: "DELETE" });
-                if (!response.ok) return alert("Failed to delete order");
-                alert("Order deleted successfully!");
-                fetchOrders();
-            } catch (err) { console.error(err); alert("Error deleting order"); }
-        }
-
+        // Initial load
         fetchOrders();
     </script>
 

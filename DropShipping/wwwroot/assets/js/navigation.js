@@ -25,11 +25,11 @@ class NavigationCategories {
                 return;
             }
 
-            // Fetch categories from API (include auth token if present)
-            const response = await fetch(this.apiBaseUrl, { headers: getAuthHeaders() });
+            // Fetch categories from API
+            const response = await fetch(this.apiBaseUrl);
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                throw new Error(HTTP error! status: ${ response.status });
             }
 
             const categories = await response.json();
@@ -60,7 +60,7 @@ class NavigationCategories {
             const a = document.createElement('a');
 
             // Set the link to category page with category ID
-            a.href = `categorypage.html?categoryId=${category.id}`;
+            a.href = categorypage.html ? categoryId = ${ category.id };
             a.textContent = category.name;
 
             li.appendChild(a);

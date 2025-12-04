@@ -15,7 +15,6 @@
 <body>
     <header class="main-header">
         <div class="container">
-            <!-- Logo -->
             <div class="logo">
                 <div class="circle"></div>
                 <a href="index.html" class="headName">
@@ -23,7 +22,6 @@
                 </a>
             </div>
 
-            <!-- Search Bar -->
             <div class="search-bar">
                 <input type="text" placeholder="Search product ..." />
                 <button><i class="fa fa-search"></i></button>
@@ -61,24 +59,7 @@
         </nav>
     </header>
 
-    <script>
-        // header search behavior: redirect user to listing page with q
-        (function () {
-            const input = document.querySelector('.search-bar input');
-            const btn = document.querySelector('.search-bar button');
-            if (!input) return;
-            const submit = () => {
-                const term = (input.value || '').trim();
-                if (!term) return;
-                window.location.href = `categorypage.html?q=${encodeURIComponent(term)}`;
-            };
-            btn?.addEventListener('click', submit);
-            input.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
-        })();
-    </script>
-
     <div class="container1">
-        <!-- Main Product Section -->
         <div class="product-main">
             <div class="product-gallery">
                 <div class="main-image-container">
@@ -93,7 +74,6 @@
                     </div>
                 </div>
                 <div class="thumbnail-images" id="thumbnailImages">
-                    <!-- Thumbnails will be populated by JavaScript -->
                 </div>
             </div>
 
@@ -140,17 +120,23 @@
             </div>
         </div>
 
-        <!-- Related Products Section -->
         <div class="related-products">
-            <h2>Related Products</h2>
-            <div class="products-grid" id="relatedProductsGrid">
-                <!-- Related products will be populated by JavaScript -->
+            <div class="related-products-container">
+                <div class="related-header">
+                    <h2>Related Products</h2>
+                    <a href="#" id="seeMoreBtn" class="see-more-btn">
+                        See More <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                <div class="products-grid" id="relatedProductsGrid">
+                </div>
             </div>
         </div>
     </div>
 
     <script src="assets/js/product.js"></script>
     <script src="./assets/js/cart.js"></script>
+    <script src="assets/js/navigation.js"></script>
 </body>
 
 </html>

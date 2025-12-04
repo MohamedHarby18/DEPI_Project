@@ -58,8 +58,14 @@ namespace BAL.Services.Mapping
 
             CreateMap<Order, OrderDetailsDTO>()
                 .ForMember(dest => dest.DropshipperName,
-                opt => opt.MapFrom(src =>
-                src.Dropshipper != null ? src.Dropshipper.UserName : string.Empty))
+                           opt => opt.MapFrom(src => src.Dropshipper != null ? src.Dropshipper.UserName : string.Empty))
+                .ForMember(dest => dest.CustomerName,
+                           opt => opt.MapFrom(src => src.Customer != null ? src.Customer.Name : string.Empty))
+             
+                .ForMember(dest => dest.CustomerAddress,
+                           opt => opt.MapFrom(src => src.Customer != null ? src.Customer.Address : string.Empty))
+                .ForMember(dest => dest.CustomerPhone,
+                           opt => opt.MapFrom(src => src.Customer != null ? src.Customer.PhoneNumber : string.Empty))
                 .ReverseMap();
 
             CreateMap<OrderCreateDTO, Order>()
