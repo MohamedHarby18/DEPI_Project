@@ -11,7 +11,7 @@ namespace DAL.Repositories.Interfaces
     {
         Task<IEnumerable<Dropshipper>> GetAllDropshippersAsync();
         Task<Dropshipper> GetDropshipperByIdAsync(string userId);
-
+        Task<Wallet> GetDropshipperWalletById(string userId);
         Task CreateDropshipperAsync(Dropshipper dropshipper , string UserId);
 
         Task UpdateDropshipperAsync(Dropshipper dropshipper);

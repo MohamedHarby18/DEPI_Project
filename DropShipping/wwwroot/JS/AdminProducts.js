@@ -19,6 +19,18 @@ const searchInput = document.getElementById('searchInput');
 function qS(sel) { return document.querySelector(sel); }
 function qSA(sel) { return Array.from(document.querySelectorAll(sel)); }
 
+
+// --- Get JWT token from localStorage ---
+function authHeaders() {
+    const token = localStorage.getItem("token");
+    return {
+        "Authorization": `Bearer ${token}`
+    };
+}
+
+
+
+
 // Build API URL (inline parameters style)
 function buildProductsUrl(searchTerm = '') {
     const cat = selectedCategoryId || '';
@@ -27,6 +39,8 @@ function buildProductsUrl(searchTerm = '') {
     const url = `${API_BASE}?CategoryId=${encodeURIComponent(cat)}&BrandId=${encodeURIComponent(brand)}&SearchTerm=${encodeURIComponent(term)}&PageIndex=${encodeURIComponent(currentPage)}&PageSize=${PAGE_SIZE}`;
     return url;
 }
+
+
 
 // Escape HTML for safe rendering
 function escapeHtml(str) {
@@ -134,7 +148,9 @@ async function openEditModal(id) {
     await populateModalDropdowns();
 
     try {
-        const res = await fetch(`${API_BASE}/${id}`);
+        const res = await fetch(`${API_BASE}/${id}`, {// --- Get JWT token from localStorage ---
+            headers: authHeaders()
+            });
         if (!res.ok) throw new Error('Failed to fetch product');
         const p = await res.json();
 
@@ -163,7 +179,9 @@ async function openEditModal(id) {
 async function populateModalDropdowns() {
     // Categories
     try {
-        const catRes = await fetch(CAT_API);
+        const catRes = await fetch(CAT_API, {// --- Get JWT token from localStorage ---
+            headers: authHeaders()
+        });
         if (catRes.ok) {
             categories = await catRes.json();  // Store globally
             pCategory.innerHTML = '<option value="">Select Category</option>';
@@ -182,7 +200,9 @@ async function populateModalDropdowns() {
 
     // Brands
     try {
-        const brandRes = await fetch(BRAND_API);
+        const brandRes = await fetch(BRAND_API, {// --- Get JWT token from localStorage ---
+            headers: authHeaders()
+        });
         if (brandRes.ok) {
             brands = await brandRes.json();  // Store globally
             pBrand.innerHTML = '<option value="">Select Brand</option>';
@@ -250,9 +270,14 @@ modalForm.addEventListener('submit', async e => {
         }
 
         const res = await fetch(url, {
+            headers: authHeaders(),
             method: currentEditId ? 'PUT' : 'POST',
+            headers: getAuthHeaders(),
             body: formData
+       
+          
         });
+      
 
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         overlayAddEdit.style.display = 'none';
@@ -269,7 +294,9 @@ modalForm.addEventListener('submit', async e => {
 /* ---------- View Product ---------- */
 async function openViewModal(id) {
     try {
-        const res = await fetch(`${API_BASE}/${id}`);
+        const res = await fetch(`${API_BASE}/${id}`, {
+            headers: authHeaders()
+        });
         if (!res.ok) throw new Error('Failed to fetch product');
         const p = await res.json();
 
@@ -326,7 +353,7 @@ function openDeleteModal(id) {
 confirmDeleteBtn.addEventListener('click', async () => {
     if (!deleteId) return;
     try {
-        const res = await fetch(`${API_BASE}/${deleteId}`, { method: 'DELETE' });
+        const res = await fetch(`${API_BASE}/${deleteId}`, { method: 'DELETE', headers: authHeaders() });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         overlayDelete.style.display = 'none';
         fetchAndRender();
@@ -407,7 +434,7 @@ async function fetchAndRender() {
     console.log('Fetching:', url);
 
     try {
-        const res = await fetch(url);
+        const res = await fetch(url, { headers: authHeaders()});
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const json = await res.json();
@@ -427,14 +454,14 @@ async function fetchAndRender() {
 async function loadCategoriesAndBrands() {
     // categories
     try {
-        const resC = await fetch(CAT_API);
+        const resC = await fetch(CAT_API, { headers: authHeaders()});
         const cats = await resC.json();
         populateDropdown('#categoryDropdown', '#categoryMenu', cats, 'All Categories');
     } catch { populateDropdown('#categoryDropdown', '#categoryMenu', [], 'All Categories'); }
 
     // brands
     try {
-        const resB = await fetch(BRAND_API);
+        const resB = await fetch(BRAND_API, { headers: authHeaders()});
         const brands = await resB.json();
         populateDropdown('#brandDropdown', '#brandMenu', brands, 'All Brands');
     } catch { populateDropdown('#brandDropdown', '#brandMenu', [], 'All Brands'); }

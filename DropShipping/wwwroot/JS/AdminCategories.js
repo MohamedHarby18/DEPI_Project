@@ -1,5 +1,19 @@
-﻿const API_BASE = 'https://localhost:7000/api/Category';
+﻿// =======================
+// CONFIG
+// =======================
+const API_BASE = 'https://localhost:7000/api/Category';
 
+// --- Get JWT token from localStorage ---
+function authHeaders() {
+    const token = localStorage.getItem("token");
+    return {
+        "Authorization": `Bearer ${token}`
+    };
+}
+
+// =======================
+// DOM ELEMENTS
+// =======================
 const tbody = document.getElementById('tbody');
 const searchInput = document.getElementById('searchInput');
 const addProductBtn = document.getElementById('addProductBtn');
@@ -24,6 +38,9 @@ const cancelDeleteBtn = document.getElementById('cancelDelete');
 let currentEditId = null;
 let deleteId = null;
 
+// =======================
+// HELPERS
+// =======================
 function escapeHtml(str) {
     if (!str) return '';
     return String(str).replace(/[&<>"'`=\/]/g, s => ({
@@ -55,10 +72,17 @@ function renderTable(categories) {
     categories.forEach(cat => tbody.appendChild(renderRow(cat)));
 }
 
+// =======================
+// GET ALL — WITH TOKEN
+// =======================
 async function fetchAndRender() {
     try {
-        const res = await fetch(API_BASE);
+        const res = await fetch(API_BASE, {
+            headers: authHeaders()
+        });
+
         if (!res.ok) throw new Error(res.statusText);
+
         const cats = await res.json();
         renderTable(cats.map(c => ({ id: c.id, name: c.name })));
     } catch (err) {
@@ -67,7 +91,9 @@ async function fetchAndRender() {
     }
 }
 
-// --- Add / Edit Modal ---
+// =======================
+// ADD / EDIT
+// =======================
 addProductBtn.addEventListener('click', () => {
     currentEditId = null;
     modalTitle.textContent = 'Add Category';
@@ -78,14 +104,19 @@ addProductBtn.addEventListener('click', () => {
 
 async function openEditModal(id) {
     currentEditId = id;
-    console.log(currentEditId)
     modalTitle.textContent = 'Edit Category';
+
     try {
-        const res = await fetch(`${API_BASE}/${id}`);
+        const res = await fetch(`${API_BASE}/${id}`, {
+            headers: authHeaders()
+        });
+
         if (!res.ok) throw new Error(res.statusText);
+
         const cat = await res.json();
         productIdInput.value = cat.id;
         pName.value = cat.name || '';
+
         overlayAddEdit.classList.add('show');
     } catch (err) {
         console.error(err);
@@ -95,21 +126,26 @@ async function openEditModal(id) {
 
 modalForm.addEventListener('submit', async e => {
     e.preventDefault();
+
     const name = pName.value.trim();
     const id = currentEditId;
     if (!name) { alert('Name is required'); return; }
-    if (currentEditId) { var data = { id, name }; }
-    else { var data = { name }; }
-    
+
+    const data = currentEditId ? { id, name } : { name };
+    const method = currentEditId ? 'PUT' : 'POST';
+
     try {
-        const url =  API_BASE;
-        const method = currentEditId ? 'PUT' : 'POST';
-        const res = await fetch(url, {
+        const res = await fetch(API_BASE, {
             method,
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                ...authHeaders(),
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify(data)
         });
+
         if (!res.ok) throw new Error(res.statusText);
+
         overlayAddEdit.classList.remove('show');
         currentEditId = null;
         fetchAndRender();
@@ -119,9 +155,13 @@ modalForm.addEventListener('submit', async e => {
     }
 });
 
-// --- View Modal ---
+// =======================
+// VIEW CATEGORY
+// =======================
 function openViewModal(id) {
-    fetch(`${API_BASE}/${id}`)
+    fetch(`${API_BASE}/${id}`, {
+        headers: authHeaders()
+    })
         .then(res => res.json())
         .then(cat => {
             viewName.textContent = cat.name || '';
@@ -133,7 +173,9 @@ function openViewModal(id) {
         });
 }
 
-// --- Delete Modal ---
+// =======================
+// DELETE CATEGORY
+// =======================
 function openDeleteModal(id) {
     deleteId = id;
     deleteMsg.textContent = 'Are you sure you want to delete this category?';
@@ -142,9 +184,15 @@ function openDeleteModal(id) {
 
 confirmDeleteBtn.addEventListener('click', async () => {
     if (!deleteId) return;
+
     try {
-        const res = await fetch(`${API_BASE}/${deleteId}`, { method: 'DELETE' });
+        const res = await fetch(`${API_BASE}/${deleteId}`, {
+            method: 'DELETE',
+            headers: authHeaders()
+        });
+
         if (!res.ok) throw new Error(res.statusText);
+
         overlayDelete.classList.remove('show');
         deleteId = null;
         fetchAndRender();
@@ -154,10 +202,13 @@ confirmDeleteBtn.addEventListener('click', async () => {
     }
 });
 
-// --- Event delegation for table buttons ---
+// =======================
+// EVENTS + SEARCH
+// =======================
 tbody.addEventListener('click', e => {
     const btn = e.target.closest('button');
     if (!btn || !btn.dataset.id) return;
+
     const id = btn.dataset.id;
 
     if (btn.classList.contains('viewBtn')) openViewModal(id);
@@ -165,7 +216,6 @@ tbody.addEventListener('click', e => {
     else if (btn.classList.contains('delBtn')) openDeleteModal(id);
 });
 
-// --- Close modals ---
 [cancelModalBtn, closeViewBtn, cancelDeleteBtn].forEach(btn => {
     btn.addEventListener('click', () => {
         overlayAddEdit.classList.remove('show');
@@ -174,19 +224,22 @@ tbody.addEventListener('click', e => {
     });
 });
 
-// --- Click outside modal closes it ---
 [overlayAddEdit, overlayView, overlayDelete].forEach(ov =>
-    ov.addEventListener('click', e => { if (e.target === ov) ov.classList.remove('show'); })
+    ov.addEventListener('click', e => {
+        if (e.target === ov) ov.classList.remove('show');
+    })
 );
 
-// --- Search ---
 searchInput.addEventListener('input', () => {
     const term = searchInput.value.trim().toLowerCase();
+
     Array.from(tbody.children).forEach(tr => {
         const name = tr.children[0].textContent.toLowerCase();
         tr.style.display = name.includes(term) ? '' : 'none';
     });
 });
 
-// --- Initialize table ---
+// =======================
+// INIT
+// =======================
 fetchAndRender();

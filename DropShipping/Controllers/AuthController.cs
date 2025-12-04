@@ -21,13 +21,13 @@ namespace PAL.Controllers
         private readonly IConfiguration _config;
         private readonly DropShoppingDbContext _context;
 
-
         public AuthController(UserManager<User> userManager, IConfiguration config, DropShoppingDbContext context)
         {
             _userManager = userManager;
             _config = config;
             _context = context;
         }
+
         [HttpPost("signup")]
         public async Task<IActionResult> Register(RegisterDto dto)
         {
@@ -57,7 +57,6 @@ namespace PAL.Controllers
             // Create Dropshipper row if needed
             var User = await _userManager.FindByEmailAsync(user.Email);
 
-
             var dropshipper = new Dropshipper
             {
                 UserId = User.Id,
@@ -65,12 +64,8 @@ namespace PAL.Controllers
                 Wallet = new Wallet()
             };
 
-
             _context.Dropshippers.Add(dropshipper);
             await _context.SaveChangesAsync();
-
-
-
 
             return Ok(new { Message = "Account created successfully!" });
         }
@@ -79,7 +74,9 @@ namespace PAL.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDTO dto)
         {
-            var user = await _userManager.FindByEmailAsync(dto.Email);
+            var user = await _userManager.Users
+                .Include(u => u.Dropshipper)
+                .FirstOrDefaultAsync(u => u.Email == dto.Email);
 
             if (user == null)
                 return Unauthorized("Invalid email or password");
@@ -94,11 +91,10 @@ namespace PAL.Controllers
             return Ok(new
             {
                 Token = token,
-                User = new { user.Id, user.Email },
+                UserId= user.Id,
                 UserType = user.Dropshipper != null ? "DropShipper" : "Admin"
             });
         }
-
 
         // ------------------- JWT GENERATION ----------------------
         private string GenerateJwtToken(User user)
@@ -110,7 +106,7 @@ namespace PAL.Controllers
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email)
             };
 

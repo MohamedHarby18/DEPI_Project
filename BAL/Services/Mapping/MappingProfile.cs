@@ -9,6 +9,7 @@ using BAL.DTOs.DropshipperDTOs;
 using BAL.DTOs.OrderDTOs;
 using BAL.DTOs.OrderItemDTOs;
 using BAL.DTOs.ProductDTOs;
+using BAL.DTOs.WalletDTOs;
 using DAL.Models;
 using System;
 using System.Collections.Generic;
@@ -61,8 +62,14 @@ namespace BAL.Services.Mapping
 
             CreateMap<Order, OrderDetailsDTO>()
                 .ForMember(dest => dest.DropshipperName,
-                opt => opt.MapFrom(src =>
-                src.Dropshipper != null ? src.Dropshipper.UserName : string.Empty))
+                           opt => opt.MapFrom(src => src.Dropshipper != null ? src.Dropshipper.UserName : string.Empty))
+                .ForMember(dest => dest.CustomerName,
+                           opt => opt.MapFrom(src => src.Customer != null ? src.Customer.Name : string.Empty))
+             
+                .ForMember(dest => dest.CustomerAddress,
+                           opt => opt.MapFrom(src => src.Customer != null ? src.Customer.Address : string.Empty))
+                .ForMember(dest => dest.CustomerPhone,
+                           opt => opt.MapFrom(src => src.Customer != null ? src.Customer.PhoneNumber : string.Empty))
                 .ReverseMap();
 
             CreateMap<OrderCreateDTO, Order>()
@@ -81,6 +88,14 @@ namespace BAL.Services.Mapping
                 .ReverseMap();
 
             CreateMap<OrderItemCreateDTO, OrderItem>().ReverseMap();
+
+
+
+
+            CreateMap<DAL.Models.Wallet, WalletDTO>().ReverseMap();
+            CreateMap<DAL.Models.WalletTransaction, WalletTransactionDTO>().ReverseMap();
+
+
 
             // Customer mapping
             CreateMap<Customer, CustomerDetailsDTO>().ReverseMap();
@@ -107,7 +122,8 @@ namespace BAL.Services.Mapping
 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => src.User.CreatedAt))
 .ReverseMap();
 
-
+            CreateMap<DAL.Models.WalletTransaction, BAL.DTOs.DropshipperDTOs.WalletTransaction>().ReverseMap();
+            CreateMap<DAL.Models.Wallet, BAL.DTOs.DropshipperDTOs.Wallet>().ReverseMap();
 
         }
 
