@@ -18,6 +18,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Wallet = DAL.Models.Wallet;
 
 namespace BAL.Services.Mapping
 {
@@ -92,6 +93,10 @@ namespace BAL.Services.Mapping
 
 
             CreateMap<DAL.Models.WalletTransaction, WalletTransactionDTO>().ReverseMap();
+            CreateMap<WalletCreateDTO, Wallet>().ReverseMap();
+            CreateMap<WalletCreateTransactionDTO, WalletTransactionDTO>().ReverseMap();
+
+
 
             CreateMap<DAL.Models.Wallet, WalletDTO>()
                 .ForMember(dest => dest.WalletTransactionDTO,

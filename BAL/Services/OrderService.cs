@@ -108,22 +108,51 @@ namespace BAL.Services.Implementations
 
                 var Wallet= await _context.Wallets.Where(w => w.DropshipperId == createDto.DropshipperId).FirstOrDefaultAsync();
 
-                var wallet = new WalletCreateDTO
-                {
-                    Balance = Wallet.Balance + totalPrice,
-                    DropshipperId = createDto.DropshipperId,
-                    WalletTransactionDTO = new WalletCreateTransactionDTO
-                    {
 
+                var wallet = await _context.Wallets
+          .Include(w => w.WalletTransactions) // include existing transactions
+          .FirstOrDefaultAsync(w => w.DropshipperId == createDto.DropshipperId);
+
+                if (wallet != null)
+                {
+                    // Update existing wallet balance
+                    wallet.Balance += totalPrice;
+
+                    // Ensure the WalletTransactions collection is initialized
+                    wallet.WalletTransactions ??= new List<WalletTransaction>();
+
+                    // Add a new transaction
+                    wallet.WalletTransactions.Add(new WalletTransaction
+                    {
                         Amount = totalPrice,
                         TransactionDate = DateTime.Now,
-                        Description = "Order Payment",
-                        WalletId = Wallet.WalletId
-                    }
-                };
-                var walletMapped= _mapper.Map<Wallet>(wallet);
-                await _context.Wallets.AddAsync(walletMapped);
+                        Description = "Order Payment"
+                    });
 
+                    // No need to call _context.Wallets.Update(wallet) if the entity is tracked
+                }
+                else
+                {
+                    // Create a new wallet with the first transaction
+                    var newWallet = new Wallet
+                    {
+                        DropshipperId = createDto.DropshipperId,
+                        Balance = totalPrice,
+                        WalletTransactions = new List<WalletTransaction>
+        {
+            new WalletTransaction
+            {
+                Amount = totalPrice,
+                TransactionDate = DateTime.Now,
+                Description = "Order Payment"
+            }
+        }
+                    };
+
+                    await _context.Wallets.AddAsync(newWallet);
+                }
+
+                // Finally, save changes
 
 
                 await _context.SaveChangesAsync();
