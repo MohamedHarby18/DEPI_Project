@@ -2,11 +2,11 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>DropZone - Home</title>
-  <link rel="stylesheet" href="./home.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DropZone - Home</title>
+    <link rel="stylesheet" href="./home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
 </head>
 
@@ -25,8 +25,8 @@
 
             <!-- Search Bar -->
             <div class="search-bar">
-                <input type="text" placeholder="Search product ..." />
-                <button><i class="fa fa-search"></i></button>
+                <input type="text" id="searchInput" placeholder="Search product ..." />
+                <button id="searchBtn"><i class="fa fa-search"></i></button>
             </div>
 
             <div class="right-section">
@@ -63,7 +63,8 @@
         <div class="hero-content">
             <h1>Global Electronics Dropshipping Made Simple</h1>
             <p>
-                We connect you to trusted manufacturers and trending tech products — scale your business without inventory or
+                We connect you to trusted manufacturers and trending tech products — scale your business without
+                inventory or
                 logistics stress.
             </p>
             <a href="#" class="btn">View Latest Products</a>
@@ -199,7 +200,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", loadNewestProducts);
-        // header search behavior: redirect to category page with query q
+        // header search behavior: redirect to search page with query q
         (function () {
             const input = document.querySelector('.search-bar input');
             const btn = document.querySelector('.search-bar button');
@@ -207,7 +208,7 @@
             const submit = () => {
                 const term = (input.value || '').trim();
                 if (!term) return;
-                window.location.href = `categorypage.html?q=${encodeURIComponent(term)}`;
+                window.location.href = `search.html?q=${encodeURIComponent(term)}`;
             };
             btn?.addEventListener('click', submit);
             input.addEventListener('keydown', (e) => { if (e.key === 'Enter') submit(); });
