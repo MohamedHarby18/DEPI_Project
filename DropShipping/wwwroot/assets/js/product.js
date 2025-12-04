@@ -101,11 +101,26 @@ if (grid) {
     else if (len === 4) grid.classList.add('four-items');
 }
 
-        } catch (error) {
-    console.error("Error fetching related products:", error);
-    this.relatedProducts = [];
-    this.renderRelatedProducts();
-}
+        // Setup main gallery arrow events
+        this.setupMainGalleryArrows();
+
+        // Setup "See More" button to go to the category page
+        try {
+            const seeMoreBtn = document.getElementById('seeMoreBtn');
+            if (seeMoreBtn) {
+                if (product.categoryId) {
+                    // Link to category page using categoryId
+                    seeMoreBtn.href = `categorypage.html?categoryId=${encodeURIComponent(product.categoryId)}`;
+                    seeMoreBtn.style.display = 'inline-flex';
+                } else {
+                    // If no categoryId is available hide the button
+                    seeMoreBtn.href = '#';
+                    seeMoreBtn.style.display = 'none';
+                }
+            }
+        } catch (err) {
+            console.error('Failed to setup See More button:', err);
+        }
     }
 
 renderMainProduct() {
@@ -355,10 +370,8 @@ createProductCard(product) {
             </div>
         `;
 
-
-
-    // Setup arrow events for this card
-    this.setupCardArrows(card, product);
+        // Setup arrow events for this card
+        this.setupCardArrows(card, product);
 
     // Setup action button event for this card
     this.setupCardActionButton(card, product);
@@ -696,22 +709,12 @@ loadSelectedProduct() {
     }
 }
 
-loadProductCatalog() {
-    try {
-        const stored = localStorage.getItem('productCatalog');
-        return stored ? JSON.parse(stored) : [];
-    } catch (error) {
-        console.error('Failed to parse product catalog', error);
-        return [];
-    }
-}
-
-showMessage(message, type = 'info') {
-    // Create and show a temporary message
-    const messageDiv = document.createElement('div');
-    messageDiv.className = message message - ${ type };
-    messageDiv.textContent = message;
-    messageDiv.style.cssText = `
+    showMessage(message, type = 'info') {
+        // Create and show a temporary message
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message message-${type}`;
+        messageDiv.textContent = message;
+        messageDiv.style.cssText = `
             position: fixed;
             top: 20px;
             right: 20px;
