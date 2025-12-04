@@ -67,6 +67,10 @@ namespace BAL.Services
             var dropshipper = await dropshipperRepository.GetDropshipperByIdAsync(userId);
             if (dropshipper == null)
                 return null;
+            if (dropshipper.Wallet != null)
+            {
+                Console.WriteLine($"Transactions: {dropshipper.Wallet.WalletTransactions.Count}");
+            }
             var mapped = mapper.Map<DropshipperDetails>(dropshipper);
             return mapped;
         }

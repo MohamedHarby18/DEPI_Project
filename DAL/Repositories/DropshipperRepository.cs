@@ -23,8 +23,9 @@ namespace DAL.Repositories
         public async Task<Dropshipper> GetDropshipperByIdAsync(string userId)
         {
             return (await dbContext.Dropshippers.Include(d => d.User) 
-         .AsNoTracking()
+         .AsNoTracking().Include(x=>x.Wallet).ThenInclude(x=>x.WalletTransactions)
          .FirstOrDefaultAsync(x => x.UserId == userId))!;
+
         }
 
         public async Task<Wallet> GetDropshipperWalletById(string userId)

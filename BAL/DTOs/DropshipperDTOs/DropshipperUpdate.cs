@@ -14,7 +14,7 @@ namespace BAL.DTOs.DropshipperDTOs
         public string Email { get; set; }
         public string PhoneNumber { get; set; }
 
-        public string Password { get; set; }  // PK and FK to ApplicationUser
+        public string? Password { get; set; }  // PK and FK to ApplicationUser
 
         public Address Address { get; set; }
 

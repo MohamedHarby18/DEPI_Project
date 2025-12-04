@@ -15,7 +15,7 @@ namespace BAL.DTOs.WalletDTOs
         // Foreign key to Dropshipper
         public string DropshipperId { get; set; }
 
-        public WalletTransactionDTO WalletTransactionDTO { get; set; }
+        public ICollection<WalletTransactionDTO> WalletTransactionDTO { get; set; }
     }
 
 

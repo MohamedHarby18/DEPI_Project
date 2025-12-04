@@ -19,8 +19,8 @@ namespace BAL.DTOs.WalletDTOs
         // Foreign key to Wallet
         public int WalletId { get; set; }
 
-        // Navigation property to Wallet
-        public virtual WalletDTO Wallet { get; set; }
+        //// Navigation property to Wallet
+        //public WalletDTO Wallet { get; set; }
     }
 
     public class WalletCreateTransactionDTO

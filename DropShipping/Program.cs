@@ -64,7 +64,7 @@ namespace DropShipping
                 options.AddPolicy("AllowFrontend",
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:3000", "http://127.0.0.1:5500", "http://localhost:4200") // your frontend URLs
+                        policy.WithOrigins("http://localhost:7000", "http://127.0.0.1:5500", "http://localhost:4200") // your frontend URLs
                               .AllowAnyHeader()
                               .AllowAnyMethod();
                     });

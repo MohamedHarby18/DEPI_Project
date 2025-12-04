@@ -88,9 +88,12 @@ namespace BAL.Services.Mapping
 
 
 
-
-            CreateMap<DAL.Models.Wallet, WalletDTO>().ReverseMap();
             CreateMap<DAL.Models.WalletTransaction, WalletTransactionDTO>().ReverseMap();
+
+            CreateMap<DAL.Models.Wallet, WalletDTO>()
+                .ForMember(dest => dest.WalletTransactionDTO,
+                           opt => opt.MapFrom(src => src.WalletTransactions))
+                .ReverseMap();
 
 
 
