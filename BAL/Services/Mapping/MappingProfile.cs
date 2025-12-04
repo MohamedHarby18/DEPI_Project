@@ -9,6 +9,7 @@ using BAL.DTOs.DropshipperDTOs;
 using BAL.DTOs.OrderDTOs;
 using BAL.DTOs.OrderItemDTOs;
 using BAL.DTOs.ProductDTOs;
+using BAL.DTOs.WalletDTOs;
 using DAL.Models;
 using System;
 using System.Collections.Generic;
@@ -84,6 +85,14 @@ namespace BAL.Services.Mapping
                 .ReverseMap();
 
             CreateMap<OrderItemCreateDTO, OrderItem>().ReverseMap();
+
+
+
+
+            CreateMap<DAL.Models.Wallet, WalletDTO>().ReverseMap();
+            CreateMap<DAL.Models.WalletTransaction, WalletTransactionDTO>().ReverseMap();
+
+
 
             // Customer mapping
             CreateMap<Customer, CustomerDetailsDTO>().ReverseMap();

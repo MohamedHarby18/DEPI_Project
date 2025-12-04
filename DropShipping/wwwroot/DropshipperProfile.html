@@ -1,0 +1,203 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dropshipper Profile | SupplierConnect</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="CSS/DropshipperProfile.css" />
+</head>
+<body>
+
+<header>
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-box-open"></i>
+                <span>SupplierConnect</span>
+            </div>
+            <div class="user-actions">
+                <button class="btn btn-outline"><i class="fas fa-chart-line"></i> Dashboard</button>
+                <button class="btn btn-primary" id="editProfileBtn"><i class="fas fa-edit"></i> Edit Profile</button>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <h1 class="page-title">Dropshipper Dashboard</h1>
+
+    <div class="profile-container">
+        <aside class="sidebar">
+            <div class="profile-header">
+                <div class="avatar" id="profileAvatar">JD</div>
+                <h2 class="profile-name" id="profileName">John Doe</h2>
+                <div class="profile-role">Verified Dropshipper</div>
+            </div>
+
+            <ul class="sidebar-menu">
+                <li><a href="#" class="sidebar-tab active" data-tab="profile"><i class="fas fa-user"></i> Profile</a></li>
+                <li><a href="#" class="sidebar-tab" data-tab="wallet"><i class="fas fa-wallet"></i> Wallet</a></li>
+                <li><a href="#" class="sidebar-tab" data-tab="transactions"><i class="fas fa-exchange-alt"></i> Transactions</a></li>
+                <li><a href="#"><i class="fas fa-shopping-cart"></i> Orders (24)</a></li>
+                <li><a href="#"><i class="fas fa-box"></i> Products (156)</a></li>
+                <li><a href="#"><i class="fas fa-chart-bar"></i> Analytics</a></li>
+                <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="profile"><i class="fas fa-user"></i> Profile Information</button>
+                <button class="tab-btn" data-tab="wallet"><i class="fas fa-wallet"></i> Wallet</button>
+                <button class="tab-btn" data-tab="transactions"><i class="fas fa-exchange-alt"></i> Transactions</button>
+            </div>
+
+            <!-- Profile Tab -->
+            <div class="tab-content active" id="profile-tab">
+                <div class="tab-pane">
+                    <h2 class="section-title"><i class="fas fa-info-circle"></i> Personal Information</h2>
+
+                    <div class="data-grid">
+                        <div class="data-item"><div class="data-label">User ID</div><div class="data-value" id="userId"></div></div>
+                        <div class="data-item"><div class="data-label">Username</div><div class="data-value" id="userName"></div></div>
+                        <div class="data-item"><div class="data-label">Email Address</div><div class="data-value" id="userEmail"></div></div>
+                        <div class="data-item"><div class="data-label">Phone Number</div><div class="data-value" id="userPhone"></div></div>
+                        <div class="data-item"><div class="data-label">Account Status</div><div class="data-value"><span id="accountStatus"></span></div></div>
+                        <div class="data-item"><div class="data-label">Member Since</div><div class="data-value" id="createdAt"></div></div>
+                    </div>
+
+                    <h2 class="section-title"><i class="fas fa-map-marker-alt"></i> Address Information</h2>
+                    <div class="address-section"><div class="address-grid" id="addressInfo"></div></div>
+
+                    <div class="account-info">
+                        <div><div class="data-label">Account ID</div><div class="data-value" id="accountId"></div></div>
+                        <div><button class="btn btn-danger" id="deactivateBtn"><i class="fas fa-user-slash"></i> Deactivate Account</button></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Wallet Tab -->
+            <div class="tab-content" id="wallet-tab">
+                <div class="tab-pane">
+                    <h2 class="section-title"><i class="fas fa-wallet"></i> Wallet Overview</h2>
+
+                    <div class="wallet-summary" id="walletSummary"></div>
+                    <table class="transactions-table"><tbody id="walletActivity"></tbody></table>
+                </div>
+            </div>
+
+            <!-- Transactions Tab -->
+            <div class="tab-content" id="transactions-tab">
+                <div class="tab-pane">
+                    <h2 class="section-title"><i class="fas fa-exchange-alt"></i> Transaction History</h2>
+                    <table class="transactions-table"><tbody id="transactionsTableBody"></tbody></table>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+let dropshipperData = null;
+let walletData = null;
+let transactionsData = [];
+
+async function loadDropshipper() {
+    const userId = localStorage.getItem("userId");
+    if (!userId) return alert("User not logged in");
+
+    try {
+        const response = await fetch(`/api/dropshipper/${userId}`);
+        if (!response.ok) throw new Error("API error");
+
+        const data = await response.json();
+
+        dropshipperData = {
+            id: data.id,
+            userName: data.userName,
+            email: data.email,
+            phoneNumber: data.phoneNumber,
+            isActive: data.isActive,
+            createdAt: data.createdAt,
+            address: {
+                street: data.address?.street ?? "N/A",
+                city: data.address?.city ?? "N/A",
+                country: data.address?.country ?? "N/A"
+            }
+        };
+
+        if (data.wallet) {
+            walletData = {
+                balance: data.wallet.balance ?? 0,
+                totalWithdrawn: data.wallet.totalWithdrawn ?? 0,
+                pending: data.wallet.pending ?? 0,
+                currency: data.wallet.currency ?? "USD",
+                recentActivity: data.wallet.recentActivity ?? []
+            };
+            transactionsData = data.wallet.transactions ?? [];
+        }
+
+        updateProfileDisplay();
+        if (walletData) populateWalletActivity();
+        if (transactionsData) populateTransactionsTable(transactionsData);
+
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function updateProfileDisplay() {
+    document.getElementById("userId").textContent = dropshipperData.id;
+    document.getElementById("userName").textContent = dropshipperData.userName;
+    document.getElementById("userEmail").textContent = dropshipperData.email;
+    document.getElementById("userPhone").textContent = dropshipperData.phoneNumber;
+    document.getElementById("createdAt").textContent = new Date(dropshipperData.createdAt).toLocaleDateString();
+
+    const status = document.getElementById("accountStatus");
+    status.textContent = dropshipperData.isActive ? "Active" : "Inactive";
+
+    populateAddress();
+}
+
+function populateAddress() {
+    const a = dropshipperData.address;
+    document.getElementById("addressInfo").innerHTML = `
+        <div class='data-item'><div class='data-label'>Street</div><div class='data-value'>${a.street}</div></div>
+        <div class='data-item'><div class='data-label'>City</div><div class='data-value'>${a.city}</div></div>
+        <div class='data-item'><div class='data-label'>Country</div><div class='data-value'>${a.country}</div></div>
+    `;
+}
+
+function populateWalletActivity() {
+    const tbody = document.getElementById("walletActivity");
+    tbody.innerHTML = walletData.recentActivity.map(a => `
+        <tr>
+            <td>${new Date(a.date).toLocaleDateString()}</td>
+            <td>${a.description}</td>
+            <td>${a.type}</td>
+            <td>${a.amount}</td>
+            <td>${a.balance}</td>
+        </tr>
+    `).join("");
+}
+
+function populateTransactionsTable(data) {
+    document.getElementById("transactionsTableBody").innerHTML = data.map(t => `
+        <tr>
+            <td>${t.id}</td>
+            <td>${new Date(t.date).toLocaleDateString()}</td>
+            <td>${t.description}</td>
+            <td>${t.type}</td>
+            <td>${t.amount}</td>
+            <td>${t.status}</td>
+        </tr>
+    `).join("");
+}
+
+document.addEventListener("DOMContentLoaded", loadDropshipper);
+</script>
+
+</body>
+</html>

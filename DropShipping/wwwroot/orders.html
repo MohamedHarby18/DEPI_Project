@@ -243,7 +243,7 @@
                             <td>${productName}</td>
                             <td><span class="${status.class}">${status.text}</span></td>
                             <td>${order.items?.length || 0}</td>
-                            <td>${order.createdAt ? order.createdAt.split("T")[0] : "—"}</td>
+                            <td>${order.shippedDate ? order.shippedDate.split("T")[0] : "—"}</td>
                             <td><!-- Actions can go here --></td>
                         </tr>
                     `;

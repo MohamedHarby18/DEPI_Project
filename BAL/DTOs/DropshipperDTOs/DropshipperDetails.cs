@@ -1,4 +1,5 @@
-﻿using DAL.Models;
+﻿using BAL.DTOs.WalletDTOs;
+using DAL.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,8 @@ namespace BAL.DTOs.DropshipperDTOs
         public string Password { get; set; }  // PK and FK to ApplicationUser
 
         public Address Address { get; set; }
+
+        public WalletDTO Wallet { get; set; }
 
         public bool IsActive { get; set; }
         public DateOnly CreatedAt { get; set; }

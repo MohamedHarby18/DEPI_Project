@@ -91,7 +91,7 @@ namespace PAL.Controllers
             return Ok(new
             {
                 Token = token,
-                
+                UserId= user.Id,
                 UserType = user.Dropshipper != null ? "DropShipper" : "Admin"
             });
         }
