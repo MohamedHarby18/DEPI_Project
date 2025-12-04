@@ -91,7 +91,7 @@ namespace PAL.Controllers
             return Ok(new
             {
                 Token = token,
-                User = new { user.Id, user.Email },
+                
                 UserType = user.Dropshipper != null ? "DropShipper" : "Admin"
             });
         }
@@ -106,7 +106,7 @@ namespace PAL.Controllers
 
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Email, user.Email)
             };
 
